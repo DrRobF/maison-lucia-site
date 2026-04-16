@@ -1,0 +1,242 @@
+.page {
+  font-family: "Inter", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  color: #3e342f;
+  background: linear-gradient(to bottom, #f8f3ec 0%, #fdfaf7 35%, #f6f0e8 100%);
+}
+
+.hero {
+  min-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 5rem 1.5rem 4rem;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.75rem;
+  color: #8c7769;
+  margin-bottom: 1rem;
+}
+
+.hero h1 {
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  font-size: clamp(2.2rem, 6vw, 4.4rem);
+  font-weight: 500;
+  line-height: 1.1;
+  max-width: 14ch;
+  margin: 0;
+}
+
+.heroText {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.8;
+  max-width: 640px;
+  margin: 1.5rem auto 2.2rem;
+  color: #5d5048;
+}
+
+.primaryButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  border: none;
+  background: #4f4036;
+  color: #fff9f3;
+  padding: 0.85rem 1.45rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.primaryButton:hover,
+.primaryButton:focus-visible {
+  background: #3d322b;
+  transform: translateY(-1px);
+}
+
+.section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4.5rem 1.25rem;
+}
+
+.sectionHeader {
+  margin-bottom: 1.7rem;
+}
+
+.sectionLabel {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.72rem;
+  color: #9a8578;
+  margin-bottom: 0.35rem;
+}
+
+.section h2 {
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  font-weight: 500;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  margin: 0;
+  color: #3f332c;
+}
+
+.bodyText {
+  max-width: 760px;
+  line-height: 1.9;
+  font-size: 1.06rem;
+  color: #5c4f46;
+}
+
+.gridFour,
+.gridThree,
+.galleryGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+.gridFour {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.gridThree {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.card,
+.packageCard,
+.galleryCard {
+  background: rgba(255, 251, 247, 0.78);
+  border: 1px solid #eadfce;
+  border-radius: 1rem;
+  padding: 1.35rem;
+}
+
+.card h3,
+.packageCard h3 {
+  margin-top: 0;
+  margin-bottom: 0.65rem;
+  font-size: 1.1rem;
+  color: #42362f;
+}
+
+.card p,
+.packageCard p {
+  margin: 0;
+  line-height: 1.75;
+  color: #5f5248;
+}
+
+.price {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: #8f7767 !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.customQuote {
+  margin-top: 1rem;
+  color: #6a5a4f;
+  font-style: italic;
+}
+
+.galleryGrid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.galleryCard {
+  min-height: 170px;
+  display: flex;
+  align-items: flex-end;
+  background: linear-gradient(145deg, #f5ece3, #eee1d5);
+}
+
+.galleryCard span {
+  font-size: 0.9rem;
+  color: #68574b;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  background: #fffaf5;
+  border: 1px solid #e9dece;
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  color: #4f433c;
+  font-size: 0.92rem;
+}
+
+.form input,
+.form select,
+.form textarea {
+  border: 1px solid #dacdbf;
+  border-radius: 0.65rem;
+  padding: 0.7rem 0.75rem;
+  font-size: 0.95rem;
+  background: #fff;
+  color: #443933;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  outline: 2px solid #cfb39b;
+  outline-offset: 0;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.form button {
+  width: fit-content;
+}
+
+.footer {
+  border-top: 1px solid #e7d9c8;
+  margin-top: 1.5rem;
+  padding: 2rem 1.25rem 2.8rem;
+  text-align: center;
+  color: #68584b;
+  background: rgba(244, 236, 227, 0.52);
+}
+
+.footer p {
+  margin: 0.4rem 0;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    min-height: 76vh;
+    padding-top: 4rem;
+  }
+
+  .section {
+    padding: 3.6rem 1rem;
+  }
+
+  .form {
+    grid-template-columns: 1fr;
+  }
+
+  .form button {
+    width: 100%;
+  }
+}
