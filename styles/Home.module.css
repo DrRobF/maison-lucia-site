@@ -1,44 +1,48 @@
 .page {
   font-family: "Inter", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  color: #3e342f;
-  background: linear-gradient(to bottom, #f8f3ec 0%, #fdfaf7 35%, #f6f0e8 100%);
+  color: #352c27;
+  background:
+    radial-gradient(circle at 12% 6%, rgba(255, 248, 238, 0.75), transparent 44%),
+    linear-gradient(to bottom, #fbf6f0 0%, #fdfaf7 34%, #f7f1ea 100%);
 }
 
 .hero {
-  min-height: 88vh;
+  min-height: 92vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 5rem 1.5rem 4rem;
-  max-width: 880px;
+  padding: 6.8rem 1.5rem 5rem;
+  max-width: 980px;
   margin: 0 auto;
 }
 
 .eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: 0.75rem;
-  color: #8c7769;
-  margin-bottom: 1rem;
+  letter-spacing: 0.28em;
+  font-size: 0.72rem;
+  color: #8a7465;
+  margin-bottom: 1.35rem;
 }
 
 .hero h1 {
   font-family: "Cormorant Garamond", "Times New Roman", serif;
-  font-size: clamp(2.2rem, 6vw, 4.4rem);
+  font-size: clamp(2.5rem, 6vw, 5rem);
   font-weight: 500;
-  line-height: 1.1;
-  max-width: 14ch;
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+  max-width: 13ch;
   margin: 0;
+  color: #2f2621;
 }
 
 .heroText {
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  line-height: 1.8;
-  max-width: 640px;
-  margin: 1.5rem auto 2.2rem;
-  color: #5d5048;
+  font-size: clamp(1.05rem, 2vw, 1.26rem);
+  line-height: 1.95;
+  max-width: 700px;
+  margin: 2rem auto 2.8rem;
+  color: #584b43;
 }
 
 .primaryButton {
@@ -46,133 +50,148 @@
   justify-content: center;
   align-items: center;
   text-decoration: none;
-  border: none;
+  border: 1px solid #4f4036;
   background: #4f4036;
   color: #fff9f3;
-  padding: 0.85rem 1.45rem;
+  padding: 0.95rem 1.7rem;
   border-radius: 999px;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.25s ease;
+  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 10px 28px rgba(62, 48, 38, 0.14);
 }
 
 .primaryButton:hover,
 .primaryButton:focus-visible {
   background: #3d322b;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(62, 48, 38, 0.2);
 }
 
 .section {
-  max-width: 1100px;
+  max-width: 1140px;
   margin: 0 auto;
-  padding: 4.5rem 1.25rem;
+  padding: 6rem 1.5rem;
 }
 
 .sectionHeader {
-  margin-bottom: 1.7rem;
+  margin-bottom: 2.2rem;
 }
 
 .sectionLabel {
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 0.72rem;
-  color: #9a8578;
-  margin-bottom: 0.35rem;
+  letter-spacing: 0.24em;
+  font-size: 0.68rem;
+  color: #9b8475;
+  margin-bottom: 0.5rem;
 }
 
 .section h2 {
   font-family: "Cormorant Garamond", "Times New Roman", serif;
   font-weight: 500;
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
   margin: 0;
-  color: #3f332c;
+  color: #362c26;
 }
 
 .bodyText {
-  max-width: 760px;
-  line-height: 1.9;
-  font-size: 1.06rem;
-  color: #5c4f46;
+  max-width: 780px;
+  line-height: 2;
+  font-size: 1.1rem;
+  color: #564942;
 }
 
 .gridFour,
 .gridThree,
 .galleryGrid {
   display: grid;
-  gap: 1rem;
+  gap: 1.35rem;
 }
 
 .gridFour {
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 
 .gridThree {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
 .card,
 .packageCard,
 .galleryCard {
-  background: rgba(255, 251, 247, 0.78);
-  border: 1px solid #eadfce;
-  border-radius: 1rem;
-  padding: 1.35rem;
+  background: rgba(255, 252, 248, 0.86);
+  border: 1px solid rgba(233, 223, 209, 0.95);
+  border-radius: 1.15rem;
+  padding: 1.8rem;
+  box-shadow: 0 16px 34px rgba(112, 88, 68, 0.08);
 }
 
 .card h3,
 .packageCard h3 {
   margin-top: 0;
-  margin-bottom: 0.65rem;
-  font-size: 1.1rem;
-  color: #42362f;
+  margin-bottom: 0.75rem;
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+  color: #3f332c;
 }
 
 .card p,
 .packageCard p {
   margin: 0;
-  line-height: 1.75;
-  color: #5f5248;
+  line-height: 1.85;
+  color: #5b4e45;
+}
+
+.packageCard {
+  border-top: 3px solid rgba(132, 102, 82, 0.45);
 }
 
 .price {
-  font-size: 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.11em;
-  color: #8f7767 !important;
-  margin-bottom: 0.75rem !important;
+  letter-spacing: 0.16em;
+  color: #866f60 !important;
+  margin-bottom: 0.95rem !important;
 }
 
 .customQuote {
-  margin-top: 1rem;
-  color: #6a5a4f;
+  margin-top: 1.25rem;
+  color: #66564b;
   font-style: italic;
 }
 
 .galleryGrid {
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .galleryCard {
-  min-height: 170px;
+  min-height: 190px;
   display: flex;
   align-items: flex-end;
-  background: linear-gradient(145deg, #f5ece3, #eee1d5);
+  background: linear-gradient(145deg, #f8efe5, #eee1d5);
 }
 
 .galleryCard span {
   font-size: 0.9rem;
+  letter-spacing: 0.03em;
   color: #68574b;
 }
 
 .form {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  background: #fffaf5;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.2rem;
+  background: rgba(255, 250, 245, 0.95);
   border: 1px solid #e9dece;
-  border-radius: 1rem;
-  padding: 1.25rem;
+  border-radius: 1.1rem;
+  padding: 1.75rem;
+  box-shadow: 0 20px 38px rgba(115, 90, 70, 0.1);
 }
 
 .form label {
@@ -180,16 +199,22 @@
   flex-direction: column;
   gap: 0.45rem;
   color: #4f433c;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
 }
 
 .form input,
 .form select,
 .form textarea {
   border: 1px solid #dacdbf;
-  border-radius: 0.65rem;
-  padding: 0.7rem 0.75rem;
+  border-radius: 0.7rem;
+  padding: 0.8rem 0.85rem;
   font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
   background: #fff;
   color: #443933;
 }
@@ -207,33 +232,35 @@
 
 .form button {
   width: fit-content;
+  margin-top: 0.35rem;
 }
 
 .footer {
   border-top: 1px solid #e7d9c8;
-  margin-top: 1.5rem;
-  padding: 2rem 1.25rem 2.8rem;
+  margin-top: 2.5rem;
+  padding: 2.3rem 1.25rem 3rem;
   text-align: center;
   color: #68584b;
-  background: rgba(244, 236, 227, 0.52);
+  background: rgba(244, 236, 227, 0.62);
 }
 
 .footer p {
-  margin: 0.4rem 0;
+  margin: 0.5rem 0;
 }
 
 @media (max-width: 720px) {
   .hero {
-    min-height: 76vh;
-    padding-top: 4rem;
+    min-height: 80vh;
+    padding-top: 4.8rem;
   }
 
   .section {
-    padding: 3.6rem 1rem;
+    padding: 4.2rem 1rem;
   }
 
   .form {
     grid-template-columns: 1fr;
+    padding: 1.25rem;
   }
 
   .form button {
