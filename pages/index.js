@@ -84,6 +84,26 @@ export default function Home() {
       </Head>
 
       <main className={styles.page}>
+        <header className={styles.topNav}>
+          <p className={styles.brandMark}>Maison Lucia LLC</p>
+          <nav aria-label="Primary">
+            <ul className={styles.menuList}>
+              <li>
+                <a href="#services">Services</a>
+              </li>
+              <li>
+                <a href="#gallery">Gallery</a>
+              </li>
+              <li>
+                <a href="#atmos">Atmos</a>
+              </li>
+              <li>
+                <a href="#contact">Contact</a>
+              </li>
+            </ul>
+          </nav>
+        </header>
+
         <section className={styles.hero}>
           <div className={styles.heroPanel}>
             <p className={styles.eyebrow}>Maison Lucia LLC</p>
@@ -123,6 +143,22 @@ export default function Home() {
               guests will never forget.
             </p>
           </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.atmosSection}`} id="atmos">
+          <div className={styles.sectionHeader}>
+            <p className={styles.sectionLabel}>Atmos</p>
+            <h2>Atmos by Maison Lucia</h2>
+            <p className={styles.sectionSubtext}>Design your atmosphere.</p>
+          </div>
+          <a
+            href="https://atmos-aiv2.vercel.app/"
+            className={styles.primaryButton}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Design Your Atmosphere
+          </a>
         </section>
 
         <section className={styles.section} id="services">
