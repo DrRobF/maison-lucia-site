@@ -152,7 +152,7 @@ export default function Home() {
             <p className={styles.sectionSubtext}>Design your atmosphere.</p>
           </div>
           <a
-            href="https://atmos-aiv2.vercel.app/"
+            href="https://atmos.maisonluciallc.com/"
             className={styles.primaryButton}
             target="_blank"
             rel="noopener noreferrer"
