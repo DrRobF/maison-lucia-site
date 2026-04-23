@@ -7,6 +7,47 @@
     linear-gradient(to bottom, #fcf8f4 0%, #f9f3ed 42%, #f6efe8 100%);
 }
 
+.topNav {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.4rem 1.25rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brandMark {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.17em;
+  font-size: 0.7rem;
+  color: #8e7869;
+}
+
+.menuList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.menuList a {
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-size: 0.73rem;
+  color: #5e5047;
+  transition: color 0.2s ease;
+}
+
+.menuList a:hover,
+.menuList a:focus-visible {
+  color: #3f322b;
+}
+
 .hero {
   padding: 5.5rem 1.25rem 3rem;
 }
@@ -206,6 +247,12 @@
   background: linear-gradient(to right, rgba(251, 244, 237, 0.8), rgba(249, 239, 230, 0.52));
 }
 
+.atmosSection {
+  border-radius: 1.3rem;
+  border: 1px solid rgba(225, 209, 194, 0.78);
+  background: linear-gradient(to right, rgba(251, 244, 237, 0.8), rgba(249, 239, 230, 0.52));
+}
+
 .featureList {
   list-style: none;
   margin: 0;
@@ -380,6 +427,17 @@
 }
 
 @media (max-width: 720px) {
+  .topNav {
+    padding-top: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .menuList {
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+  }
+
   .hero {
     padding-top: 4rem;
   }
