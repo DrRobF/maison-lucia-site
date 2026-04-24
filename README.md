@@ -1,2 +1,2 @@
 # maison-lucia-site
-Website for Maison Lucia LLC – Event Planning &amp; Styling
+Website for Maison Lucia – Event Planning &amp; Styling

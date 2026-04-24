@@ -76,7 +76,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Maison Lucia LLC | Luxury Event Styling & Tablescapes</title>
+        <title>Maison Lucia | Luxury Event Styling & Tablescapes</title>
         <meta
           name="description"
           content="Maison Lucia creates refined tablescapes and elevated event styling for celebrations, milestones, and memorable moments throughout South Florida."
@@ -85,7 +85,7 @@ export default function Home() {
 
       <main className={styles.page}>
         <header className={styles.topNav}>
-          <p className={styles.brandMark}>Maison Lucia LLC</p>
+          <p className={styles.brandMark}>Maison Lucia</p>
           <nav aria-label="Primary">
             <ul className={styles.menuList}>
               <li>
@@ -106,7 +106,7 @@ export default function Home() {
 
         <section className={styles.hero}>
           <div className={styles.heroPanel}>
-            <p className={styles.eyebrow}>Maison Lucia LLC</p>
+            <p className={styles.eyebrow}>Maison Lucia</p>
             <h1>Beautifully Styled Celebrations, Designed to Be Remembered</h1>
             <p className={styles.heroText}>
               Maison Lucia creates refined tablescapes and elevated event styling for celebrations,
@@ -286,8 +286,12 @@ export default function Home() {
           </div>
           <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
             <label>
-              Name
-              <input type="text" name="name" placeholder="Your full name" required />
+              First Name
+              <input type="text" name="firstName" placeholder="First name" />
+            </label>
+            <label>
+              Last Name
+              <input type="text" name="lastName" placeholder="Last name" />
             </label>
             <label>
               Email
@@ -297,59 +301,23 @@ export default function Home() {
               Phone
               <input type="tel" name="phone" placeholder="(555) 123-4567" />
             </label>
-            <label>
-              Event Date
-              <input type="date" name="date" />
-            </label>
-            <label>
-              Event Type
-              <input type="text" name="type" placeholder="Shower, dinner, milestone, etc." />
-            </label>
-            <label>
-              Venue / Location
-              <input type="text" name="location" placeholder="City or venue name" />
-            </label>
-            <label>
-              Guest Count
-              <input type="number" name="guests" min="1" placeholder="Estimated guests" />
-            </label>
-            <label>
-              Design Scope
-              <select name="package">
-                <option value="">Select service interest</option>
-                <option value="table-styling">Bespoke Table Styling</option>
-                <option value="milestone">Celebrations &amp; Milestones</option>
-                <option value="private-gathering">Private Gatherings</option>
-                <option value="full-event">Full Event Styling</option>
-                <option value="custom">Custom Experiences</option>
-              </select>
-            </label>
-            <label>
-              Budget Range
-              <select name="budget">
-                <option value="">Select budget range</option>
-                <option value="under-2000">Under $2,000</option>
-                <option value="2000-5000">$2,000 - $5,000</option>
-                <option value="5000-10000">$5,000 - $10,000</option>
-                <option value="10000-plus">$10,000+</option>
-              </select>
-            </label>
             <label className={styles.fullWidth}>
-              Event Details / Notes
+              Message
               <textarea
-                name="details"
+                name="message"
                 rows="5"
-                placeholder="Share your vision, inspiration, priorities, and any key event details."
+                placeholder="Tell us about your event and styling needs."
+                required
               />
             </label>
             <button type="submit" className={styles.primaryButton}>
-              Begin Your Inquiry
+              Send Message
             </button>
           </form>
         </section>
 
         <footer className={styles.footer}>
-          <p>Maison Lucia LLC</p>
+          <p>Maison Lucia</p>
           <p>Luxury Event Styling &amp; Tablescapes</p>
           <p>Miami, Florida | Serving South Florida</p>
         </footer>
