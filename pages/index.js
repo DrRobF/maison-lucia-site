@@ -48,7 +48,7 @@ const galleryPlaceholders = [
 ];
 
 const testimonials = [
-  "Maison Lucia exceeded every expectation. Every detail felt luxurious.",
+  "MAISON LUCIA LLC exceeded every expectation. Every detail felt luxurious.",
   "Our guests could not stop talking about how beautiful everything looked.",
   "The entire experience was seamless, elegant, and stress-free.",
 ];
@@ -76,16 +76,16 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Maison Lucia | Luxury Event Styling & Tablescapes</title>
+        <title>MAISON LUCIA LLC | Luxury Event Styling & Tablescapes</title>
         <meta
           name="description"
-          content="Maison Lucia creates refined tablescapes and elevated event styling for celebrations, milestones, and memorable moments throughout South Florida."
+          content="MAISON LUCIA LLC creates refined tablescapes and elevated event styling for celebrations, milestones, and memorable moments throughout South Florida."
         />
       </Head>
 
       <main className={styles.page}>
         <header className={styles.topNav}>
-          <p className={styles.brandMark}>Maison Lucia</p>
+          <p className={styles.brandMark}>MAISON LUCIA LLC</p>
           <nav aria-label="Primary">
             <ul className={styles.menuList}>
               <li>
@@ -106,10 +106,10 @@ export default function Home() {
 
         <section className={styles.hero}>
           <div className={styles.heroPanel}>
-            <p className={styles.eyebrow}>Maison Lucia</p>
+            <p className={styles.eyebrow}>MAISON LUCIA LLC</p>
             <h1>Beautifully Styled Celebrations, Designed to Be Remembered</h1>
             <p className={styles.heroText}>
-              Maison Lucia creates refined tablescapes and elevated event styling for celebrations,
+              MAISON LUCIA LLC creates refined tablescapes and elevated event styling for celebrations,
               milestones, and memorable moments throughout South Florida.
             </p>
             <div className={styles.heroActions}>
@@ -129,7 +129,7 @@ export default function Home() {
           </div>
           <div className={styles.copyStack}>
             <p>
-              At Maison Lucia, we believe the most memorable gatherings begin with intention.
+              At MAISON LUCIA LLC, we believe the most memorable gatherings begin with intention.
             </p>
             <p>
               For years, we have created beautiful tablescapes and designed events for our family
@@ -138,7 +138,7 @@ export default function Home() {
               quality.
             </p>
             <p>
-              Today, Maison Lucia brings that same passion for design, d&eacute;cor, and the art of
+              Today, MAISON LUCIA LLC brings that same passion for design, d&eacute;cor, and the art of
               table setting to your celebration&mdash;transforming gatherings into experiences your
               guests will never forget.
             </p>
@@ -148,7 +148,7 @@ export default function Home() {
         <section className={`${styles.section} ${styles.atmosSection}`} id="atmos">
           <div className={styles.sectionHeader}>
             <p className={styles.sectionLabel}>Atmos</p>
-            <h2>Atmos by Maison Lucia</h2>
+            <h2>Atmos by MAISON LUCIA LLC</h2>
             <p className={styles.sectionSubtext}>Design your atmosphere.</p>
           </div>
           <a
@@ -181,7 +181,7 @@ export default function Home() {
 
         <section className={`${styles.section} ${styles.experience}`} id="experience">
           <div className={styles.sectionHeader}>
-            <h2>The Maison Lucia Experience</h2>
+            <h2>The MAISON LUCIA LLC Experience</h2>
           </div>
           <div className={styles.copyStack}>
             <p>
@@ -229,11 +229,11 @@ export default function Home() {
 
         <section className={styles.section} id="about">
           <div className={styles.sectionHeader}>
-            <h2>About Maison Lucia</h2>
+            <h2>About MAISON LUCIA LLC</h2>
           </div>
           <div className={styles.copyStack}>
             <p>
-              Maison Lucia was founded from a lifelong love of beautiful hosting, meaningful
+              MAISON LUCIA LLC was founded from a lifelong love of beautiful hosting, meaningful
               gatherings, and thoughtful design.
             </p>
             <p>
@@ -317,7 +317,7 @@ export default function Home() {
         </section>
 
         <footer className={styles.footer}>
-          <p>Maison Lucia</p>
+          <p>MAISON LUCIA LLC</p>
           <p>Luxury Event Styling &amp; Tablescapes</p>
           <p>Miami, Florida | Serving South Florida</p>
         </footer>
