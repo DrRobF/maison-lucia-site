@@ -125,7 +125,7 @@ export default function Home() {
 
         <section className={styles.section} id="intro">
           <div className={styles.sectionHeader}>
-            <h2>Where Meaningful Moments Meet Beautiful Design</h2>
+            <h2>Setting the Tone for Taste</h2>
           </div>
           <div className={styles.copyStack}>
             <p>
@@ -142,6 +142,14 @@ export default function Home() {
               table setting to your celebration&mdash;transforming gatherings into experiences your
               guests will never forget.
             </p>
+          </div>
+          <div className={styles.singleDecorImageWrap}>
+            <img
+              src="/green-purple-gold.PNG"
+              alt=""
+              aria-hidden="true"
+              className={styles.singleDecorImage}
+            />
           </div>
         </section>
 
@@ -198,6 +206,20 @@ export default function Home() {
         <section className={styles.section} id="why-us">
           <div className={styles.sectionHeader}>
             <h2>Chosen for Taste. Remembered for Experience.</h2>
+          </div>
+          <div className={styles.decorativeImageRow}>
+            <img
+              src="/formal-table-setting-ml.PNG"
+              alt=""
+              aria-hidden="true"
+              className={styles.decorativeImage}
+            />
+            <img
+              src="/casual-table-setting-ml.PNG"
+              alt=""
+              aria-hidden="true"
+              className={styles.decorativeImage}
+            />
           </div>
           <ul className={styles.featureList}>
             {highlights.map((point) => (
