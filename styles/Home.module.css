@@ -265,7 +265,7 @@
   border-radius: 1.2rem;
   border: 1px solid rgba(230, 216, 204, 0.9);
   box-shadow: 0 16px 34px rgba(109, 87, 71, 0.14);
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .decorativeImageRow {
@@ -277,8 +277,8 @@
 
 .decorativeImage {
   width: 100%;
-  height: clamp(220px, 32vw, 380px);
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   border-radius: 1rem;
   border: 1px solid rgba(230, 216, 204, 0.9);
   box-shadow: 0 14px 30px rgba(112, 87, 67, 0.1);
@@ -321,8 +321,6 @@
 
 .galleryCard {
   margin: 0;
-  overflow: hidden;
-  min-height: 280px;
   display: grid;
   grid-template-rows: 1fr auto;
 }
