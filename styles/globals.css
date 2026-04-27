@@ -1,13 +1,34 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap");
+
+:root {
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Montserrat", sans-serif;
+  --bg-main: #fcfbf8;
+  --bg-alt: #f8f6f2;
+  --text-main: #1a1a1a;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
   scroll-behavior: smooth;
-  background: #fdfaf7;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-body);
 }
 
 * {
   box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 a {

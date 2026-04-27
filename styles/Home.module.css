@@ -1,10 +1,7 @@
 .page {
-  font-family: "Inter", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  color: #352d28;
-  background:
-    radial-gradient(circle at 8% 7%, rgba(255, 248, 240, 0.82), transparent 38%),
-    radial-gradient(circle at 90% 0%, rgba(248, 236, 224, 0.5), transparent 36%),
-    linear-gradient(to bottom, #fcf8f4 0%, #f9f3ed 42%, #f6efe8 100%);
+  font-family: var(--font-body);
+  color: var(--text-main);
+  background: var(--bg-main);
 }
 
 .topNav {
@@ -37,8 +34,9 @@
 .menuList a {
   text-decoration: none;
   text-transform: uppercase;
-  letter-spacing: 0.13em;
+  letter-spacing: 2.5px;
   font-size: 0.73rem;
+  font-weight: 500;
   color: #5e5047;
   transition: color 0.2s ease;
 }
@@ -58,15 +56,7 @@
   min-height: 84vh;
   border-radius: 2rem;
   border: 1px solid rgba(226, 211, 197, 0.8);
-  background:
-    linear-gradient(148deg, rgba(255, 250, 244, 0.92), rgba(251, 241, 232, 0.9)),
-    repeating-linear-gradient(
-      115deg,
-      rgba(255, 255, 255, 0.15),
-      rgba(255, 255, 255, 0.15) 16px,
-      rgba(255, 255, 255, 0) 16px,
-      rgba(255, 255, 255, 0) 32px
-    );
+  background: var(--bg-alt);
   box-shadow: 0 22px 44px rgba(110, 84, 63, 0.11);
   padding: clamp(3rem, 7vw, 6.5rem) clamp(1.5rem, 5vw, 5rem);
   display: flex;
@@ -84,10 +74,10 @@
 }
 
 .hero h1 {
-  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  font-family: var(--font-heading);
   font-size: clamp(2.4rem, 6vw, 5rem);
   line-height: 1.02;
-  letter-spacing: -0.018em;
+  letter-spacing: 0.01em;
   margin: 0 auto;
   max-width: 14ch;
   color: #2f2521;
@@ -118,7 +108,8 @@
   padding: 0.95rem 1.8rem;
   font-size: 0.81rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 1.8px;
+  font-family: var(--font-body);
   text-transform: uppercase;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
   cursor: pointer;
@@ -170,11 +161,11 @@
 }
 
 .section h2 {
-  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  font-family: var(--font-heading);
   font-size: clamp(2rem, 4vw, 3.5rem);
   font-weight: 500;
   line-height: 1.05;
-  letter-spacing: -0.015em;
+  letter-spacing: 0.01em;
   margin: 0;
   color: #342a25;
   max-width: 17ch;
@@ -221,7 +212,7 @@
 .galleryCard {
   border-radius: 1.2rem;
   border: 1px solid rgba(230, 216, 204, 0.9);
-  background: rgba(255, 252, 249, 0.86);
+  background: var(--bg-alt);
   box-shadow: 0 14px 30px rgba(112, 87, 67, 0.08);
 }
 
@@ -244,13 +235,13 @@
 .experience {
   border-radius: 1.3rem;
   border: 1px solid rgba(225, 209, 194, 0.78);
-  background: linear-gradient(to right, rgba(251, 244, 237, 0.8), rgba(249, 239, 230, 0.52));
+  background: var(--bg-alt);
 }
 
 .atmosSection {
   border-radius: 1.3rem;
   border: 1px solid rgba(225, 209, 194, 0.78);
-  background: linear-gradient(to right, rgba(251, 244, 237, 0.8), rgba(249, 239, 230, 0.52));
+  background: var(--bg-alt);
 }
 
 .singleDecorImageWrap {
@@ -298,7 +289,7 @@
   padding: 1.05rem 1rem 1.05rem 2.5rem;
   border-radius: 0.9rem;
   border: 1px solid rgba(229, 216, 204, 0.85);
-  background: rgba(255, 252, 249, 0.78);
+  background: var(--bg-alt);
   line-height: 1.7;
   color: #584b43;
 }
@@ -327,9 +318,7 @@
 
 .imagePlaceholder {
   min-height: 190px;
-  background:
-    linear-gradient(120deg, rgba(255, 248, 240, 0.95), rgba(245, 229, 214, 0.92)),
-    radial-gradient(circle at 65% 25%, rgba(255, 255, 255, 0.55), transparent 55%);
+  background: var(--bg-alt);
 }
 
 .galleryCard figcaption {
@@ -355,7 +344,7 @@
 
 .quoteCard p {
   margin: 0;
-  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  font-family: var(--font-heading);
   font-size: 1.5rem;
   line-height: 1.4;
   color: #463933;
@@ -398,7 +387,7 @@
   gap: 1.1rem;
   border: 1px solid #e6d7c8;
   border-radius: 1.2rem;
-  background: rgba(255, 252, 248, 0.95);
+  background: var(--bg-alt);
   box-shadow: 0 18px 36px rgba(111, 89, 72, 0.11);
   padding: 1.6rem;
 }
@@ -444,7 +433,7 @@
 .footer {
   margin-top: 2rem;
   border-top: 1px solid #e8dacb;
-  background: rgba(245, 236, 227, 0.72);
+  background: var(--bg-alt);
   text-align: center;
   padding: 2.25rem 1rem 2.9rem;
 }
