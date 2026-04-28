@@ -69,30 +69,21 @@ const detailsGroups = [
   },
 ];
 
-const detailStrip = [
+const signatureMoments = [
   {
-    src: "/cocktail detail 1.jpg",
-    alt: "Cocktail detail with refined glassware and florals",
-  },
-  {
-    src: "/napkin detail 1 .jpg",
-    alt: "Folded napkin styling detail at place setting",
-  },
-  {
-    src: "/napkin-setting 2.jpg",
-    alt: "Napkin and place setting detail on styled event table",
+    src: "/table setup 1.jpg",
+    alt: "Intimate candlelight dinner with layered place settings",
+    caption: "Intimate Candlelight Dinner",
   },
   {
     src: "/colors-floral1.jpg",
-    alt: "Colorful floral arrangement detail for celebration table",
+    alt: "Garden celebration with colorful florals and curated tableware",
+    caption: "Garden Celebration",
   },
   {
-    src: "/table setup 1.jpg",
-    alt: "Styled table setup detail by Maison Lucia",
-  },
-  {
-    src: "/table setup 2.jpg",
-    alt: "Curated table setup with layered textures and glassware",
+    src: "/table blue setup 1.jpg",
+    alt: "Modern coastal table with blue tones and elegant glassware",
+    caption: "Modern Coastal Table",
   },
 ];
 
@@ -242,10 +233,14 @@ export default function Home() {
             ))}
           </div>
 
-          <div className={styles.detailStrip}>
-            {detailStrip.map((image) => (
-              <figure key={image.src} className={styles.stripImageWrap}>
-                <img src={image.src} alt={image.alt} className={styles.stripImage} />
+          <div className={styles.signatureMoments}>
+            <div className={styles.signatureHeader}>
+              <h3>Signature Moments</h3>
+            </div>
+            {signatureMoments.map((image) => (
+              <figure key={image.src} className={styles.signatureImageWrap}>
+                <img src={image.src} alt={image.alt} className={styles.signatureImage} />
+                <figcaption>{image.caption}</figcaption>
               </figure>
             ))}
           </div>
