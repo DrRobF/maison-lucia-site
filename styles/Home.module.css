@@ -169,6 +169,32 @@
   padding-bottom: 0.2rem;
 }
 
+.atmosFeatureButton {
+  text-decoration: none;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0.95rem 1.8rem;
+  border-radius: 999px;
+  background: #f3e8d1;
+  color: #1f1b16;
+  border: 1px solid rgba(243, 232, 209, 0.8);
+  transition: transform 220ms ease, box-shadow 260ms ease, background 220ms ease;
+}
+
+.atmosFeatureButton:hover,
+.atmosFeatureButton:focus-visible {
+  background: #f8efdd;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(13, 10, 7, 0.25);
+}
+
 .heroImageCol {
   min-height: clamp(440px, 72vh, 760px);
   position: relative;
@@ -458,6 +484,59 @@
   color: #6f6557;
 }
 
+.atmosFeature {
+  max-width: 1240px;
+  margin: clamp(2.2rem, 6vw, 4rem) auto 0;
+  padding: clamp(2.2rem, 4.8vw, 4.1rem);
+  border-radius: 30px;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 8% 20%, rgba(255, 255, 255, 0.22), transparent 43%),
+    linear-gradient(130deg, #2b2620 0%, #191713 65%, #11100f 100%);
+  box-shadow: 0 24px 50px rgba(15, 12, 9, 0.26), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  isolation: isolate;
+}
+
+.atmosFeatureVisual {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to right, rgba(18, 15, 12, 0.8), rgba(18, 15, 12, 0.2)),
+    url("/table setup 1.jpg");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.35;
+  filter: blur(1.5px) saturate(0.85);
+  transform: scale(1.06);
+}
+
+.atmosFeatureContent {
+  position: relative;
+  z-index: 1;
+  max-width: 62ch;
+}
+
+.atmosFeatureContent .kicker {
+  color: rgba(243, 232, 209, 0.9);
+  font-size: 0.74rem;
+  letter-spacing: 3px;
+}
+
+.atmosFeatureContent h2 {
+  margin: 0.9rem 0 1.1rem;
+  color: #f7f3ec;
+  font-size: clamp(2.2rem, 5.8vw, 4.5rem);
+  line-height: 1.04;
+  font-weight: 500;
+}
+
+.atmosFeatureContent p {
+  margin: 0 0 1.8rem;
+  color: rgba(247, 243, 236, 0.92);
+  line-height: 1.95;
+  font-size: clamp(1.02rem, 2.1vw, 1.35rem);
+  max-width: 48ch;
+}
+
 .footer {
   max-width: 1240px;
   margin: 3rem auto 0;
@@ -551,6 +630,10 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .atmosFeature {
+    border-radius: 24px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -579,5 +662,10 @@
   .footerMeta {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .atmosFeature {
+    margin-top: 2rem;
+    padding: 1.6rem 1.25rem;
   }
 }
