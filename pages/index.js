@@ -258,14 +258,25 @@ export default function Home() {
 
         <section className={styles.journalStub} id="journal" aria-label="Journal">
           <p>Journal coming soon.</p>
-          <a
-            href="https://atmos.maisonluciallc.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.subtleLink}
-          >
-            Plan the atmosphere for your event
-          </a>
+        </section>
+
+        <section className={styles.atmosFeature} aria-label="Atmos AI feature">
+          <div className={styles.atmosFeatureVisual} aria-hidden="true" />
+          <div className={styles.atmosFeatureContent}>
+            <p className={styles.kicker}>Featured Experience</p>
+            <h2>Design Your Table Before It Exists</h2>
+            <p>
+              Explore Atmos AI — a guided experience to visualize your event before it’s set.
+            </p>
+            <a
+              href="https://atmos.maisonluciallc.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.atmosFeatureButton}
+            >
+              Explore Atmos AI
+            </a>
+          </div>
         </section>
 
         <footer className={styles.footer}>
