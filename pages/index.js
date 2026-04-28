@@ -28,6 +28,74 @@ const features = [
   },
 ];
 
+const detailsGroups = [
+  {
+    title: "Blue Garden Palette",
+    description:
+      "Layered blues, delicate florals, and clean place settings bring a modern coastal elegance.",
+    images: [
+      {
+        src: "/floral-blue1.jpg",
+        alt: "Blue floral centerpiece detail for Maison Lucia table styling",
+      },
+      {
+        src: "/floral-blue-2.jpg",
+        alt: "Blue floral and candle arrangement on a styled event table",
+      },
+      {
+        src: "/table blue setup 1.jpg",
+        alt: "Blue themed full table setup styled by Maison Lucia",
+      },
+    ],
+  },
+  {
+    title: "Warm Signature Styling",
+    description:
+      "Warm neutrals, gold accents, and textured florals create an elevated, intimate atmosphere.",
+    images: [
+      {
+        src: "/beige-floral1.jpg",
+        alt: "Beige floral arrangement with soft neutral tones",
+      },
+      {
+        src: "/beige-floral2.jpg",
+        alt: "Warm beige floral event detail styled by Maison Lucia",
+      },
+      {
+        src: "/green-purple-gold.PNG",
+        alt: "Luxury table setting with green, purple, and gold details",
+      },
+    ],
+  },
+];
+
+const detailStrip = [
+  {
+    src: "/cocktail detail 1.jpg",
+    alt: "Cocktail detail with refined glassware and florals",
+  },
+  {
+    src: "/napkin detail 1 .jpg",
+    alt: "Folded napkin styling detail at place setting",
+  },
+  {
+    src: "/napkin-setting 2.jpg",
+    alt: "Napkin and place setting detail on styled event table",
+  },
+  {
+    src: "/colors-floral1.jpg",
+    alt: "Colorful floral arrangement detail for celebration table",
+  },
+  {
+    src: "/table setup 1.jpg",
+    alt: "Styled table setup detail by Maison Lucia",
+  },
+  {
+    src: "/table setup 2.jpg",
+    alt: "Curated table setup with layered textures and glassware",
+  },
+];
+
 export default function Home() {
   return (
     <>
@@ -94,8 +162,8 @@ export default function Home() {
 
           <div className={styles.heroImageCol}>
             <img
-              src="/green-purple-gold.PNG"
-              alt="Elegant Maison Lucia tablescape with florals and gold accents"
+              src="/table setup 2.jpg"
+              alt="Signature Maison Lucia table setup with candles and florals"
               className={styles.heroImage}
             />
           </div>
@@ -128,7 +196,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className={styles.approachImages} id="gallery">
+          <div className={styles.approachImages} id="gallery" aria-label="Chosen for taste details">
             <figure className={styles.editorialImageWrap}>
               <img
                 src="/casual-table-setting-ml.PNG"
@@ -143,6 +211,43 @@ export default function Home() {
                 className={styles.editorialImage}
               />
             </figure>
+          </div>
+        </section>
+
+        <section className={styles.detailsSection} aria-label="Styled details gallery">
+          <div className={styles.detailsHeader}>
+            <p className={styles.kicker}>Selected Details</p>
+            <h2>Chosen for Taste</h2>
+            <p>
+              A curated look at textures, florals, and layered table moments that define each Maison
+              Lucia setting.
+            </p>
+          </div>
+
+          <div className={styles.detailsGroups}>
+            {detailsGroups.map((group) => (
+              <article key={group.title} className={styles.detailsGroupCard}>
+                <div className={styles.groupText}>
+                  <h3>{group.title}</h3>
+                  <p>{group.description}</p>
+                </div>
+                <div className={styles.groupImageRow}>
+                  {group.images.map((image) => (
+                    <figure key={image.src} className={styles.groupImageWrap}>
+                      <img src={image.src} alt={image.alt} className={styles.groupImage} />
+                    </figure>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className={styles.detailStrip}>
+            {detailStrip.map((image) => (
+              <figure key={image.src} className={styles.stripImageWrap}>
+                <img src={image.src} alt={image.alt} className={styles.stripImage} />
+              </figure>
+            ))}
           </div>
         </section>
 
