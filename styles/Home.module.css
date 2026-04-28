@@ -333,7 +333,7 @@
 
 .detailsGroups {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.8rem;
 }
 
 .detailsGroupCard {
@@ -357,23 +357,32 @@
 }
 
 .groupImageRow {
-  margin-top: 1rem;
+  margin-top: 1.15rem;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.8rem;
+  gap: 1.05rem;
 }
 
 .groupImageWrap {
   margin: 0;
-  background: #fcfbf8;
-  border-radius: 16px;
+  background: linear-gradient(160deg, #fefdfb 0%, #f8f3eb 100%);
+  border-radius: 20px;
   border: 1px solid rgba(194, 163, 110, 0.2);
   overflow: hidden;
+  box-shadow: 0 10px 22px rgba(25, 21, 14, 0.08), 0 2px 6px rgba(25, 21, 14, 0.05);
+  transform: translateY(0);
+  transition: transform 280ms ease, box-shadow 320ms ease;
+}
+
+.groupImageWrap:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(25, 21, 14, 0.11), 0 3px 8px rgba(25, 21, 14, 0.06);
 }
 
 .groupImage {
   width: 100%;
   display: block;
+  filter: saturate(0.92) contrast(1.03);
 }
 
 .groupImage {
