@@ -344,7 +344,7 @@
 .detailsSection {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 0 1.25rem clamp(3.2rem, 6vw, 5rem);
+  padding: clamp(2.4rem, 4vw, 3.6rem) 1.25rem clamp(4rem, 7vw, 6rem);
 }
 
 .detailsHeader {
@@ -419,7 +419,13 @@
 .signatureMoments {
   margin-top: clamp(3.5rem, 8vw, 6rem);
   display: grid;
-  gap: clamp(2rem, 4.5vw, 3.4rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+  row-gap: clamp(1.5rem, 3vw, 2rem);
+}
+
+.signatureHeader {
+  grid-column: 1 / -1;
 }
 
 .signatureHeader h3 {
@@ -431,23 +437,24 @@
 
 .signatureImageWrap {
   margin: 0;
-  border-radius: 24px;
-  overflow: hidden;
-  background: #f8f6f2;
-  border: 1px solid rgba(194, 163, 110, 0.2);
-  box-shadow: 0 14px 34px rgba(32, 28, 20, 0.06);
 }
 
 .signatureImage {
   width: 100%;
+  height: min(28vw, 360px);
+  max-height: 360px;
+  aspect-ratio: 4 / 5;
   display: block;
-  min-height: clamp(380px, 55vw, 620px);
   object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(32, 28, 20, 0.08);
 }
 
 .signatureImageWrap figcaption {
-  padding: 1.1rem 1.2rem;
-  font-size: 0.92rem;
+  margin-top: 0.85rem;
+  padding: 0;
+  font-size: 0.88rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #4d453a;
@@ -626,6 +633,14 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .signatureMoments {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .signatureImage {
+    height: min(44vw, 350px);
+  }
+
   .ctaBanner {
     flex-direction: column;
     align-items: flex-start;
@@ -647,16 +662,20 @@
 
   .featureRow,
   .approachImages,
-  .groupImageRow {
+  .groupImageRow,
+  .signatureMoments {
     grid-template-columns: 1fr;
   }
 
   .editorialImage,
-  .groupImage,
-  .signatureImage {
+  .groupImage {
     height: auto;
     min-height: 0;
     object-fit: cover;
+  }
+
+  .signatureImage {
+    height: min(94vw, 360px);
   }
 
   .footerMeta {
