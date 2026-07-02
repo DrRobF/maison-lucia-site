@@ -87,6 +87,67 @@ const signatureMoments = [
   },
 ];
 
+const floralServiceExamples = [
+  "Centerpieces",
+  "Accent florals",
+  "Welcome table florals",
+  "Sweetheart table styling",
+  "Gift table styling",
+  "Bud vases",
+  "Cake flowers",
+  "Curated floral details for intimate events",
+];
+
+const floralPlaceholders = [
+  {
+    id: "floral-tablescape-hero",
+    label: "Floral Tablescape",
+    ariaLabel: "Luxury floral tablescape with cream flowers and candles",
+  },
+  {
+    id: "floral-centerpiece",
+    label: "Centerpiece",
+    ariaLabel: "Maison Lucia floral centerpiece with soft neutral blooms",
+  },
+  {
+    id: "floral-bud-vases",
+    label: "Bud Vases",
+    ariaLabel: "Bud vase floral styling for an intimate celebration",
+  },
+  {
+    id: "floral-sweetheart-table",
+    label: "Sweetheart Table",
+    ariaLabel: "Sweetheart table with refined floral decor",
+  },
+  {
+    id: "floral-welcome-table",
+    label: "Welcome Table",
+    ariaLabel: "Welcome table with curated floral details",
+  },
+  {
+    id: "floral-cake-flowers",
+    label: "Cake Flowers",
+    ariaLabel: "Cake with delicate floral accents",
+  },
+];
+
+const signatureCollections = [
+  "The Lucia Collection",
+  "The Garden Collection",
+  "The Editorial Collection",
+  "The Countryside Collection",
+  "The Celebration Collection",
+];
+
+const inquiryOptions = [
+  "Tablescape Styling",
+  "Floral Styling & Decor",
+  "Full Event Styling",
+  "Delivery Only",
+  "Custom Request",
+];
+
+
 export default function Home() {
   return (
     <>
@@ -129,9 +190,11 @@ export default function Home() {
               <br />
               Meaningful Moments.
             </h1>
+            <p className={styles.heroTagline}>Florals. Tablescapes. Thoughtful Gatherings.</p>
             <p className={styles.heroCopy}>
-              Refined tablescapes and elevated event styling for celebrations, milestones, and
-              unforgettable gatherings throughout South Florida.
+              Maison Lucia creates thoughtful celebrations through floral styling, tablescapes, and
+              beautifully curated details—bringing softness, elegance, and intention to every
+              gathering.
             </p>
             <div className={styles.heroActions}>
               <a href="#contact" className={styles.primaryButton}>
@@ -167,6 +230,18 @@ export default function Home() {
               <p>{feature.copy}</p>
             </article>
           ))}
+          <article className={`${styles.featureCard} ${styles.floralFeatureCard}`}>
+            <h2>Floral Styling &amp; Decor</h2>
+            <p>
+              Soft, intentional floral details designed to complement your tablescape, event
+              palette, and overall atmosphere.
+            </p>
+            <ul>
+              {floralServiceExamples.map((example) => (
+                <li key={example}>{example}</li>
+              ))}
+            </ul>
+          </article>
         </section>
 
         <section className={styles.approachSection} id="about">
@@ -209,6 +284,7 @@ export default function Home() {
           <div className={styles.detailsHeader}>
             <p className={styles.kicker}>Selected Details</p>
             <h2>Chosen for Taste</h2>
+            <p className={styles.galleryCategory}>Florals &amp; Table Details</p>
             <p>
               A curated look at textures, florals, and layered table moments that define each Maison
               Lucia setting.
@@ -246,14 +322,82 @@ export default function Home() {
           </div>
         </section>
 
+        <section className={styles.floralSection} aria-label="Signature Floral Styling">
+          <div className={styles.floralIntro}>
+            <p className={styles.kicker}>Botanical Details</p>
+            <h2>Signature Floral Styling</h2>
+            <p>
+              At Maison Lucia, florals are never an afterthought. Each arrangement is thoughtfully
+              curated to complement the story, palette, and atmosphere of your celebration. From
+              delicate bud vases to layered centerpiece styling, every floral detail is designed to
+              feel refined, personal, and beautifully intentional.
+            </p>
+            <p className={styles.positioningLine}>
+              Floral decor is available as part of Maison Lucia event styling services.
+            </p>
+          </div>
+
+          <div className={styles.floralPlaceholderGrid}>
+            {floralPlaceholders.map((placeholder, index) => (
+              <figure
+                key={placeholder.id}
+                className={`${styles.floralPlaceholder} ${
+                  index === 0 ? styles.floralPlaceholderHero : ""
+                }`}
+                aria-label={placeholder.ariaLabel}
+              >
+                <span>{placeholder.label}</span>
+                <figcaption>{placeholder.id}</figcaption>
+              </figure>
+            ))}
+          </div>
+
+          <div className={styles.collectionSection}>
+            <p className={styles.kicker}>Signature Collections</p>
+            <div className={styles.collectionList}>
+              {signatureCollections.map((collection) => (
+                <span key={collection}>{collection}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className={styles.ctaBanner} id="contact">
-          <div>
+          <div className={styles.ctaIntro}>
             <h2>Ready to create something beautiful?</h2>
             <p>Weddings, milestones, intimate gatherings, and unforgettable celebrations.</p>
           </div>
-          <a href="mailto:hello@maisonluciallc.com" className={styles.ctaButton}>
-            Inquire Today
-          </a>
+          <form
+            className={styles.inquiryForm}
+            action="mailto:hello@maisonluciallc.com"
+            method="post"
+            encType="text/plain"
+          >
+            <label>
+              Name
+              <input name="name" type="text" autoComplete="name" required />
+            </label>
+            <label>
+              Email
+              <input name="email" type="email" autoComplete="email" required />
+            </label>
+            <fieldset>
+              <legend>Interested Services</legend>
+              {inquiryOptions.map((option) => (
+                <label key={option} className={styles.checkboxLabel}>
+                  <input name="services" type="checkbox" value={option} />
+                  <span>{option}</span>
+                </label>
+              ))}
+            </fieldset>
+            <label>
+              Event Notes
+              <textarea name="event-notes" rows="4" />
+            </label>
+            <button type="submit" className={styles.ctaButton}>
+              Inquire Today
+            </button>
+          </form>
         </section>
 
         <section className={styles.journalStub} id="journal" aria-label="Journal">
