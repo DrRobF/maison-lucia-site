@@ -28,44 +28,58 @@ const features = [
   },
 ];
 
-const detailsGroups = [
+const floralGalleryImages = [
   {
-    title: "Blue Garden Palette",
-    description:
-      "Layered blues, delicate florals, and clean place settings bring a modern coastal elegance.",
-    images: [
-      {
-        src: "/floral-blue1.jpg",
-        alt: "Blue floral centerpiece detail for Maison Lucia table styling",
-      },
-      {
-        src: "/floral-blue-2.jpg",
-        alt: "Blue floral and candle arrangement on a styled event table",
-      },
-      {
-        src: "/table blue setup 1.jpg",
-        alt: "Blue themed full table setup styled by Maison Lucia",
-      },
-    ],
+    src: "/italian-gerbera-tomato.webp",
+    alt: "Italian gerbera floral decor with warm tomato tones",
   },
   {
-    title: "Warm Signature Styling",
-    description:
-      "Warm neutrals, gold accents, and textured florals create an elevated, intimate atmosphere.",
-    images: [
-      {
-        src: "/beige-floral1.jpg",
-        alt: "Beige floral arrangement with soft neutral tones",
-      },
-      {
-        src: "/beige-floral2.jpg",
-        alt: "Warm beige floral event detail styled by Maison Lucia",
-      },
-      {
-        src: "/green-purple-gold.PNG",
-        alt: "Luxury table setting with green, purple, and gold details",
-      },
-    ],
+    src: "/italiangerbera1.webp",
+    alt: "Italian gerbera floral styling for a refined celebration",
+  },
+  {
+    src: "/lacesilverwhite.webp",
+    alt: "White and silver floral styling with lace detail",
+  },
+  {
+    src: "/lillyofthevalley.webp",
+    alt: "Lily of the valley floral styling with soft white blooms",
+  },
+  {
+    src: "/purplepeachpink.webp",
+    alt: "Purple peach and pink floral decor arrangement",
+  },
+  {
+    src: "/purplepeachpinkwhite.webp",
+    alt: "Purple peach pink and white floral arrangement",
+  },
+  {
+    src: "/red-white-blue.webp",
+    alt: "Red white and blue floral styling for a celebration",
+  },
+  {
+    src: "/red-white-blue1.webp",
+    alt: "Red white and blue floral decor detail",
+  },
+  {
+    src: "/redwhitesmall (1).webp",
+    alt: "Small red and white floral arrangement",
+  },
+  {
+    src: "/sunflower white.webp",
+    alt: "White sunflower floral decor for an intimate event",
+  },
+  {
+    src: "/white lace.webp",
+    alt: "White floral styling with lace-inspired details",
+  },
+  {
+    src: "/white-red.webp",
+    alt: "White and red floral arrangement for event styling",
+  },
+  {
+    src: "/whiteblue .webp",
+    alt: "White and blue floral styling detail",
   },
 ];
 
@@ -98,12 +112,47 @@ const floralServiceExamples = [
   "Curated floral details for intimate events",
 ];
 
+const supportingFloralImages = [
+  {
+    src: "/white lace.webp",
+    alt: "White floral arrangement with lace-inspired styling",
+  },
+  {
+    src: "/lillyofthevalley.webp",
+    alt: "Lily of the valley floral styling with soft white blooms",
+  },
+  {
+    src: "/sunflower white.webp",
+    alt: "White sunflower floral decor with refined event styling",
+  },
+];
+
 const signatureCollections = [
-  "The Lucia Collection",
-  "The Garden Collection",
-  "The Editorial Collection",
-  "The Countryside Collection",
-  "The Celebration Collection",
+  {
+    title: "The Lucia Collection",
+    src: "/lacesilverwhite.webp",
+    alt: "Maison Lucia signature floral styling in white and silver tones",
+  },
+  {
+    title: "The Garden Collection",
+    src: "/lillyofthevalley.webp",
+    alt: "Garden-inspired floral styling with delicate white blooms",
+  },
+  {
+    title: "The Editorial Collection",
+    src: "/purplepeachpinkwhite.webp",
+    alt: "Editorial floral arrangement with purple peach pink and white tones",
+  },
+  {
+    title: "The Countryside Collection",
+    src: "/sunflower white.webp",
+    alt: "Countryside-inspired floral styling with soft sunflower details",
+  },
+  {
+    title: "The Celebration Collection",
+    src: "/italian-gerbera-tomato.webp",
+    alt: "Celebration floral styling with Italian gerbera and tomato-inspired color palette",
+  },
 ];
 
 const inquiryOptions = [
@@ -113,7 +162,6 @@ const inquiryOptions = [
   "Delivery Only",
   "Custom Request",
 ];
-
 
 export default function Home() {
   return (
@@ -157,11 +205,13 @@ export default function Home() {
               <br />
               Meaningful Moments.
             </h1>
-            <p className={styles.heroTagline}>Florals. Tablescapes. Thoughtful Gatherings.</p>
+            <p className={styles.heroTagline}>
+              Florals. Tablescapes. Thoughtful Gatherings.
+            </p>
             <p className={styles.heroCopy}>
-              Maison Lucia creates thoughtful celebrations through floral styling, tablescapes, and
-              beautifully curated details—bringing softness, elegance, and intention to every
-              gathering.
+              Maison Lucia creates thoughtful celebrations through floral
+              styling, tablescapes, and beautifully curated details—bringing
+              softness, elegance, and intention to every gathering.
             </p>
             <div className={styles.heroActions}>
               <a href="#contact" className={styles.primaryButton}>
@@ -199,19 +249,24 @@ export default function Home() {
           ))}
         </section>
 
-        <section className={styles.floralDecorSection} aria-labelledby="floral-decor-title">
+        <section
+          className={styles.floralDecorSection}
+          aria-labelledby="floral-decor-title"
+        >
           <div className={styles.floralDecorPanel}>
             <div className={styles.floralDecorText}>
-              <p className={styles.kicker}>Florals. Tablescapes. Thoughtful Gatherings.</p>
+              <p className={styles.kicker}>
+                Florals. Tablescapes. Thoughtful Gatherings.
+              </p>
               <h2 id="floral-decor-title">Floral Styling &amp; Decor</h2>
               <p className={styles.floralDecorLead}>
-                Maison Lucia creates thoughtful celebrations through floral styling, tablescapes, and
-                beautifully curated details—bringing softness, elegance, and intention to every
-                gathering.
+                Maison Lucia creates thoughtful celebrations through floral
+                styling, tablescapes, and beautifully curated details—bringing
+                softness, elegance, and intention to every gathering.
               </p>
               <p>
-                Soft, intentional floral details designed to complement your tablescape, event
-                palette, and overall atmosphere.
+                Soft, intentional floral details designed to complement your
+                tablescape, event palette, and overall atmosphere.
               </p>
               <ul className={styles.floralServiceList}>
                 {floralServiceExamples.map((example) => (
@@ -219,17 +274,20 @@ export default function Home() {
                 ))}
               </ul>
               <p className={styles.floralDecorNote}>
-                Floral decor is available as part of Maison Lucia event styling services.
+                Floral decor is available as part of Maison Lucia event styling
+                services.
               </p>
             </div>
 
-            <figure
-              className={styles.floralTablescapeHero}
-              data-concept="floral-tablescape-hero"
-              aria-label="Luxury floral tablescape with cream flowers and candles"
-            >
-              <span>Floral Tablescape</span>
-              <figcaption>Cream florals &amp; candlelight</figcaption>
+            <figure className={styles.floralTablescapeHero}>
+              <img
+                src="/lacesilverwhite.webp"
+                alt="Luxury floral tablescape with white lace and silver accents"
+                className={styles.floralTablescapeImage}
+              />
+              <figcaption>
+                White lace, silver accents, and styled florals
+              </figcaption>
             </figure>
           </div>
         </section>
@@ -243,16 +301,20 @@ export default function Home() {
               Effortless Execution.
             </h2>
             <p>
-              From intimate dinners to weddings and meaningful milestones, we transform gatherings
-              into elevated experiences through seamless planning, thoughtful design, and refined
-              styling.
+              From intimate dinners to weddings and meaningful milestones, we
+              transform gatherings into elevated experiences through seamless
+              planning, thoughtful design, and refined styling.
             </p>
             <a href="#contact" className={styles.primaryButton}>
               Inquire Today
             </a>
           </div>
 
-          <div className={styles.approachImages} id="gallery" aria-label="Chosen for taste details">
+          <div
+            className={styles.approachImages}
+            id="gallery"
+            aria-label="Chosen for taste details"
+          >
             <figure className={styles.editorialImageWrap}>
               <img
                 src="/casual-table-setting-ml.PNG"
@@ -270,32 +332,31 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={styles.detailsSection} aria-label="Styled details gallery">
+        <section
+          className={styles.detailsSection}
+          aria-label="Styled details gallery"
+        >
           <div className={styles.detailsHeader}>
             <p className={styles.kicker}>Selected Details</p>
             <h2>Chosen for Taste</h2>
-            <p className={styles.galleryCategory}>Florals &amp; Table Details</p>
+            <p className={styles.galleryCategory}>
+              Florals &amp; Table Details
+            </p>
             <p>
-              A curated look at textures, florals, and layered table moments that define each Maison
-              Lucia setting.
+              A curated look at textures, florals, and layered table moments
+              that define each Maison Lucia setting.
             </p>
           </div>
 
-          <div className={styles.detailsGroups}>
-            {detailsGroups.map((group) => (
-              <article key={group.title} className={styles.detailsGroupCard}>
-                <div className={styles.groupText}>
-                  <h3>{group.title}</h3>
-                  <p>{group.description}</p>
-                </div>
-                <div className={styles.groupImageRow}>
-                  {group.images.map((image) => (
-                    <figure key={image.src} className={styles.groupImageWrap}>
-                      <img src={image.src} alt={image.alt} className={styles.groupImage} />
-                    </figure>
-                  ))}
-                </div>
-              </article>
+          <div className={styles.floralGalleryGrid}>
+            {floralGalleryImages.map((image) => (
+              <figure key={image.src} className={styles.floralGalleryItem}>
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className={styles.floralGalleryImage}
+                />
+              </figure>
             ))}
           </div>
 
@@ -305,33 +366,64 @@ export default function Home() {
             </div>
             {signatureMoments.map((image) => (
               <figure key={image.src} className={styles.signatureImageWrap}>
-                <img src={image.src} alt={image.alt} className={styles.signatureImage} />
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className={styles.signatureImage}
+                />
                 <figcaption>{image.caption}</figcaption>
               </figure>
             ))}
           </div>
         </section>
 
-        <section className={styles.floralSection} aria-label="Signature Floral Styling">
+        <section
+          className={styles.floralSection}
+          aria-label="Signature Floral Styling"
+        >
           <div className={styles.floralIntro}>
             <p className={styles.kicker}>Botanical Details</p>
             <h2>Signature Floral Styling</h2>
             <p>
-              At Maison Lucia, florals are never an afterthought. Each arrangement is thoughtfully
-              curated to complement the story, palette, and atmosphere of your celebration. From
-              delicate bud vases to layered centerpiece styling, every floral detail is designed to
-              feel refined, personal, and beautifully intentional.
+              At Maison Lucia, florals are never an afterthought. Each
+              arrangement is thoughtfully curated to complement the story,
+              palette, and atmosphere of your celebration. From delicate bud
+              vases to layered centerpiece styling, every floral detail is
+              designed to feel refined, personal, and beautifully intentional.
             </p>
             <p className={styles.positioningLine}>
-              Floral decor is available as part of Maison Lucia event styling services.
+              Floral decor is available as part of Maison Lucia event styling
+              services.
             </p>
+          </div>
+
+          <div className={styles.supportingFloralGrid}>
+            {supportingFloralImages.map((image) => (
+              <figure key={image.src} className={styles.supportingFloralCard}>
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className={styles.supportingFloralImage}
+                />
+              </figure>
+            ))}
           </div>
 
           <div className={styles.collectionSection}>
             <p className={styles.kicker}>Signature Collections</p>
             <div className={styles.collectionList}>
               {signatureCollections.map((collection) => (
-                <span key={collection}>{collection}</span>
+                <article
+                  key={collection.title}
+                  className={styles.collectionCard}
+                >
+                  <img
+                    src={collection.src}
+                    alt={collection.alt}
+                    className={styles.collectionImage}
+                  />
+                  <h3>{collection.title}</h3>
+                </article>
               ))}
             </div>
           </div>
@@ -340,7 +432,10 @@ export default function Home() {
         <section className={styles.ctaBanner} id="contact">
           <div className={styles.ctaIntro}>
             <h2>Ready to create something beautiful?</h2>
-            <p>Weddings, milestones, intimate gatherings, and unforgettable celebrations.</p>
+            <p>
+              Weddings, milestones, intimate gatherings, and unforgettable
+              celebrations.
+            </p>
           </div>
           <form
             className={styles.inquiryForm}
@@ -375,7 +470,11 @@ export default function Home() {
           </form>
         </section>
 
-        <section className={styles.journalStub} id="journal" aria-label="Journal">
+        <section
+          className={styles.journalStub}
+          id="journal"
+          aria-label="Journal"
+        >
           <p>Journal coming soon.</p>
         </section>
 
@@ -385,7 +484,8 @@ export default function Home() {
             <p className={styles.kicker}>Featured Experience</p>
             <h2>Design Your Table Before It Exists</h2>
             <p>
-              Explore Atmos AI — a guided experience to visualize your event before it’s set.
+              Explore Atmos AI — a guided experience to visualize your event
+              before it’s set.
             </p>
             <a
               href="https://atmos.maisonluciallc.com/"
@@ -409,7 +509,10 @@ export default function Home() {
           </ul>
           <div className={styles.footerMeta}>
             <p>© {new Date().getFullYear()} Maison Lucia LLC</p>
-            <div className={styles.socialPlaceholders} aria-label="Social links">
+            <div
+              className={styles.socialPlaceholders}
+              aria-label="Social links"
+            >
               <a href="#" aria-label="Instagram">
                 IG
               </a>
