@@ -271,8 +271,8 @@ export default function Home() {
 
           <div className={styles.heroImageCol}>
             <img
-              src="/purplepeachpinkwhite.webp"
-              alt="Elegant Maison Lucia table styling with florals and refined celebration details"
+              src="/whiteblue%20.webp"
+              alt="Elegant white and blue Maison Lucia table styling with refined floral details"
               className={styles.heroImage}
             />
           </div>
