@@ -698,33 +698,158 @@
   font-weight: 600;
 }
 
-.floralFeatureCard {
-  grid-column: span 2;
-  background: linear-gradient(135deg, rgba(255, 252, 246, 0.95), rgba(247, 241, 231, 0.92));
-  border: 1px solid rgba(194, 163, 110, 0.28);
-  border-radius: 20px;
-  padding: 1.2rem 1.3rem;
+.floralDecorSection {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(2.8rem, 6vw, 5.5rem) 1.25rem 0;
 }
 
-.floralFeatureCard ul {
-  margin: 1rem 0 0;
-  padding: 0;
+.floralDecorPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1.08fr);
+  gap: clamp(2rem, 5vw, 4.75rem);
+  align-items: center;
+  padding: clamp(1.5rem, 4.2vw, 3.6rem);
+  border: 1px solid rgba(194, 163, 110, 0.24);
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 249, 0.96), rgba(247, 241, 231, 0.9)),
+    #fbf7ef;
+  box-shadow: 0 22px 60px rgba(41, 35, 25, 0.06);
+}
+
+.floralDecorText h2 {
+  margin: 0.85rem 0 1.1rem;
+  font-size: clamp(2.25rem, 5vw, 4.45rem);
+  line-height: 1;
+  font-weight: 500;
+  color: #2c2924;
+}
+
+.floralDecorText p {
+  margin: 0;
+  color: #37342f;
+  line-height: 1.86;
+}
+
+.floralDecorLead {
+  max-width: 54ch;
+  font-size: clamp(1.02rem, 1.8vw, 1.16rem);
+}
+
+.floralDecorLead + p {
+  margin-top: 1rem;
+}
+
+.floralServiceList {
+  margin: 1.6rem 0 0;
+  padding: 1.35rem 0 0;
+  border-top: 1px solid rgba(194, 163, 110, 0.24);
   list-style: none;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.55rem 1rem;
+  gap: 0.78rem 1.35rem;
 }
 
-.floralFeatureCard li {
-  color: #575044;
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
+.floralServiceList li {
+  position: relative;
+  padding-left: 1.15rem;
+  color: #4c463d;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  letter-spacing: 0.03em;
 }
 
-.floralFeatureCard li::before {
-  content: "—";
-  color: #b29566;
-  margin-right: 0.45rem;
+.floralServiceList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.64em;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 999px;
+  background: #b29566;
+  box-shadow: 0 0 0 4px rgba(178, 149, 102, 0.12);
+}
+
+.floralDecorNote {
+  margin-top: 1.25rem !important;
+  font-size: 0.78rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #7c6a4d !important;
+}
+
+.floralTablescapeHero {
+  margin: 0;
+  min-height: clamp(360px, 44vw, 560px);
+  border: 1px solid rgba(178, 149, 102, 0.34);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 24% 26%, rgba(255, 247, 229, 0.95) 0 10%, transparent 11%),
+    radial-gradient(circle at 36% 38%, rgba(243, 223, 211, 0.86) 0 7%, transparent 8%),
+    radial-gradient(circle at 70% 28%, rgba(248, 240, 221, 0.9) 0 12%, transparent 13%),
+    radial-gradient(circle at 62% 64%, rgba(224, 232, 214, 0.62) 0 10%, transparent 11%),
+    linear-gradient(155deg, #fffdf8 0%, #f6efe3 56%, #eadfce 100%);
+  box-shadow:
+    inset 0 0 0 12px rgba(255, 255, 255, 0.46),
+    0 24px 55px rgba(44, 35, 23, 0.11);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.floralTablescapeHero::before {
+  content: "";
+  position: absolute;
+  inset: 14%;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0 11%,
+      rgba(141, 119, 82, 0.14) 12% 13%,
+      transparent 14% 32%,
+      rgba(141, 119, 82, 0.1) 33% 34%,
+      transparent 35%
+    ),
+    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.5), transparent 68%);
+  transform: rotate(-7deg);
+}
+
+.floralTablescapeHero::after {
+  content: "";
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.floralTablescapeHero span {
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  padding: 0.52rem 0.74rem;
+  border: 1px solid rgba(178, 149, 102, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.72);
+  color: #5c4d36;
+  font-size: 0.67rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.floralTablescapeHero figcaption {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.75rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.55rem, 3vw, 2.5rem);
+  color: #302b24;
 }
 
 .galleryCategory {
@@ -768,64 +893,6 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #7c6a4d !important;
-}
-
-.floralPlaceholderGrid {
-  margin-top: 2rem;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.floralPlaceholder {
-  margin: 0;
-  min-height: 260px;
-  border: 1px solid rgba(178, 149, 102, 0.32);
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 25% 24%, rgba(244, 225, 218, 0.78) 0 12%, transparent 13%),
-    radial-gradient(circle at 70% 30%, rgba(224, 232, 214, 0.65) 0 10%, transparent 11%),
-    radial-gradient(circle at 46% 72%, rgba(248, 229, 169, 0.42) 0 8%, transparent 9%),
-    linear-gradient(145deg, #fffdf9 0%, #f7f1e8 58%, #eee5d7 100%);
-  box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.45), 0 16px 38px rgba(32, 28, 20, 0.07);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 1.2rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.floralPlaceholder::after {
-  content: "";
-  position: absolute;
-  inset: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.74);
-  border-radius: 18px;
-  pointer-events: none;
-}
-
-.floralPlaceholderHero {
-  grid-column: span 2;
-  min-height: 360px;
-}
-
-.floralPlaceholder span {
-  position: relative;
-  z-index: 1;
-  font-family: var(--font-heading);
-  font-size: clamp(1.35rem, 2.6vw, 2.15rem);
-  color: #2f2b25;
-}
-
-.floralPlaceholder figcaption {
-  position: relative;
-  z-index: 1;
-  margin-top: 0.45rem;
-  font-size: 0.64rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #7a6a53;
 }
 
 .collectionSection {
@@ -902,20 +969,26 @@
 }
 
 @media (max-width: 1040px) {
-  .floralPlaceholderGrid,
+  .floralDecorPanel {
+    grid-template-columns: 1fr;
+  }
+
   .collectionList {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 640px) {
-  .floralFeatureCard,
-  .floralPlaceholderHero {
-    grid-column: span 1;
+  .floralDecorPanel {
+    padding: 1.2rem;
+    border-radius: 24px;
   }
 
-  .floralFeatureCard ul,
-  .floralPlaceholderGrid,
+  .floralTablescapeHero {
+    min-height: 320px;
+  }
+
+  .floralServiceList,
   .collectionList,
   .inquiryForm fieldset {
     grid-template-columns: 1fr;

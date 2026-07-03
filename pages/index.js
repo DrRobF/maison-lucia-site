@@ -98,39 +98,6 @@ const floralServiceExamples = [
   "Curated floral details for intimate events",
 ];
 
-const floralPlaceholders = [
-  {
-    id: "floral-tablescape-hero",
-    label: "Floral Tablescape",
-    ariaLabel: "Luxury floral tablescape with cream flowers and candles",
-  },
-  {
-    id: "floral-centerpiece",
-    label: "Centerpiece",
-    ariaLabel: "Maison Lucia floral centerpiece with soft neutral blooms",
-  },
-  {
-    id: "floral-bud-vases",
-    label: "Bud Vases",
-    ariaLabel: "Bud vase floral styling for an intimate celebration",
-  },
-  {
-    id: "floral-sweetheart-table",
-    label: "Sweetheart Table",
-    ariaLabel: "Sweetheart table with refined floral decor",
-  },
-  {
-    id: "floral-welcome-table",
-    label: "Welcome Table",
-    ariaLabel: "Welcome table with curated floral details",
-  },
-  {
-    id: "floral-cake-flowers",
-    label: "Cake Flowers",
-    ariaLabel: "Cake with delicate floral accents",
-  },
-];
-
 const signatureCollections = [
   "The Lucia Collection",
   "The Garden Collection",
@@ -230,18 +197,41 @@ export default function Home() {
               <p>{feature.copy}</p>
             </article>
           ))}
-          <article className={`${styles.featureCard} ${styles.floralFeatureCard}`}>
-            <h2>Floral Styling &amp; Decor</h2>
-            <p>
-              Soft, intentional floral details designed to complement your tablescape, event
-              palette, and overall atmosphere.
-            </p>
-            <ul>
-              {floralServiceExamples.map((example) => (
-                <li key={example}>{example}</li>
-              ))}
-            </ul>
-          </article>
+        </section>
+
+        <section className={styles.floralDecorSection} aria-labelledby="floral-decor-title">
+          <div className={styles.floralDecorPanel}>
+            <div className={styles.floralDecorText}>
+              <p className={styles.kicker}>Florals. Tablescapes. Thoughtful Gatherings.</p>
+              <h2 id="floral-decor-title">Floral Styling &amp; Decor</h2>
+              <p className={styles.floralDecorLead}>
+                Maison Lucia creates thoughtful celebrations through floral styling, tablescapes, and
+                beautifully curated details—bringing softness, elegance, and intention to every
+                gathering.
+              </p>
+              <p>
+                Soft, intentional floral details designed to complement your tablescape, event
+                palette, and overall atmosphere.
+              </p>
+              <ul className={styles.floralServiceList}>
+                {floralServiceExamples.map((example) => (
+                  <li key={example}>{example}</li>
+                ))}
+              </ul>
+              <p className={styles.floralDecorNote}>
+                Floral decor is available as part of Maison Lucia event styling services.
+              </p>
+            </div>
+
+            <figure
+              className={styles.floralTablescapeHero}
+              data-concept="floral-tablescape-hero"
+              aria-label="Luxury floral tablescape with cream flowers and candles"
+            >
+              <span>Floral Tablescape</span>
+              <figcaption>Cream florals &amp; candlelight</figcaption>
+            </figure>
+          </div>
         </section>
 
         <section className={styles.approachSection} id="about">
@@ -335,21 +325,6 @@ export default function Home() {
             <p className={styles.positioningLine}>
               Floral decor is available as part of Maison Lucia event styling services.
             </p>
-          </div>
-
-          <div className={styles.floralPlaceholderGrid}>
-            {floralPlaceholders.map((placeholder, index) => (
-              <figure
-                key={placeholder.id}
-                className={`${styles.floralPlaceholder} ${
-                  index === 0 ? styles.floralPlaceholderHero : ""
-                }`}
-                aria-label={placeholder.ariaLabel}
-              >
-                <span>{placeholder.label}</span>
-                <figcaption>{placeholder.id}</figcaption>
-              </figure>
-            ))}
           </div>
 
           <div className={styles.collectionSection}>
