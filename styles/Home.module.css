@@ -286,10 +286,6 @@
   max-width: 1240px;
   margin: 0 auto;
   padding: clamp(3.3rem, 8vw, 6rem) 1.25rem;
-  display: grid;
-  grid-template-columns: minmax(280px, 0.9fr) minmax(420px, 1.3fr);
-  gap: clamp(1.1rem, 2.8vw, 2rem);
-  align-items: start;
 }
 
 .kicker {
@@ -337,7 +333,7 @@
 
 .editorialImage {
   width: 100%;
-  height: clamp(360px, 53vw, 620px);
+  height: clamp(220px, 24vw, 320px);
   object-fit: contain;
   object-position: center;
   display: block;
@@ -660,8 +656,11 @@
     flex-wrap: wrap;
   }
 
-  .hero,
-  .approachSection {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .approachPanel {
     grid-template-columns: 1fr;
   }
 
@@ -729,6 +728,7 @@
 
   .featureRow,
   .approachImages,
+  .tableSettingPair,
   .groupImageRow,
   .floralGalleryGrid,
   .signatureMoments {
@@ -1053,4 +1053,167 @@
   .inquiryForm fieldset {
     grid-template-columns: 1fr;
   }
+}
+
+.approachPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.98fr) minmax(420px, 1.12fr);
+  gap: clamp(2rem, 5vw, 4.75rem);
+  align-items: center;
+  padding: clamp(1.5rem, 4.2vw, 3.6rem);
+  border: 1px solid rgba(194, 163, 110, 0.24);
+  border-radius: 30px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 253, 249, 0.96),
+      rgba(247, 241, 231, 0.9)
+    ),
+    #fbf7ef;
+  box-shadow: 0 22px 60px rgba(41, 35, 25, 0.06);
+}
+
+.approachLead {
+  font-size: clamp(1.02rem, 1.8vw, 1.16rem);
+}
+
+.tableFeatureGrid {
+  margin: 1.6rem 0 1.5rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid rgba(194, 163, 110, 0.24);
+  display: grid;
+  gap: 0.9rem;
+}
+
+.tableFeatureCard {
+  padding: 1rem;
+  border: 1px solid rgba(194, 163, 110, 0.22);
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.66);
+  box-shadow: 0 10px 24px rgba(32, 28, 20, 0.05);
+}
+
+.tableFeatureCard h3 {
+  margin: 0 0 0.42rem;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+  color: #342f28;
+}
+
+.tableFeatureCard p {
+  margin: 0;
+  color: #4c463d;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.approachHeroImage {
+  grid-column: 1 / -1;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(178, 149, 102, 0.34);
+  border-radius: 28px;
+  box-shadow: 0 24px 55px rgba(44, 35, 23, 0.11);
+}
+
+.approachMainImage {
+  width: 100%;
+  height: clamp(360px, 43vw, 540px);
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.94) contrast(1.02);
+}
+
+.approachHeroImage::after {
+  content: "";
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.approachHeroImage figcaption {
+  position: absolute;
+  left: clamp(1.25rem, 3vw, 2rem);
+  right: clamp(1.25rem, 3vw, 2rem);
+  bottom: clamp(1.25rem, 3vw, 2rem);
+  z-index: 1;
+  width: fit-content;
+  max-width: min(32rem, calc(100% - 2.5rem));
+  margin: 0;
+  padding: 0.72rem 0.9rem;
+  border: 1px solid rgba(178, 149, 102, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.84);
+  color: #302b24;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tableSettingPair {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.carouselShell {
+  position: relative;
+}
+
+.carouselControls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  margin-bottom: 0.9rem;
+}
+
+.carouselControls button {
+  width: 2.65rem;
+  height: 2.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(178, 149, 102, 0.42);
+  background: #fffdf8;
+  color: #342f28;
+  cursor: pointer;
+  font-size: 1.1rem;
+  box-shadow: 0 8px 20px rgba(32, 28, 20, 0.06);
+  transition:
+    transform 200ms ease,
+    background 200ms ease;
+}
+
+.carouselControls button:hover,
+.carouselControls button:focus-visible {
+  background: #f8f1e4;
+  transform: translateY(-1px);
+}
+
+.floralCarousel {
+  display: flex;
+  gap: clamp(0.85rem, 1.6vw, 1.15rem);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 0.15rem 0 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(178, 149, 102, 0.65) rgba(248, 246, 242, 0.8);
+}
+
+.floralCarousel .floralGalleryItem {
+  flex: 0 0 clamp(245px, 28vw, 350px);
+  scroll-snap-align: start;
+}
+
+.floralGalleryItem figcaption {
+  padding: 0.85rem 0.95rem 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #5f513f;
 }
