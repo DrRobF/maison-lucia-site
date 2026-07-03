@@ -1262,3 +1262,259 @@
   text-transform: uppercase;
   color: #5f513f;
 }
+
+@media (max-width: 768px) {
+  .header {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 0.95rem 1rem;
+    padding: 1rem 1.1rem;
+  }
+
+  .brandName {
+    font-size: clamp(1.35rem, 7vw, 1.65rem);
+  }
+
+  .tagline {
+    max-width: 19rem;
+    font-size: 0.6rem;
+    line-height: 1.45;
+    letter-spacing: 0.16em;
+  }
+
+  .header nav {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .menuList {
+    justify-content: flex-start;
+    gap: 0.55rem 0.85rem;
+  }
+
+  .menuList a {
+    font-size: 0.66rem;
+    letter-spacing: 1.7px;
+  }
+
+  .headerButton {
+    min-height: 40px;
+    padding: 0 1rem;
+    font-size: 0.68rem;
+    letter-spacing: 1.4px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 1.55rem;
+    padding: 2rem 1.1rem 1.4rem;
+  }
+
+  .heroTextCol {
+    padding: 0;
+  }
+
+  .heroTextCol h1 {
+    max-width: 11ch;
+    font-size: clamp(2.55rem, 13vw, 4rem);
+    line-height: 1.02;
+  }
+
+  .heroTagline {
+    margin-top: 1.15rem;
+    font-size: 0.72rem;
+    line-height: 1.55;
+    letter-spacing: 0.17em;
+  }
+
+  .heroCopy {
+    margin: 1.15rem 0 1.25rem;
+    max-width: 100%;
+    font-size: 1rem;
+    line-height: 1.72;
+  }
+
+  .heroActions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .ctaButton {
+    width: 100%;
+    padding: 0.88rem 1rem;
+    text-align: center;
+  }
+
+  .atmosLink,
+  .subtleLink {
+    margin-top: 1.15rem;
+  }
+
+  .heroImageCol {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+    border-top: 0;
+    padding: 0;
+  }
+
+  .heroImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 44%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .featureSection {
+    margin-top: 1.35rem;
+    padding: 2.25rem 1.1rem;
+  }
+
+  .featureIntro {
+    text-align: left;
+  }
+
+  .featureIntro h2,
+  .floralDecorText h2,
+  .approachText h2,
+  .detailsHeader h2,
+  .floralIntro h2,
+  .ctaBanner h2 {
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 1.06;
+  }
+
+  .featureRow {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .featureCard {
+    padding: 1.35rem;
+    border-radius: 20px;
+  }
+
+  .featureNumber {
+    margin-bottom: 1rem;
+  }
+
+  .featureCard p,
+  .tableFeatureCard p,
+  .floralDecorText p,
+  .detailsHeader p,
+  .floralIntro p {
+    font-size: 1rem;
+  }
+
+  .floralDecorSection,
+  .approachSection,
+  .detailsSection,
+  .floralSection {
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+  }
+
+  .floralDecorPanel,
+  .approachPanel {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.2rem;
+    border-radius: 24px;
+  }
+
+  .floralServiceList {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .floralServiceList li {
+    font-size: 0.96rem;
+    line-height: 1.55;
+  }
+
+  .floralTablescapeHero,
+  .approachHeroImage {
+    border-radius: 20px;
+  }
+
+  .floralTablescapeImage {
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    object-position: center;
+  }
+
+  .approachImages,
+  .tableSettingPair,
+  .signatureMoments,
+  .collectionList {
+    grid-template-columns: 1fr;
+  }
+
+  .approachMainImage {
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-position: center;
+  }
+
+  .editorialImage {
+    height: auto;
+    aspect-ratio: 4 / 5;
+  }
+
+  .floralCarousel {
+    gap: 0.9rem;
+    padding-bottom: 1.1rem;
+    scroll-padding-left: 0.05rem;
+  }
+
+  .floralCarousel .floralGalleryItem {
+    flex-basis: min(82vw, 340px);
+  }
+
+  .carouselControls {
+    justify-content: flex-start;
+  }
+
+  .supportingFloralGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .supportingFloralImage,
+  .signatureImage {
+    height: auto;
+    aspect-ratio: 4 / 5;
+  }
+
+  .ctaBanner {
+    margin-left: 1.1rem;
+    margin-right: 1.1rem;
+    padding: 1.5rem 1.15rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .heroTextCol h1 {
+    font-size: clamp(2.35rem, 12.5vw, 3.25rem);
+  }
+
+  .heroActions {
+    gap: 0.65rem;
+  }
+
+  .floralTablescapeHero figcaption,
+  .approachHeroImage figcaption {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: calc(100% - 2rem);
+    border-radius: 16px;
+    line-height: 1.45;
+  }
+}
