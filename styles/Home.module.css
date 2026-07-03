@@ -285,44 +285,40 @@
 
 .featureEditorialImageWrap {
   position: relative;
+  width: min(52%, 560px);
   margin: 0 auto clamp(2rem, 4vw, 3rem);
-  padding: clamp(0.45rem, 1vw, 0.7rem);
-  max-width: 860px;
+  padding: clamp(1rem, 1.5vw, 1.5rem);
   overflow: hidden;
-  border: 1px solid rgba(194, 163, 110, 0.3);
+  border: 1px solid rgba(255, 253, 249, 0.92);
   border-radius: 24px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 253, 249, 0.98),
-    rgba(246, 239, 226, 0.86)
-  );
-  box-shadow: 0 14px 34px rgba(38, 32, 23, 0.07);
+  background: rgba(255, 253, 249, 0.72);
+  box-shadow:
+    0 22px 48px rgba(38, 32, 23, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.75) inset;
 }
 
 .featureEditorialImageWrap::before {
   content: "";
   position: absolute;
-  inset: clamp(0.45rem, 1vw, 0.7rem);
+  inset: clamp(1rem, 1.5vw, 1.5rem);
   z-index: 1;
   border-radius: 18px;
-  background:
-    radial-gradient(
-      ellipse at center,
-      rgba(255, 255, 255, 0) 68%,
-      rgba(252, 251, 248, 0.16) 100%
-    ),
-    linear-gradient(to bottom, rgba(255, 253, 249, 0.16), rgba(255, 253, 249, 0));
-  box-shadow: inset 0 0 0 1px rgba(255, 253, 249, 0.55);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 253, 249, 0) 58%,
+    rgba(255, 250, 239, 0.12) 78%,
+    rgba(246, 237, 220, 0.28) 100%
+  );
+  box-shadow: inset 0 0 42px rgba(108, 83, 50, 0.08);
   pointer-events: none;
 }
 
 .featureEditorialImage {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: auto;
   display: block;
   object-fit: contain;
   object-position: center;
-  background: #fbf6ec;
   border-radius: 18px;
   filter: saturate(0.95) contrast(1.02) brightness(1.03);
 }
@@ -775,6 +771,10 @@
     );
   }
 
+  .featureEditorialImageWrap {
+    width: min(68%, 520px);
+  }
+
   .featureRow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -816,17 +816,18 @@
   }
 
   .featureEditorialImageWrap {
-    width: 100%;
+    width: min(100%, 430px);
     margin-bottom: 1.8rem;
+    padding: 1rem;
     border-radius: 20px;
   }
 
   .featureEditorialImageWrap::before {
+    inset: 1rem;
     border-radius: 14px;
   }
 
   .featureEditorialImage {
-    aspect-ratio: 4 / 3;
     border-radius: 14px;
   }
 
