@@ -287,6 +287,13 @@ export default function Home() {
               designed to make every gathering feel beautifully considered.
             </p>
           </div>
+          <figure className={styles.featureEditorialImageWrap}>
+            <img
+              src="/white-red.webp"
+              alt="White and red Maison Lucia table styling with refined floral details"
+              className={styles.featureEditorialImage}
+            />
+          </figure>
           <div className={styles.featureRow}>
             {features.map((feature, index) => (
               <article key={feature.title} className={styles.featureCard}>
