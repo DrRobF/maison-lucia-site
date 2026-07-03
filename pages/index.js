@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { useRef } from "react";
 import styles from "../styles/Home.module.css";
 
 const navLinks = [
@@ -32,54 +33,67 @@ const floralGalleryImages = [
   {
     src: "/italian-gerbera-tomato.webp",
     alt: "Italian gerbera floral decor with warm tomato tones",
+    caption: "Floral Tablescape",
   },
   {
     src: "/italiangerbera1.webp",
     alt: "Italian gerbera floral styling for a refined celebration",
+    caption: "Celebration Florals",
   },
   {
     src: "/lacesilverwhite.webp",
     alt: "White and silver floral styling with lace detail",
+    caption: "White Lace & Silver",
   },
   {
     src: "/lillyofthevalley.webp",
     alt: "Lily of the valley floral styling with soft white blooms",
+    caption: "Garden-Inspired Details",
   },
   {
     src: "/purplepeachpink.webp",
     alt: "Purple peach and pink floral decor arrangement",
+    caption: "Soft Botanical Styling",
   },
   {
     src: "/purplepeachpinkwhite.webp",
     alt: "Purple peach pink and white floral arrangement",
+    caption: "Celebration Florals",
   },
   {
     src: "/red-white-blue.webp",
     alt: "Red white and blue floral styling for a celebration",
+    caption: "Layered Table Moment",
   },
   {
     src: "/red-white-blue1.webp",
     alt: "Red white and blue floral decor detail",
+    caption: "Candlelit Detail",
   },
   {
     src: "/redwhitesmall (1).webp",
     alt: "Small red and white floral arrangement",
+    caption: "Refined Place Setting",
   },
   {
     src: "/sunflower white.webp",
     alt: "White sunflower floral decor for an intimate event",
+    caption: "Garden-Inspired Details",
   },
   {
     src: "/white lace.webp",
     alt: "White floral styling with lace-inspired details",
+    caption: "White Lace & Silver",
   },
   {
     src: "/white-red.webp",
     alt: "White and red floral arrangement for event styling",
+    caption: "Layered Table Moment",
   },
   {
     src: "/whiteblue .webp",
     alt: "White and blue floral styling detail",
+    caption: "Soft Botanical Styling",
   },
 ];
 
@@ -155,6 +169,21 @@ const signatureCollections = [
   },
 ];
 
+const tableSettingFeatures = [
+  {
+    title: "Casual Table Setting",
+    copy: "Relaxed, refined, and inviting. Designed for everyday elegance, intimate dinners, brunches, and effortless hosting.",
+  },
+  {
+    title: "Formal Table Setting",
+    copy: "Polished, balanced, and timeless. A refined approach to elevated celebrations, special occasions, and beautifully layered tables.",
+  },
+  {
+    title: "Styled Table Moments",
+    copy: "Curated details including linens, glassware, candles, florals, place settings, and finishing touches that complete the experience.",
+  },
+];
+
 const inquiryOptions = [
   "Tablescape Styling",
   "Floral Styling & Decor",
@@ -164,6 +193,15 @@ const inquiryOptions = [
 ];
 
 export default function Home() {
+  const floralCarouselRef = useRef(null);
+
+  const scrollFloralCarousel = (direction) => {
+    floralCarouselRef.current?.scrollBy({
+      left: direction * 360,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <>
       <Head>
@@ -293,42 +331,68 @@ export default function Home() {
         </section>
 
         <section className={styles.approachSection} id="about">
-          <div className={styles.approachText}>
-            <p className={styles.kicker}>A Modern Approach to Celebration</p>
-            <h2>
-              Timeless Style.
-              <br />
-              Effortless Execution.
-            </h2>
-            <p>
-              From intimate dinners to weddings and meaningful milestones, we
-              transform gatherings into elevated experiences through seamless
-              planning, thoughtful design, and refined styling.
-            </p>
-            <a href="#contact" className={styles.primaryButton}>
-              Inquire Today
-            </a>
-          </div>
+          <div className={styles.approachPanel}>
+            <div className={styles.approachText}>
+              <p className={styles.kicker}>A Modern Approach to Celebration</p>
+              <h2>
+                Timeless Style.
+                <br />
+                Effortless Execution.
+              </h2>
+              <p className={styles.approachLead}>
+                From intimate dinners to weddings and meaningful milestones,
+                Maison Lucia transforms gatherings into elevated experiences
+                through seamless planning, thoughtful design, and refined table
+                styling.
+              </p>
+              <div className={styles.tableFeatureGrid}>
+                {tableSettingFeatures.map((feature) => (
+                  <article
+                    key={feature.title}
+                    className={styles.tableFeatureCard}
+                  >
+                    <h3>{feature.title}</h3>
+                    <p>{feature.copy}</p>
+                  </article>
+                ))}
+              </div>
+              <a href="#contact" className={styles.primaryButton}>
+                Inquire Today
+              </a>
+            </div>
 
-          <div
-            className={styles.approachImages}
-            id="gallery"
-            aria-label="Chosen for taste details"
-          >
-            <figure className={styles.editorialImageWrap}>
-              <img
-                src="/casual-table-setting-ml.PNG"
-                alt="Casual elegant table setting by Maison Lucia"
-                className={styles.editorialImage}
-              />
-            </figure>
-            <figure className={styles.editorialImageWrap}>
-              <img
-                src="/formal-table-setting-ml.PNG"
-                alt="Formal luxury table setting by Maison Lucia"
-                className={styles.editorialImage}
-              />
-            </figure>
+            <div
+              className={styles.approachImages}
+              id="gallery"
+              aria-label="Maison Lucia table setting details"
+            >
+              <figure className={styles.approachHeroImage}>
+                <img
+                  src="/table setup 1.jpg"
+                  alt="Elegant Maison Lucia table setting with layered plates, glassware, and refined details"
+                  className={styles.approachMainImage}
+                />
+                <figcaption>
+                  Layered plates, candlelight, and refined details
+                </figcaption>
+              </figure>
+              <div className={styles.tableSettingPair}>
+                <figure className={styles.editorialImageWrap}>
+                  <img
+                    src="/casual-table-setting-ml.PNG"
+                    alt="Casual elegant table setting by Maison Lucia"
+                    className={styles.editorialImage}
+                  />
+                </figure>
+                <figure className={styles.editorialImageWrap}>
+                  <img
+                    src="/formal-table-setting-ml.PNG"
+                    alt="Formal luxury table setting by Maison Lucia"
+                    className={styles.editorialImage}
+                  />
+                </figure>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -348,16 +412,42 @@ export default function Home() {
             </p>
           </div>
 
-          <div className={styles.floralGalleryGrid}>
-            {floralGalleryImages.map((image) => (
-              <figure key={image.src} className={styles.floralGalleryItem}>
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className={styles.floralGalleryImage}
-                />
-              </figure>
-            ))}
+          <div className={styles.carouselShell}>
+            <div
+              className={styles.carouselControls}
+              aria-label="Floral gallery controls"
+            >
+              <button
+                type="button"
+                onClick={() => scrollFloralCarousel(-1)}
+                aria-label="Previous floral details"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollFloralCarousel(1)}
+                aria-label="Next floral details"
+              >
+                →
+              </button>
+            </div>
+            <div
+              className={styles.floralCarousel}
+              ref={floralCarouselRef}
+              aria-label="Florals and table details carousel"
+            >
+              {floralGalleryImages.map((image) => (
+                <figure key={image.src} className={styles.floralGalleryItem}>
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className={styles.floralGalleryImage}
+                  />
+                  <figcaption>{image.caption}</figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
 
           <div className={styles.signatureMoments}>
