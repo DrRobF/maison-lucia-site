@@ -13,19 +13,19 @@ const navLinks = [
 const features = [
   {
     title: "Thoughtful Design & Details",
-    copy: "Every detail is intentionally considered and beautifully curated.",
+    copy: "Every detail is intentionally chosen to create a setting that feels personal, polished, and beautifully complete.",
   },
   {
-    title: "Curated With Intention",
-    copy: "Layered styling that feels personal, polished, and meaningful.",
+    title: "Curated with Intention",
+    copy: "From linens and florals to candles and finishing touches, each layer is selected with care.",
   },
   {
     title: "Memories That Last",
-    copy: "Timeless visual moments your guests remember long after the celebration.",
+    copy: "Maison Lucia designs visual moments your guests remember long after the celebration ends.",
   },
   {
     title: "Rooted in South Florida",
-    copy: "Proudly styling refined events across South Florida and beyond.",
+    copy: "Proudly styling refined events across South Florida and beyond with warmth, elegance, and ease.",
   },
 ];
 
@@ -271,20 +271,33 @@ export default function Home() {
 
           <div className={styles.heroImageCol}>
             <img
-              src="/table setup 2.jpg"
-              alt="Signature Maison Lucia table setup with candles and florals"
+              src="/purplepeachpinkwhite.webp"
+              alt="Elegant Maison Lucia table styling with florals and refined celebration details"
               className={styles.heroImage}
             />
           </div>
         </section>
 
-        <section className={styles.featureRow} id="services">
-          {features.map((feature) => (
-            <article key={feature.title} className={styles.featureCard}>
-              <h2>{feature.title}</h2>
-              <p>{feature.copy}</p>
-            </article>
-          ))}
+        <section className={styles.featureSection} id="services">
+          <div className={styles.featureIntro}>
+            <p className={styles.kicker}>The Maison Lucia Approach</p>
+            <h2>Intentional styling for beautifully considered gatherings.</h2>
+            <p>
+              Intentional styling, refined details, and thoughtful moments
+              designed to make every gathering feel beautifully considered.
+            </p>
+          </div>
+          <div className={styles.featureRow}>
+            {features.map((feature, index) => (
+              <article key={feature.title} className={styles.featureCard}>
+                <span className={styles.featureNumber}>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h3>{feature.title}</h3>
+                <p>{feature.copy}</p>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section
