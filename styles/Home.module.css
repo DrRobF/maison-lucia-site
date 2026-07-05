@@ -169,6 +169,10 @@
   padding-bottom: 0.2rem;
 }
 
+.servicePathwayLink {
+  margin-top: clamp(1.8rem, 4vw, 2.75rem);
+}
+
 .atmosFeatureButton {
   text-decoration: none;
   text-transform: uppercase;
@@ -1749,6 +1753,19 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.7rem 1rem;
+}
+
+.footerServices {
+  margin-top: 1.15rem;
+}
+
+.footerColumnTitle {
+  margin: 0 0 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.68rem;
+  color: #4d453a;
+  font-weight: 600;
 }
 
 .footerServiceNav a {
