@@ -7,6 +7,7 @@ const navLinks = [
   { label: "Gallery", href: "#gallery" },
   { label: "About", href: "#about" },
   { label: "Journal", href: "#journal" },
+  { label: "FAQ", href: "#faq" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -21,78 +22,78 @@ const features = [
   },
   {
     title: "Memories That Last",
-    copy: "Maison Lucia designs visual moments your guests remember long after the celebration ends.",
+    copy: "Maison Lucia designs visual moments your guests remember long after weddings, private dinners, corporate gatherings, and milestones conclude.",
   },
   {
     title: "Rooted in South Florida",
-    copy: "Proudly styling refined events across South Florida and beyond with warmth, elegance, and ease.",
+    copy: "Proudly styling refined events across West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, and South Florida with warmth and ease.",
   },
 ];
 
 const floralGalleryImages = [
   {
     src: "/italian-gerbera-tomato.webp",
-    alt: "Italian gerbera floral decor with warm tomato tones",
+    alt: "Luxury floral styling with warm gerbera tones for a South Florida celebration",
     caption: "Floral Tablescape",
   },
   {
     src: "/italiangerbera1.webp",
-    alt: "Italian gerbera floral styling for a refined celebration",
+    alt: "Refined floral styling for an intimate South Florida celebration",
     caption: "Celebration Florals",
   },
   {
     src: "/lacesilverwhite.webp",
-    alt: "White and silver floral styling with lace detail",
+    alt: "Luxury floral centerpiece with white lace and silver details in Palm Beach",
     caption: "White Lace & Silver",
   },
   {
     src: "/lillyofthevalley.webp",
-    alt: "Lily of the valley floral styling with soft white blooms",
+    alt: "Soft lily of the valley floral styling for a Wellington private dinner",
     caption: "Garden-Inspired Details",
   },
   {
     src: "/purplepeachpink.webp",
-    alt: "Purple peach and pink floral decor arrangement",
+    alt: "Purple peach and pink event florals for a Boca Raton celebration",
     caption: "Soft Botanical Styling",
   },
   {
     src: "/purplepeachpinkwhite.webp",
-    alt: "Purple peach pink and white floral arrangement",
+    alt: "Editorial floral arrangement for luxury event styling in South Florida",
     caption: "Celebration Florals",
   },
   {
     src: "/red-white-blue.webp",
-    alt: "Red white and blue floral styling for a celebration",
+    alt: "Red white and blue floral styling for a West Palm Beach celebration",
     caption: "Layered Table Moment",
   },
   {
     src: "/red-white-blue1.webp",
-    alt: "Red white and blue floral decor detail",
+    alt: "Candlelit floral detail for South Florida event styling",
     caption: "Candlelit Detail",
   },
   {
     src: "/redwhitesmall (1).webp",
-    alt: "Small red and white floral arrangement",
+    alt: "Petite floral arrangement for refined table styling",
     caption: "Refined Place Setting",
   },
   {
     src: "/sunflower white.webp",
-    alt: "White sunflower floral decor for an intimate event",
+    alt: "White sunflower floral centerpiece for a Wellington private dinner",
     caption: "Garden-Inspired Details",
   },
   {
     src: "/white lace.webp",
-    alt: "White floral styling with lace-inspired details",
+    alt: "White floral styling with lace details for a Palm Beach event",
     caption: "White Lace & Silver",
   },
   {
     src: "/white-red.webp",
-    alt: "White and red floral arrangement for event styling",
+    alt: "White and red floral centerpiece for luxury event styling",
     caption: "Layered Table Moment",
   },
   {
     src: "/whiteblue .webp",
-    alt: "White and blue floral styling detail",
+    alt: "Modern white and blue floral detail for a Miami celebration",
     caption: "Soft Botanical Styling",
   },
 ];
@@ -100,17 +101,17 @@ const floralGalleryImages = [
 const signatureMoments = [
   {
     src: "/table setup 1.jpg",
-    alt: "Intimate candlelight dinner with layered place settings",
+    alt: "Private dinner styling in West Palm Beach with candlelight and layered place settings",
     caption: "Intimate Candlelight Dinner",
   },
   {
     src: "/colors-floral1.jpg",
-    alt: "Garden celebration with colorful florals and curated tableware",
+    alt: "Colorful floral styling and curated tableware for a South Florida garden celebration",
     caption: "Garden Celebration",
   },
   {
     src: "/table blue setup 1.jpg",
-    alt: "Modern coastal table with blue tones and elegant glassware",
+    alt: "Modern tablescape design for a Miami celebration with blue tones and glassware",
     caption: "Modern Coastal Table",
   },
 ];
@@ -129,15 +130,15 @@ const floralServiceExamples = [
 const supportingFloralImages = [
   {
     src: "/white lace.webp",
-    alt: "White floral arrangement with lace-inspired styling",
+    alt: "Luxury floral styling for a South Florida celebration with white blooms",
   },
   {
     src: "/lillyofthevalley.webp",
-    alt: "Lily of the valley floral styling with soft white blooms",
+    alt: "Soft lily of the valley floral styling for a Wellington private dinner",
   },
   {
     src: "/sunflower white.webp",
-    alt: "White sunflower floral decor with refined event styling",
+    alt: "Floral centerpiece for a Wellington private dinner with refined white blooms",
   },
 ];
 
@@ -145,27 +146,27 @@ const signatureCollections = [
   {
     title: "The Lucia Collection",
     src: "/lacesilverwhite.webp",
-    alt: "Maison Lucia signature floral styling in white and silver tones",
+    alt: "Maison Lucia luxury floral styling in white and silver tones for Palm Beach events",
   },
   {
     title: "The Garden Collection",
     src: "/lillyofthevalley.webp",
-    alt: "Garden-inspired floral styling with delicate white blooms",
+    alt: "Garden-inspired floral styling with delicate white blooms for South Florida celebrations",
   },
   {
     title: "The Editorial Collection",
     src: "/purplepeachpinkwhite.webp",
-    alt: "Editorial floral arrangement with purple peach pink and white tones",
+    alt: "Editorial floral arrangement for South Florida wedding styling",
   },
   {
     title: "The Countryside Collection",
     src: "/sunflower white.webp",
-    alt: "Countryside-inspired floral styling with soft sunflower details",
+    alt: "Countryside-inspired floral styling for a Wellington celebration",
   },
   {
     title: "The Celebration Collection",
     src: "/italian-gerbera-tomato.webp",
-    alt: "Celebration floral styling with Italian gerbera and tomato-inspired color palette",
+    alt: "Celebration floral styling with Italian gerbera for South Florida events",
   },
 ];
 
@@ -192,6 +193,124 @@ const inquiryOptions = [
   "Custom Request",
 ];
 
+const servicePages = [
+  {
+    id: "weddings",
+    href: "#weddings",
+    eyebrow: "Weddings",
+    title: "Wedding Styling in Palm Beach & South Florida",
+    copy: "Wedding table styling, floral styling, ceremony and reception details, bridal showers, rehearsal dinners, sweetheart tables, and intimate weddings throughout Palm Beach, West Palm Beach, Wellington, Boca Raton, Miami, and South Florida.",
+    linkLabel: "Explore Wedding Styling",
+  },
+  {
+    id: "corporate-events",
+    href: "#corporate-events",
+    eyebrow: "Corporate Events",
+    title: "Corporate Event Styling in South Florida",
+    copy: "Corporate dinners, client events, brand moments, holiday parties, professional gatherings, and elevated tablescapes for businesses in West Palm Beach, Palm Beach, Boca Raton, Fort Lauderdale, Miami, and South Florida.",
+    linkLabel: "Explore Corporate Events",
+  },
+  {
+    id: "private-dinners",
+    href: "#private-dinners",
+    eyebrow: "Private Dinners",
+    title: "Private Dinner Styling in West Palm Beach & South Florida",
+    copy: "Intimate dinner parties, home entertaining, milestone dinners, tablescapes, florals, candles, linens, and beautifully curated details for gatherings that feel personal and polished.",
+    linkLabel: "Plan a Private Dinner",
+  },
+];
+
+const serviceAreas = [
+  "West Palm Beach",
+  "Palm Beach",
+  "Wellington",
+  "Boca Raton",
+  "Jupiter",
+  "Palm Beach Gardens",
+  "Delray Beach",
+  "Fort Lauderdale",
+  "Miami",
+  "Coral Gables",
+];
+
+const faqs = [
+  {
+    question: "What areas does Maison Lucia serve?",
+    answer: "Maison Lucia styles events throughout South Florida, including West Palm Beach, Palm Beach, Wellington, Royal Palm Beach, Palm Beach Gardens, Jupiter, Delray Beach, Boca Raton, Fort Lauderdale, Miami, Coral Gables, and surrounding communities.",
+  },
+  {
+    question: "What types of events does Maison Lucia style?",
+    answer: "Maison Lucia styles weddings, bridal showers, baby showers, private dinners, corporate gatherings, milestone celebrations, intimate events, and refined home gatherings.",
+  },
+  {
+    question: "Does Maison Lucia offer floral styling?",
+    answer: "Yes. Maison Lucia offers curated floral styling as part of its event styling services, including centerpieces, bud vases, accent florals, welcome table florals, sweetheart table styling, cake flowers, and refined botanical details.",
+  },
+  {
+    question: "Does Maison Lucia provide tablescape design?",
+    answer: "Yes. Maison Lucia creates casual and formal tablescapes with layered place settings, linens, candles, glassware, florals, and finishing touches designed around the tone of each celebration.",
+  },
+  {
+    question: "Do you style events in Wellington and West Palm Beach?",
+    answer: "Yes. Maison Lucia works with clients in Wellington, West Palm Beach, Palm Beach, and surrounding South Florida communities.",
+  },
+  {
+    question: "Do you style events in Miami or Fort Lauderdale?",
+    answer: "Yes. Maison Lucia accepts select events in Miami, Fort Lauderdale, Coral Gables, and nearby South Florida areas.",
+  },
+  {
+    question: "How do I inquire about an event?",
+    answer: "Submit an inquiry through the Maison Lucia contact form with your event date, location, guest count, and the type of styling support you are interested in.",
+  },
+];
+
+const journalTopics = [
+  "How to Host an Elegant Dinner Party in Wellington",
+  "Luxury Tablescape Ideas for Palm Beach Celebrations",
+  "Floral Styling Trends for South Florida Events",
+  "The Difference Between Event Styling and Event Planning",
+  "Wedding Table Styling Ideas for Palm Beach and Miami",
+  "Corporate Event Styling for South Florida Brands",
+];
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "EventService",
+    name: "Maison Lucia LLC",
+    url: "https://www.maisonluciallc.com",
+    areaServed: [
+      "South Florida",
+      "West Palm Beach",
+      "Palm Beach",
+      "Wellington",
+      "Boca Raton",
+      "Miami",
+      "Fort Lauderdale",
+    ],
+    serviceType: [
+      "Luxury event styling",
+      "Floral styling",
+      "Tablescape design",
+      "Wedding styling",
+      "Private dinner styling",
+      "Corporate event styling",
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  },
+];
+
 export default function Home() {
   const floralCarouselRef = useRef(null);
 
@@ -205,11 +324,16 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Maison Lucia | South Florida Event Styling</title>
+        <title>Maison Lucia | Luxury Event Styling, Florals &amp; Tablescapes in South Florida</title>
         <meta
           name="description"
-          content="Refined tablescapes and elevated event styling for celebrations, milestones, and unforgettable gatherings throughout South Florida."
+          content="Maison Lucia creates luxury event styling, floral styling, and refined tablescapes for weddings, private dinners, corporate gatherings, and celebrations throughout West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, and South Florida."
         />
+        <meta property="og:title" content="Maison Lucia | Luxury Event Styling, Florals & Tablescapes in South Florida" />
+        <meta property="og:description" content="Luxury event styling, floral styling, and refined tablescapes for weddings, private dinners, corporate gatherings, and celebrations throughout West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, and South Florida." />
+        <meta property="og:url" content="https://www.maisonluciallc.com" />
+        <meta property="og:type" content="website" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </Head>
 
       <main className={styles.page}>
@@ -247,16 +371,18 @@ export default function Home() {
               Florals. Tablescapes. Thoughtful Gatherings.
             </p>
             <p className={styles.heroCopy}>
-              Maison Lucia creates thoughtful celebrations through floral
-              styling, tablescapes, and beautifully curated details—bringing
-              softness, elegance, and intention to every gathering.
+              Maison Lucia creates luxury event styling, floral styling, and refined
+              tablescapes for weddings, private dinners, corporate gatherings,
+              bridal showers, baby showers, and beautiful celebrations across
+              West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, Fort
+              Lauderdale, and South Florida.
             </p>
             <div className={styles.heroActions}>
               <a href="#contact" className={styles.primaryButton}>
-                Reserve Your Date
+                Inquire About Your Event
               </a>
               <a href="#gallery" className={styles.secondaryButton}>
-                View Our Work
+                View Tablescapes
               </a>
             </div>
             <a
@@ -309,6 +435,7 @@ export default function Home() {
 
         <section
           className={styles.floralDecorSection}
+          id="floral-styling"
           aria-labelledby="floral-decor-title"
         >
           <div className={styles.floralDecorPanel}>
@@ -316,11 +443,12 @@ export default function Home() {
               <p className={styles.kicker}>
                 Florals. Tablescapes. Thoughtful Gatherings.
               </p>
-              <h2 id="floral-decor-title">Floral Styling &amp; Decor</h2>
+              <h2 id="floral-decor-title">Floral Styling &amp; Decor in South Florida</h2>
               <p className={styles.floralDecorLead}>
-                Maison Lucia creates thoughtful celebrations through floral
-                styling, tablescapes, and beautifully curated details—bringing
-                softness, elegance, and intention to every gathering.
+                Luxury floral styling, centerpieces, bud vases, welcome table florals,
+                sweetheart tables, cake flowers, and event floral design for
+                celebrations in West Palm Beach, Palm Beach, Wellington, Boca
+                Raton, Miami, and South Florida.
               </p>
               <p>
                 Soft, intentional floral details designed to complement your
@@ -350,20 +478,21 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={styles.approachSection} id="about">
+        <section className={styles.approachSection} id="tablescapes">
           <div className={styles.approachPanel}>
             <div className={styles.approachText}>
-              <p className={styles.kicker}>A Modern Approach to Celebration</p>
+              <p className={styles.kicker}>Luxury Tablescapes &amp; Table Styling</p>
               <h2>
-                Timeless Style.
+                Timeless Tables.
                 <br />
-                Effortless Execution.
+                Effortless Celebration.
               </h2>
               <p className={styles.approachLead}>
-                From intimate dinners to weddings and meaningful milestones,
-                Maison Lucia transforms gatherings into elevated experiences
-                through seamless planning, thoughtful design, and refined table
-                styling.
+                From formal tables to casual table settings, Maison Lucia layers
+                linens, candles, glassware, florals, place settings, and
+                finishing touches for private dinners, weddings, and
+                celebrations across West Palm Beach, Wellington, Palm Beach,
+                Boca Raton, and Miami.
               </p>
               <div className={styles.tableFeatureGrid}>
                 {tableSettingFeatures.map((feature) => (
@@ -377,7 +506,7 @@ export default function Home() {
                 ))}
               </div>
               <a href="#contact" className={styles.primaryButton}>
-                Inquire Today
+                Plan a Private Dinner
               </a>
             </div>
 
@@ -489,6 +618,7 @@ export default function Home() {
 
         <section
           className={styles.floralSection}
+          id="about"
           aria-label="Signature Floral Styling"
         >
           <div className={styles.floralIntro}>
@@ -539,6 +669,46 @@ export default function Home() {
           </div>
         </section>
 
+
+        <section className={styles.serviceSeoSection} aria-labelledby="services-seo-title">
+          <div className={styles.serviceSeoIntro}>
+            <p className={styles.kicker}>Services</p>
+            <h2 id="services-seo-title">Refined styling for the moments you gather around.</h2>
+          </div>
+          <div className={styles.serviceSeoGrid}>
+            {servicePages.map((service) => (
+              <article key={service.id} id={service.id} className={styles.serviceSeoCard}>
+                <p className={styles.serviceEyebrow}>{service.eyebrow}</p>
+                <h3>{service.title}</h3>
+                <p>{service.copy}</p>
+                <a href={service.href} className={styles.subtleLink}>{service.linkLabel}</a>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.serviceAreaSection} aria-labelledby="service-area-title">
+          <p className={styles.kicker}>Service Area</p>
+          <h2 id="service-area-title">Serving South Florida’s Most Beautiful Gatherings</h2>
+          <p>Based in South Florida, Maison Lucia styles refined celebrations across West Palm Beach, Palm Beach, Wellington, Royal Palm Beach, Palm Beach Gardens, Jupiter, Delray Beach, Boca Raton, Boynton Beach, Fort Lauderdale, Miami, Coral Gables, and surrounding communities.</p>
+          <div className={styles.cityPills} aria-label="Featured service areas">
+            {serviceAreas.map((city) => <span key={city}>{city}</span>)}
+          </div>
+        </section>
+
+        <section className={styles.faqSection} id="faq" aria-labelledby="faq-title">
+          <p className={styles.kicker}>Questions</p>
+          <h2 id="faq-title">Frequently Asked Questions</h2>
+          <div className={styles.faqGrid}>
+            {faqs.map((faq) => (
+              <article key={faq.question} className={styles.faqCard}>
+                <h3>{faq.question}</h3>
+                <p>{faq.answer}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className={styles.ctaBanner} id="contact">
           <div className={styles.ctaIntro}>
             <h2>Ready to create something beautiful?</h2>
@@ -580,12 +750,20 @@ export default function Home() {
           </form>
         </section>
 
-        <section
-          className={styles.journalStub}
-          id="journal"
-          aria-label="Journal"
-        >
-          <p>Journal coming soon.</p>
+        <section className={styles.journalSection} id="journal" aria-label="Journal">
+          <div className={styles.journalHeader}>
+            <p className={styles.kicker}>Journal</p>
+            <h2>Notes on refined South Florida gatherings.</h2>
+            <p>Coming soon: thoughtful hosting ideas, tablescape inspiration, and styling guidance from the Maison Lucia studio.</p>
+          </div>
+          <div className={styles.journalGrid}>
+            {journalTopics.map((topic) => (
+              <article key={topic} className={styles.journalCard}>
+                <p>Coming Soon</p>
+                <h3>{topic}</h3>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section className={styles.atmosFeature} aria-label="Atmos AI feature">
@@ -610,12 +788,21 @@ export default function Home() {
 
         <footer className={styles.footer}>
           <p className={styles.footerBrand}>Maison Lucia</p>
+          <p className={styles.footerSeo}>Luxury event styling, floral styling, and tablescape design for weddings, private dinners, corporate gatherings, and refined celebrations throughout West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, and South Florida.</p>
           <ul className={styles.footerNav}>
             {navLinks.map((link) => (
               <li key={link.label}>
                 <a href={link.href}>{link.label}</a>
               </li>
             ))}
+          </ul>
+          <ul className={styles.footerServiceNav}>
+            <li><a href="#floral-styling">Floral Styling</a></li>
+            <li><a href="#tablescapes">Tablescapes</a></li>
+            <li><a href="#weddings">Weddings</a></li>
+            <li><a href="#corporate-events">Corporate Events</a></li>
+            <li><a href="#private-dinners">Private Dinners</a></li>
+            <li><a href="#contact">Inquiry</a></li>
           </ul>
           <div className={styles.footerMeta}>
             <p>© {new Date().getFullYear()} Maison Lucia LLC</p>

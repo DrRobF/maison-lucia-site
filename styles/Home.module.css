@@ -1578,3 +1578,202 @@
     line-height: 1.45;
   }
 }
+
+.serviceSeoSection,
+.serviceAreaSection,
+.faqSection,
+.journalSection {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(3rem, 7vw, 5.5rem) 1.25rem;
+}
+
+.serviceSeoSection {
+  border-top: 1px solid rgba(194, 163, 110, 0.22);
+}
+
+.serviceSeoIntro,
+.journalHeader {
+  max-width: 70ch;
+  margin-bottom: clamp(1.4rem, 3vw, 2.2rem);
+}
+
+.serviceSeoIntro h2,
+.serviceAreaSection h2,
+.faqSection h2,
+.journalHeader h2 {
+  margin: 0.75rem 0 1rem;
+  font-size: clamp(2rem, 4.5vw, 3.75rem);
+  line-height: 1.04;
+  font-weight: 500;
+  color: #2d2924;
+}
+
+.serviceSeoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.35rem);
+}
+
+.serviceSeoCard,
+.faqCard,
+.journalCard {
+  border: 1px solid rgba(194, 163, 110, 0.22);
+  border-radius: 24px;
+  background: rgba(255, 253, 249, 0.78);
+  box-shadow: 0 14px 34px rgba(32, 28, 20, 0.055);
+}
+
+.serviceSeoCard {
+  padding: clamp(1.35rem, 2.4vw, 2rem);
+}
+
+.serviceEyebrow,
+.journalCard p {
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.66rem;
+  color: #806d4d;
+  font-weight: 600;
+}
+
+.serviceSeoCard h3,
+.faqCard h3,
+.journalCard h3 {
+  margin: 0 0 0.85rem;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: 1.18;
+  color: #2d2924;
+}
+
+.serviceSeoCard h3 {
+  font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+}
+
+.serviceSeoCard p,
+.serviceAreaSection p,
+.faqCard p,
+.journalHeader p {
+  color: #3f3a33;
+  line-height: 1.84;
+}
+
+.serviceAreaSection {
+  text-align: center;
+  border-top: 1px solid rgba(194, 163, 110, 0.18);
+  border-bottom: 1px solid rgba(194, 163, 110, 0.18);
+  background: linear-gradient(135deg, rgba(255, 253, 249, 0.82), rgba(248, 242, 232, 0.56));
+}
+
+.serviceAreaSection p {
+  max-width: 82ch;
+  margin: 0 auto;
+}
+
+.cityPills {
+  margin: 1.6rem auto 0;
+  max-width: 920px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+}
+
+.cityPills span {
+  display: inline-flex;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid rgba(178, 149, 102, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.62);
+  color: #4b4338;
+  font-size: 0.76rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.faqCard {
+  padding: clamp(1.2rem, 2vw, 1.6rem);
+}
+
+.faqCard h3 {
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+}
+
+.faqCard p,
+.journalCard h3 {
+  margin: 0;
+}
+
+.journalSection {
+  padding-top: clamp(2.2rem, 5vw, 4rem);
+}
+
+.journalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.journalCard {
+  padding: 1.35rem;
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.journalCard h3 {
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+}
+
+.footerSeo {
+  max-width: 82ch;
+  margin: 0.75rem 0 0;
+  color: #4d4a45;
+  line-height: 1.75;
+  font-size: 0.92rem;
+}
+
+.footerServiceNav {
+  list-style: none;
+  margin: 0 0 1.2rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 1rem;
+}
+
+.footerServiceNav a {
+  text-decoration: none;
+  font-size: 0.78rem;
+  color: #695739;
+  border-bottom: 1px solid rgba(178, 149, 102, 0.45);
+  padding-bottom: 0.16rem;
+}
+
+@media (max-width: 1040px) {
+  .serviceSeoGrid,
+  .journalGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .serviceSeoGrid,
+  .faqGrid,
+  .journalGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cityPills {
+    justify-content: flex-start;
+  }
+}
