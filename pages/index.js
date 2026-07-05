@@ -195,6 +195,22 @@ const inquiryOptions = [
 
 const servicePages = [
   {
+    id: "floral-styling-service",
+    href: "/floral-styling",
+    eyebrow: "Floral Styling",
+    title: "Floral Styling",
+    copy: "Curated botanical details that bring softness, texture, and elegance to every gathering.",
+    linkLabel: "Learn More →",
+  },
+  {
+    id: "tablescapes-service",
+    href: "/tablescapes",
+    eyebrow: "Tablescapes",
+    title: "Luxury Tablescapes",
+    copy: "Layered place settings, linens, candlelight, and refined details designed for meaningful celebrations.",
+    linkLabel: "Learn More →",
+  },
+  {
     id: "weddings",
     href: "#weddings",
     eyebrow: "Weddings",
@@ -463,6 +479,12 @@ export default function Home() {
                 Floral decor is available as part of Maison Lucia event styling
                 services.
               </p>
+              <a
+                href="/floral-styling"
+                className={`${styles.subtleLink} ${styles.servicePathwayLink}`}
+              >
+                Explore Floral Styling →
+              </a>
             </div>
 
             <figure className={styles.floralTablescapeHero}>
@@ -494,6 +516,12 @@ export default function Home() {
                 celebrations across West Palm Beach, Wellington, Palm Beach,
                 Boca Raton, and Miami.
               </p>
+              <a
+                href="/tablescapes"
+                className={`${styles.subtleLink} ${styles.servicePathwayLink}`}
+              >
+                Explore Luxury Tablescapes →
+              </a>
               <div className={styles.tableFeatureGrid}>
                 {tableSettingFeatures.map((feature) => (
                   <article
@@ -796,14 +824,17 @@ export default function Home() {
               </li>
             ))}
           </ul>
-          <ul className={styles.footerServiceNav}>
-            <li><a href="/floral-styling">Floral Styling</a></li>
-            <li><a href="/tablescapes">Tablescapes</a></li>
-            <li><a href="#weddings">Weddings</a></li>
-            <li><a href="#corporate-events">Corporate Events</a></li>
-            <li><a href="#private-dinners">Private Dinners</a></li>
-            <li><a href="#contact">Inquiry</a></li>
-          </ul>
+          <div className={styles.footerServices}>
+            <p className={styles.footerColumnTitle}>Services</p>
+            <ul className={styles.footerServiceNav}>
+              <li><a href="/floral-styling">Floral Styling</a></li>
+              <li><a href="/tablescapes">Tablescapes</a></li>
+              <li><a href="#weddings">Weddings</a></li>
+              <li><a href="#corporate-events">Corporate Events</a></li>
+              <li><a href="#private-dinners">Private Dinners</a></li>
+              <li><a href="#contact">Inquiry</a></li>
+            </ul>
+          </div>
           <div className={styles.footerMeta}>
             <p>© {new Date().getFullYear()} Maison Lucia LLC</p>
             <div
