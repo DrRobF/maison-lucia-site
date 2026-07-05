@@ -797,8 +797,8 @@ export default function Home() {
             ))}
           </ul>
           <ul className={styles.footerServiceNav}>
-            <li><a href="#floral-styling">Floral Styling</a></li>
-            <li><a href="#tablescapes">Tablescapes</a></li>
+            <li><a href="/floral-styling">Floral Styling</a></li>
+            <li><a href="/tablescapes">Tablescapes</a></li>
             <li><a href="#weddings">Weddings</a></li>
             <li><a href="#corporate-events">Corporate Events</a></li>
             <li><a href="#private-dinners">Private Dinners</a></li>
