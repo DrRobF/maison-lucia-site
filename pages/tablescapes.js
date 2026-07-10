@@ -1,4 +1,5 @@
 import Head from "next/head";
+import PrimaryNav from "../components/PrimaryNav";
 import styles from "../styles/Home.module.css";
 
 const tableServices = [
@@ -62,15 +63,7 @@ export default function Tablescapes() {
             <a href="/" className={styles.brandName}>Maison Lucia</a>
             <p className={styles.tagline}>South Florida Event Styling</p>
           </div>
-          <nav aria-label="Primary">
-            <ul className={styles.menuList}>
-              <li><a href="/#services">Services</a></li>
-              <li><a href="/floral-styling">Floral Styling</a></li>
-              <li><a href="/tablescapes">Tablescapes</a></li>
-              <li><a href="/#gallery">Gallery</a></li>
-              <li><a href="/#contact">Contact</a></li>
-            </ul>
-          </nav>
+          <PrimaryNav />
           <a href="/#contact" className={styles.headerButton}>Inquire</a>
         </header>
 

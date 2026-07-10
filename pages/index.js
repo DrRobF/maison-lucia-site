@@ -1,15 +1,9 @@
 import Head from "next/head";
 import { useRef } from "react";
+import PrimaryNav, { navLinks } from "../components/PrimaryNav";
 import styles from "../styles/Home.module.css";
 
-const navLinks = [
-  { label: "Services", href: "#services" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "About", href: "#about" },
-  { label: "Journal", href: "#journal" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Contact", href: "#contact" },
-];
+const footerNavLinks = [{ label: "Services", href: "#services" }, ...navLinks];
 
 const features = [
   {
@@ -361,15 +355,7 @@ export default function Home() {
             <p className={styles.tagline}>South Florida Event Styling</p>
           </div>
 
-          <nav aria-label="Primary">
-            <ul className={styles.menuList}>
-              {navLinks.map((link) => (
-                <li key={link.label}>
-                  <a href={link.href}>{link.label}</a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <PrimaryNav />
 
           <a href="#contact" className={styles.headerButton}>
             Inquire
@@ -818,7 +804,7 @@ export default function Home() {
           <p className={styles.footerBrand}>Maison Lucia</p>
           <p className={styles.footerSeo}>Luxury event styling, floral styling, and tablescape design for weddings, private dinners, corporate gatherings, and refined celebrations throughout West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, and South Florida.</p>
           <ul className={styles.footerNav}>
-            {navLinks.map((link) => (
+            {footerNavLinks.map((link) => (
               <li key={link.label}>
                 <a href={link.href}>{link.label}</a>
               </li>
