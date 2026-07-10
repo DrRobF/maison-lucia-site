@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import PrimaryNav, { navLinks } from "../components/PrimaryNav";
 import styles from "../styles/Home.module.css";
 
@@ -187,6 +187,15 @@ const inquiryOptions = [
   "Custom Request",
 ];
 
+const initialInquiryForm = {
+  name: "",
+  email: "",
+  services: [],
+  eventNotes: "",
+};
+
+const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
+
 const servicePages = [
   {
     id: "floral-styling-service",
@@ -323,6 +332,130 @@ const structuredData = [
 
 export default function Home() {
   const floralCarouselRef = useRef(null);
+  const [inquiryForm, setInquiryForm] = useState(initialInquiryForm);
+  const [formErrors, setFormErrors] = useState({});
+  const [submissionStatus, setSubmissionStatus] = useState("idle");
+
+  const handleInquiryChange = (event) => {
+    const { name, value, checked, type } = event.target;
+
+    setSubmissionStatus("idle");
+    setFormErrors((currentErrors) => ({ ...currentErrors, [name]: undefined }));
+
+    if (name === "services") {
+      setInquiryForm((currentForm) => ({
+        ...currentForm,
+        services: checked
+          ? [...currentForm.services, value]
+          : currentForm.services.filter((service) => service !== value),
+      }));
+      return;
+    }
+
+    if (type === "checkbox") {
+      return;
+    }
+
+    setInquiryForm((currentForm) => ({ ...currentForm, [name]: value }));
+  };
+
+  const validateInquiryForm = () => {
+    const errors = {};
+
+    if (!inquiryForm.name.trim()) {
+      errors.name = "Please enter your name.";
+    }
+
+    if (!inquiryForm.email.trim()) {
+      errors.email = "Please enter your email address.";
+    } else if (!isValidEmail(inquiryForm.email.trim())) {
+      errors.email = "Please enter a valid email address.";
+    }
+
+    if (inquiryForm.services.length === 0) {
+      errors.services = "Please select at least one interested service.";
+    }
+
+    if (!inquiryForm.eventNotes.trim()) {
+      errors.eventNotes = "Please share a few event notes.";
+    }
+
+    return errors;
+  };
+
+  const handleInquirySubmit = async (event) => {
+    event.preventDefault();
+
+    const errors = validateInquiryForm();
+    setFormErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setSubmissionStatus("idle");
+      return;
+    }
+
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+
+    if (!accessKey) {
+      console.error("Maison Lucia inquiry form configuration error: missing Web3Forms access key environment variable.");
+      setSubmissionStatus("error");
+      return;
+    }
+
+    const services = inquiryForm.services.join(", ");
+    const message = [
+      `Name: ${inquiryForm.name.trim()}`,
+      `Email: ${inquiryForm.email.trim()}`,
+      `Interested Service: ${services}`,
+      `Event Notes: ${inquiryForm.eventNotes.trim()}`,
+    ].join("\n");
+
+    const payload = {
+      access_key: accessKey,
+      subject: "New Maison Lucia Event Inquiry",
+      from_name: "Maison Lucia Website",
+      name: inquiryForm.name.trim(),
+      email: inquiryForm.email.trim(),
+      services,
+      event_notes: inquiryForm.eventNotes.trim(),
+      message,
+      replyto: inquiryForm.email.trim(),
+      botcheck: "",
+    };
+
+    setSubmissionStatus("sending");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        console.error("Maison Lucia inquiry form submission failed", {
+          status: response.status,
+          message: result.message,
+        });
+        setSubmissionStatus("error");
+        return;
+      }
+
+      setInquiryForm(initialInquiryForm);
+      setFormErrors({});
+      setSubmissionStatus("success");
+    } catch (error) {
+      console.error("Maison Lucia inquiry form network error", {
+        name: error.name,
+        message: error.message,
+      });
+      setSubmissionStatus("error");
+    }
+  };
 
   const scrollFloralCarousel = (direction) => {
     floralCarouselRef.current?.scrollBy({
@@ -731,35 +864,92 @@ export default function Home() {
               celebrations.
             </p>
           </div>
-          <form
-            className={styles.inquiryForm}
-            action="mailto:hello@maisonluciallc.com"
-            method="post"
-            encType="text/plain"
-          >
-            <label>
+          <form className={styles.inquiryForm} onSubmit={handleInquirySubmit} noValidate>
+            <label htmlFor="inquiry-name">
               Name
-              <input name="name" type="text" autoComplete="name" required />
+              <input
+                id="inquiry-name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                value={inquiryForm.name}
+                onChange={handleInquiryChange}
+                aria-invalid={Boolean(formErrors.name)}
+                aria-describedby={formErrors.name ? "inquiry-name-error" : undefined}
+                required
+              />
             </label>
-            <label>
+            {formErrors.name && <p id="inquiry-name-error" className={styles.formError}>{formErrors.name}</p>}
+            <label htmlFor="inquiry-email">
               Email
-              <input name="email" type="email" autoComplete="email" required />
+              <input
+                id="inquiry-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                value={inquiryForm.email}
+                onChange={handleInquiryChange}
+                aria-invalid={Boolean(formErrors.email)}
+                aria-describedby={formErrors.email ? "inquiry-email-error" : undefined}
+                required
+              />
             </label>
-            <fieldset>
+            {formErrors.email && <p id="inquiry-email-error" className={styles.formError}>{formErrors.email}</p>}
+            <fieldset
+              aria-invalid={Boolean(formErrors.services)}
+              aria-describedby={formErrors.services ? "inquiry-services-error" : undefined}
+            >
               <legend>Interested Services</legend>
               {inquiryOptions.map((option) => (
                 <label key={option} className={styles.checkboxLabel}>
-                  <input name="services" type="checkbox" value={option} />
+                  <input
+                    name="services"
+                    type="checkbox"
+                    value={option}
+                    checked={inquiryForm.services.includes(option)}
+                    onChange={handleInquiryChange}
+                    autoComplete="off"
+                  />
                   <span>{option}</span>
                 </label>
               ))}
             </fieldset>
-            <label>
+            {formErrors.services && <p id="inquiry-services-error" className={styles.formError}>{formErrors.services}</p>}
+            <label htmlFor="inquiry-event-notes">
               Event Notes
-              <textarea name="event-notes" rows="4" />
+              <textarea
+                id="inquiry-event-notes"
+                name="eventNotes"
+                rows="4"
+                autoComplete="off"
+                value={inquiryForm.eventNotes}
+                onChange={handleInquiryChange}
+                aria-invalid={Boolean(formErrors.eventNotes)}
+                aria-describedby={formErrors.eventNotes ? "inquiry-event-notes-error" : undefined}
+                required
+              />
             </label>
-            <button type="submit" className={styles.ctaButton}>
-              Inquire Today
+            {formErrors.eventNotes && <p id="inquiry-event-notes-error" className={styles.formError}>{formErrors.eventNotes}</p>}
+            <input
+              type="checkbox"
+              name="botcheck"
+              className="hidden"
+              style={{ display: "none" }}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+            {submissionStatus === "success" && (
+              <p className={styles.formSuccess} role="status">
+                Thank you. Your inquiry has been sent to Maison Lucia. We’ll be in touch soon.
+              </p>
+            )}
+            {submissionStatus === "error" && (
+              <p className={styles.formError} role="alert">
+                We’re sorry, your inquiry could not be sent. Please try again.
+              </p>
+            )}
+            <button type="submit" className={styles.ctaButton} disabled={submissionStatus === "sending"}>
+              {submissionStatus === "sending" ? "Sending…" : "Inquire Today"}
             </button>
           </form>
         </section>
