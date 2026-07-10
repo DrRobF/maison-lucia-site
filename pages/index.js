@@ -284,12 +284,18 @@ const faqs = [
 ];
 
 const journalTopics = [
-  "How to Host an Elegant Dinner Party in Wellington",
-  "Luxury Tablescape Ideas for Palm Beach Celebrations",
-  "Floral Styling Trends for South Florida Events",
-  "The Difference Between Event Styling and Event Planning",
-  "Wedding Table Styling Ideas for Palm Beach and Miami",
-  "Corporate Event Styling for South Florida Brands",
+  {
+    title: "How to Host an Elegant Dinner Party in Wellington",
+    status: "Featured Journal",
+    href: "/journal/how-to-host-an-elegant-dinner-party-in-wellington",
+    excerpt: "Create a memorable Wellington dinner party with elegant tablescapes, seasonal florals, layered details, and thoughtful styling that makes entertaining feel effortless.",
+    cta: "Read Article",
+  },
+  { title: "Luxury Tablescape Ideas for Palm Beach Celebrations" },
+  { title: "Floral Styling Trends for South Florida Events" },
+  { title: "The Difference Between Event Styling and Event Planning" },
+  { title: "Wedding Table Styling Ideas for Palm Beach and Miami" },
+  { title: "Corporate Event Styling for South Florida Brands" },
 ];
 
 const structuredData = [
@@ -962,9 +968,20 @@ export default function Home() {
           </div>
           <div className={styles.journalGrid}>
             {journalTopics.map((topic) => (
-              <article key={topic} className={styles.journalCard}>
-                <p>Coming Soon</p>
-                <h3>{topic}</h3>
+              <article key={topic.title} className={styles.journalCard}>
+                {topic.href ? (
+                  <a href={topic.href} className={styles.journalCardLink}>
+                    <p>{topic.status}</p>
+                    <h3>{topic.title}</h3>
+                    <span className={styles.journalExcerpt}>{topic.excerpt}</span>
+                    <span className={styles.journalCta}>{topic.cta}</span>
+                  </a>
+                ) : (
+                  <>
+                    <p>Coming Soon</p>
+                    <h3>{topic.title}</h3>
+                  </>
+                )}
               </article>
             ))}
           </div>
