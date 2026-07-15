@@ -5,6 +5,35 @@ import styles from "../styles/Home.module.css";
 
 const footerNavLinks = [{ label: "Services", href: "#services" }, ...navLinks];
 
+const instagramProfileUrl = "https://www.instagram.com/maisonlucia_llc/";
+
+const instagramGalleryImages = [
+  {
+    src: "/table setup 1.jpg",
+    alt: "Maison Lucia candlelit tablescape with layered plates and refined details",
+  },
+  {
+    src: "/colors-floral1.jpg",
+    alt: "Colorful Maison Lucia floral styling for an elegant South Florida celebration",
+  },
+  {
+    src: "/table blue setup 1.jpg",
+    alt: "Maison Lucia blue-toned luxury tablescape with glassware and florals",
+  },
+  {
+    src: "/lacesilverwhite.webp",
+    alt: "Maison Lucia white lace and silver floral tablescape detail",
+  },
+  {
+    src: "/purplepeachpinkwhite.webp",
+    alt: "Maison Lucia purple peach pink and white floral arrangement",
+  },
+  {
+    src: "/formal-table-setting-ml.PNG",
+    alt: "Maison Lucia formal table setting with luxury place setting details",
+  },
+];
+
 const features = [
   {
     title: "Thoughtful Design & Details",
@@ -1004,6 +1033,50 @@ export default function Home() {
             >
               Explore Atmos AI
             </a>
+          </div>
+        </section>
+
+        <section className={styles.instagramSection} aria-labelledby="instagram-title">
+          <div className={styles.instagramIntro}>
+            <p className={styles.kicker}>Instagram</p>
+            <h2 id="instagram-title">Follow Our Story</h2>
+            <p>
+              Elegant florals, luxury tablescapes, and beautiful celebrations from across South Florida.
+            </p>
+            <a
+              href={instagramProfileUrl}
+              className={styles.instagramButton}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Follow @maisonlucia_llc on Instagram
+            </a>
+          </div>
+          <div className={styles.instagramGrid} aria-label="Maison Lucia Instagram preview gallery">
+            {instagramGalleryImages.map((image) => (
+              <a
+                key={image.src}
+                href={instagramProfileUrl}
+                className={styles.instagramTile}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open Maison Lucia on Instagram"
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className={styles.instagramImage}
+                  loading="lazy"
+                />
+                <span className={styles.instagramOverlay} aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false" className={styles.instagramIcon}>
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="1" />
+                  </svg>
+                </span>
+              </a>
+            ))}
           </div>
         </section>
 
