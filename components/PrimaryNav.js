@@ -13,6 +13,8 @@ const navLinks = [
   { label: "Journal", href: "/#journal" },
   { label: "FAQ", href: "/#faq" },
   { label: "Contact", href: "/#contact" },
+  { label: "Plan Your Event", href: "/event-questionnaire" },
+  { label: "Client Portal", href: "/portal" },
 ];
 
 export { navLinks, serviceLinks };
