@@ -17,6 +17,19 @@ test('questionnaire and financial validation reject malformed inputs', () => {
   assert.equal(normalizeCode('ab cd-12'), 'ABCD12');
 });
 
+test('Supabase database URLs require verified TLS, including pasted SSL flags', () => {
+  const source = fs.readFileSync(path.join(__dirname, '../lib/portal-db.js'), 'utf8');
+  const context = { URL, module: { exports: {} }, process: { env: {
+    DATABASE_URL: 'postgresql://test:test@pool.pooler.supabase.com:6543/postgres?sslmode=no-verify',
+    DATABASE_CA_CERT: 'test-ca\\nnext-line',
+  } }, require: () => ({ Pool: class { constructor(options) { this.options = options; } } }) };
+  vm.runInNewContext(source, context);
+  const options = context.module.exports.database().options;
+  assert.equal(options.ssl.rejectUnauthorized, true);
+  assert.equal(options.ssl.ca, 'test-ca\nnext-line');
+  assert.equal(new URL(options.connectionString).searchParams.has('sslmode'), false);
+});
+
 test('private portal end-to-end PostgreSQL workflow and authorization', async () => {
   const pg = new PGlite();
   await pg.exec('CREATE ROLE anon; CREATE ROLE authenticated;');
