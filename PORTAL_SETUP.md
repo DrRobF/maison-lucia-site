@@ -10,6 +10,14 @@ This extends the existing Next.js / Vercel site. Keep the existing Vercel projec
 4. With `DATABASE_URL` set in the shell, run `npm run portal:setup` once to create the tables and indexes. The script is idempotent. The production database must support ordinary PostgreSQL transactions. Do not use local filesystem storage on Vercel.
 5. Deploy the changes to the existing Vercel project. Test the routes and the workflow below before inviting real clients.
 
+### Supabase
+
+Create a separate Maison Lucia project in the organization selected by the owner. For Vercel runtime traffic use the project's **Connect → Transaction pooler** URL, including its actual pooler hostname and username, with TLS configured. Do not guess the pooler hostname from the project's region. The app uses parameterized queries without named prepared statements and uses a single checked-out connection for each transaction, so transaction pooling is supported.
+
+The schema enables RLS on every portal table and revokes all privileges from `PUBLIC`, `anon`, and `authenticated` (where these roles exist). No browser Data API policies are granted. The server connects as the project's privileged PostgreSQL owner and enforces project authorization in its API. Do not send this connection string to browsers. Supabase Auth is not required for the requested designer-issued client-code flow.
+
+Run the schema in the new project's SQL Editor or through the connected Supabase SQL tools, then verify the six tables, RLS status, denied browser-role privileges, and advisory results before deploying. Keep existing AskVic projects and tables unchanged. A new organization has its own billing plan; check the actual project creation cost before creating it.
+
 `/event-questionnaire` shows a preparation notice and disables submission until both private settings are present. `/portal/manage` and the APIs refuse unavailable database or login configuration. Merely deploying the code does not create a production database.
 
 ## Manager workflow

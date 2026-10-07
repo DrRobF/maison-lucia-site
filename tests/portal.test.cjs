@@ -19,7 +19,14 @@ test('questionnaire and financial validation reject malformed inputs', () => {
 
 test('private portal end-to-end PostgreSQL workflow and authorization', async () => {
   const pg = new PGlite();
+  await pg.exec('CREATE ROLE anon; CREATE ROLE authenticated;');
   await pg.exec(fs.readFileSync(path.join(__dirname, '../scripts/portal-schema.sql'), 'utf8'));
+  const security = await pg.query("SELECT relname, relrowsecurity FROM pg_class WHERE relname LIKE 'ml_%' AND relkind='r'");
+  assert.equal(security.rows.length, 6);
+  assert.ok(security.rows.every(table => table.relrowsecurity));
+  const grants = await pg.query("SELECT has_table_privilege('anon','ml_projects','SELECT') AS anon_read, has_table_privilege('authenticated','ml_sessions','SELECT') AS client_sessions");
+  assert.equal(grants.rows[0].anon_read, false);
+  assert.equal(grants.rows[0].client_sessions, false);
   const db = { query: (...args) => pg.query(...args), connect: async () => ({ query: (...args) => pg.query(...args), release() {} }) };
   const filename = path.join(__dirname, '../pages/api/portal/[action].js');
   const originalRequire = createRequire(filename);

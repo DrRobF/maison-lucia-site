@@ -48,3 +48,27 @@ CREATE INDEX IF NOT EXISTS ml_designs_project ON ml_designs(project_id);
 CREATE INDEX IF NOT EXISTS ml_messages_project ON ml_messages(project_id, created_at);
 CREATE INDEX IF NOT EXISTS ml_proposals_project ON ml_proposals(project_id, version);
 CREATE UNIQUE INDEX IF NOT EXISTS ml_one_pending_proposal ON ml_proposals(project_id) WHERE status = 'Pending';
+CREATE INDEX IF NOT EXISTS ml_sessions_project ON ml_sessions(project_id);
+CREATE INDEX IF NOT EXISTS ml_sessions_expiry ON ml_sessions(expires_at);
+CREATE INDEX IF NOT EXISTS ml_messages_design ON ml_messages(design_id);
+
+-- These records are accessed through the site's authorized server APIs, never
+-- through Supabase's browser Data API. No public-client RLS policies are added.
+ALTER TABLE ml_projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ml_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ml_designs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ml_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ml_proposals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ml_rate_limits ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE ml_projects, ml_sessions, ml_designs, ml_messages, ml_proposals, ml_rate_limits FROM PUBLIC;
+-- Preserve portability to ordinary PostgreSQL installations without these roles.
+DO $security$
+DECLARE role_name text;
+BEGIN
+  FOREACH role_name IN ARRAY ARRAY['anon', 'authenticated'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = role_name) THEN
+      EXECUTE format('REVOKE ALL ON TABLE ml_projects, ml_sessions, ml_designs, ml_messages, ml_proposals, ml_rate_limits FROM %I', role_name);
+    END IF;
+  END LOOP;
+END
+$security$;
