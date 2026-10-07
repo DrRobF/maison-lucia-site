@@ -61,7 +61,26 @@ export default async function handler(req, res) {
         if (origin.host !== req.headers.host) fail('Request not allowed.', 403);
       }
     }
-    if (action === 'ready') return res.json({ ready: Boolean(process.env.DATABASE_URL && process.env.PORTAL_ADMIN_PASSWORD?.length >= 16) });
+    if (action === 'ready') {
+      const configured = Boolean(process.env.DATABASE_URL && process.env.PORTAL_ADMIN_PASSWORD?.length >= 16);
+      if (!configured) return res.json({ ready: false, configured: false });
+      try {
+        await database().query('SELECT id FROM ml_projects LIMIT 0');
+        return res.json({ ready: true, configured: true });
+      } catch (error) {
+        // Report only known categories, never connection strings or server messages.
+        const categories = {
+          '28P01': 'authentication', '28000': 'authentication',
+          ENOTFOUND: 'hostname', EAI_AGAIN: 'hostname',
+          SELF_SIGNED_CERT_IN_CHAIN: 'certificate', DEPTH_ZERO_SELF_SIGNED_CERT: 'certificate',
+          UNABLE_TO_VERIFY_LEAF_SIGNATURE: 'certificate', CERT_HAS_EXPIRED: 'certificate',
+          ERR_TLS_CERT_ALTNAME_INVALID: 'certificate',
+          ETIMEDOUT: 'network', ECONNREFUSED: 'network',
+          '42P01': 'schema', '42501': 'permissions', ERR_INVALID_URL: 'connection_string',
+        };
+        return res.json({ ready: false, configured: true, databaseError: categories[error.code] || 'connection' });
+      }
+    }
     const db = database();
     const body = req.body || {};
     if (action === 'inquiry') {
