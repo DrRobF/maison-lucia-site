@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS ml_messages (
   body text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+-- Upgrade existing portals as well as new installations.
+ALTER TABLE ml_messages ADD COLUMN IF NOT EXISTS images jsonb NOT NULL DEFAULT '[]'::jsonb;
 CREATE TABLE IF NOT EXISTS ml_proposals (
   id uuid PRIMARY KEY,
   project_id uuid NOT NULL REFERENCES ml_projects(id) ON DELETE CASCADE,

@@ -24,12 +24,14 @@ Run the schema in the new project's SQL Editor or through the connected Supabase
 
 ## Manager workflow
 
+- To start without a questionnaire, open `/portal/manage` and click **Add client**. Only the client email is required; name and event title are optional. Creating the portal generates its access code immediately and opens Conversation.
+- **Copy invitation** includes the client portal link and code. **Email invitation** opens the manager's mail app with the recipient and invitation filled in; the manager must click Send in that app. This is not automatic server-side email delivery. Connecting a transactional email service is required before adding automatic invitations.
 - Open `/portal/manage`, sign in, and select an inquiry.
 - Review its original questionnaire and inspiration images.
 - Create a client code. Copy it while visible and share it privately alongside `https://maisonluciallc.com/portal`. Codes are not emailed automatically.
 - Each code contains 128 bits of randomness and is stored only as a SHA-256 hash. The plaintext is shown only on creation. Replacing a code revokes the old code and existing client sessions.
 - Add design concepts with descriptions and up to three images each. Add a revised concept as a new idea to preserve the earlier conversation.
-- Reply under individual designs or in the general Conversation tab.
+- Reply under individual designs or in the general Conversation tab. Both the client and manager can attach up to three photos to a message, including a photo-only message.
 - Compose an itemized USD proposal with quantities, prices, additional charges, and your own scope, tax, setup, delivery, and payment terms. No rates or legal terms are assumed by the application. Use separate line items to itemize multiple fees.
 - The client reviews and approves the current version with their full name and explicit confirmation. Approval records the name, time, accepted content, and version, then creates an invoice. Approval is a recorded client action; it is not an external e-signature service or evidence that payment occurred.
 - The invoice preserves the accepted proposal content. Clients can print or save the displayed invoice as PDF. There is no checkout or online payment processing.

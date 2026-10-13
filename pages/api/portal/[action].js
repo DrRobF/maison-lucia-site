@@ -1,6 +1,6 @@
 const { randomUUID, randomBytes } = require('node:crypto');
 const { database } = require('../../../lib/portal-db');
-const { fields, fail, text, cleanSurvey, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
+const { fields, fail, text, cleanSurvey, cleanClient, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
 const cookieName = 'ml_portal';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -117,6 +117,14 @@ export default async function handler(req, res) {
     }
     const auth = await session(db, req);
     if (action === 'session') return res.json(auth);
+    if (action === 'create-client') {
+      if (auth.role !== 'admin') fail('Access denied.', 403);
+      await rateLimit(db, req, 'create-client', 30);
+      const survey = cleanClient(body);
+      const projectId = randomUUID(), code = newCode();
+      await db.query("INSERT INTO ml_projects(id,survey,code_hash,status) VALUES($1,$2,$3,'Designing')", [projectId, survey, hash(normalizeCode(code))]);
+      return res.status(201).json({ projectId, code });
+    }
     if (action === 'projects') {
       if (auth.role !== 'admin') fail('Access denied.', 403);
       const result = await db.query(`SELECT id, survey->>'name' AS name, survey->>'eventTitle' AS title, survey->>'email' AS email,
@@ -134,15 +142,16 @@ export default async function handler(req, res) {
     }
     if (action === 'message') {
       await rateLimit(db, req, 'message', 100);
-      const message = text(body.message, 5000);
-      if (!message) fail('Write a message first.');
+      const message = text(body.message ?? '', 5000);
+      const images = cleanImages(body.images || []);
+      if (!message && !images.length) fail('Write a message or attach an image first.');
       let designId = body.designId || null;
       if (designId) {
         if (!uuid.test(designId)) fail('Design not found.', 404);
         const result = await db.query('SELECT id FROM ml_designs WHERE id=$1 AND project_id=$2', [designId, project.id]);
         if (!result.rows[0]) fail('Design not found.', 404);
       }
-      await db.query('INSERT INTO ml_messages(id,project_id,design_id,role,body) VALUES($1,$2,$3,$4,$5)', [randomUUID(), project.id, designId, auth.role, message]);
+      await db.query('INSERT INTO ml_messages(id,project_id,design_id,role,body,images) VALUES($1,$2,$3,$4,$5,$6)', [randomUUID(), project.id, designId, auth.role, message, JSON.stringify(images)]);
       return res.status(201).json({ ok: true });
     }
     if (action === 'approve') {

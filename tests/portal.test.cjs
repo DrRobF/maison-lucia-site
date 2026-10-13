@@ -5,7 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { createRequire } = require('node:module');
 const { PGlite } = require('@electric-sql/pglite');
-const { cleanSurvey, cleanProposal, normalizeCode } = require('../lib/portal-model');
+const { cleanSurvey, cleanClient, cleanProposal, normalizeCode } = require('../lib/portal-model');
 
 test('questionnaire and financial validation reject malformed inputs', () => {
   assert.throws(() => cleanSurvey({ name: 'A', email: 'bad', eventTitle: 'Party', services: 'Florals' }));
@@ -15,6 +15,10 @@ test('questionnaire and financial validation reject malformed inputs', () => {
   const proposal = cleanProposal({ items: [{ description: 'Centerpiece', quantity: 3, price: 19.95 }], extra: 5 });
   assert.equal(proposal.totalCents, 6485);
   assert.equal(normalizeCode('ab cd-12'), 'ABCD12');
+  assert.equal(cleanClient({ email: ' CLIENT@EXAMPLE.COM ' }).email, 'client@example.com');
+  assert.equal(cleanClient({ email: 'client@example.com' }).intakeSource, 'manager');
+  assert.throws(() => cleanClient({ email: 'bad' }));
+  assert.throws(() => cleanClient({ email: 'one,two@example.com' }));
 });
 
 test('Supabase database URLs require verified TLS, including pasted SSL flags', () => {
@@ -57,10 +61,28 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
   }
   try {
     assert.equal((await call('projects')).status, 401);
+    assert.equal((await call('create-client', { email: 'client@example.com' })).status, 401);
     assert.equal((await call('login', { admin: true, password: 'test-only-long-password' }, '', null, 'https://evil.test')).status, 403);
     assert.equal((await call('login', { admin: true, password: 'wrong' })).status, 401);
     const admin = await call('login', { admin: true, password: 'test-only-long-password' });
     assert.equal(admin.status, 200); assert.match(admin.headers['Set-Cookie'], /HttpOnly/);
+    assert.equal((await call('create-client', { email: 'bad' }, admin.cookie)).status, 400);
+    const direct = await call('create-client', { email: 'direct@example.com' }, admin.cookie);
+    assert.equal(direct.status, 201); assert.ok(direct.result.code);
+    const directClient = await call('login', { code: direct.result.code });
+    assert.equal(directClient.status, 200);
+    const directProject = (await call('project', undefined, directClient.cookie)).result.project;
+    assert.equal(directProject.survey.email, 'direct@example.com');
+    assert.equal(directProject.survey.intakeSource, 'manager');
+    assert.equal(directProject.survey.tableCount, '');
+    assert.equal((await call('create-client', { email: 'other@example.com' }, directClient.cookie)).status, 403);
+    const photo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aWEcAAAAASUVORK5CYII=';
+    assert.equal((await call('message', { message: '', images: [photo] }, directClient.cookie)).status, 201);
+    assert.equal((await call('message', { message: 'Reply with a photo', images: [photo], projectId: direct.result.projectId }, admin.cookie)).status, 201);
+    const shared = (await call('project', undefined, directClient.cookie)).result.messages;
+    assert.equal(shared.length, 2); assert.equal(shared[0].images[0], photo); assert.equal(shared[1].role, 'admin');
+    assert.equal((await call('message', { message: '', images: [] }, directClient.cookie)).status, 400);
+    assert.equal((await call('message', { message: 'Bad upload', images: ['https://evil.test/image.svg'] }, directClient.cookie)).status, 400);
     for (const title of ['First event', 'Second event']) {
       const result = await call('inquiry', { survey: { name: 'Client', email: 'client@example.com', eventTitle: title, services: 'Tables and florals', tableCount: '10' } });
       assert.equal(result.status, 201); assert.equal(result.result.saved, true);
