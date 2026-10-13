@@ -6,6 +6,27 @@ const vm = require('node:vm');
 const { createRequire } = require('node:module');
 const { PGlite } = require('@electric-sql/pglite');
 const { cleanSurvey, cleanClient, cleanProposal, normalizeCode } = require('../lib/portal-model');
+const { invitationsReady, sendInvitation } = require('../lib/portal-invitations');
+
+test('invitation emails use the configured sender, escape client data and retry safely', async () => {
+  const env = { RESEND_API_KEY: 'test-key', PORTAL_INVITE_FROM: 'Maison Lucia <portal@maisonluciallc.com>', PORTAL_INVITES_ENABLED: 'true' };
+  const requests = [];
+  const request = async (url, options) => { requests.push({ url, ...options }); return { ok: true, json: async () => ({ id: 'provider-test-id' }) }; };
+  const survey = { email: 'delivered@resend.dev', name: '<img src=x onerror=alert(1)>' };
+  assert.equal(invitationsReady({ ...env, PORTAL_INVITES_ENABLED: 'false' }), false);
+  assert.equal((await sendInvitation(survey, 'TEST-CODE', 'project', { env: {}, request })).invitationStatus, 'not_configured');
+  assert.equal(requests.length, 0);
+  assert.equal((await sendInvitation(survey, 'TEST-CODE', 'project', { env, request })).invitationStatus, 'accepted');
+  await sendInvitation(survey, 'TEST-CODE', 'project', { env, request });
+  const payload = JSON.parse(requests[0].body);
+  assert.equal(payload.from, env.PORTAL_INVITE_FROM); assert.deepEqual(payload.to, [survey.email]);
+  assert.ok(payload.text.includes('TEST-CODE')); assert.ok(payload.html.includes('&lt;img'));
+  assert.ok(!payload.html.includes('<img')); assert.ok(!payload.html.includes('test-key'));
+  assert.equal(requests[0].headers['Idempotency-Key'], requests[1].headers['Idempotency-Key']);
+  const failed = async () => ({ ok: false, json: async () => ({ message: 'private provider error' }) });
+  assert.deepEqual(await sendInvitation(survey, 'TEST-CODE', 'project', { env, request: failed }), { invitationStatus: 'failed' });
+  assert.equal((await sendInvitation(survey, 'TEST-CODE', 'project', { env, request: async () => { throw new Error('timeout'); } })).invitationStatus, 'failed');
+});
 
 test('questionnaire and financial validation reject malformed inputs', () => {
   assert.throws(() => cleanSurvey({ name: 'A', email: 'bad', eventTitle: 'Party', services: 'Florals' }));
@@ -47,7 +68,12 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
   const db = { query: (...args) => pg.query(...args), connect: async () => ({ query: (...args) => pg.query(...args), release() {} }) };
   const filename = path.join(__dirname, '../pages/api/portal/[action].js');
   const originalRequire = createRequire(filename);
-  const context = { require: name => name === '../../../lib/portal-db' ? { database: () => db } : originalRequire(name), module: { exports: {} }, process: { env: { PORTAL_ADMIN_PASSWORD: 'test-only-long-password' } }, console, URL, AbortSignal, fetch };
+  let mailFails = false; const deliveries = [];
+  const emailService = { invitationsReady: () => true, sendInvitation: async (survey, code, id) => {
+    deliveries.push({ email: survey.email, code, id });
+    return { invitationStatus: mailFails ? 'failed' : 'accepted' };
+  } };
+  const context = { require: name => name === '../../../lib/portal-db' ? { database: () => db } : name === '../../../lib/portal-invitations' ? emailService : originalRequire(name), module: { exports: {} }, process: { env: { PORTAL_ADMIN_PASSWORD: 'test-only-long-password' } }, console, URL, AbortSignal, fetch };
   const source = fs.readFileSync(filename, 'utf8').replace('export default async function handler', 'async function handler').replace(/export const config =[^\n]+/, 'module.exports = handler;');
   vm.runInNewContext(source, context, { filename });
   const handler = context.module.exports;
@@ -69,6 +95,20 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     assert.equal((await call('create-client', { email: 'bad' }, admin.cookie)).status, 400);
     const direct = await call('create-client', { email: 'direct@example.com' }, admin.cookie);
     assert.equal(direct.status, 201); assert.ok(direct.result.code);
+    assert.equal(direct.result.invitationStatus, 'accepted'); assert.equal(deliveries.at(-1).email, 'direct@example.com');
+    await call('email-code', { projectId: direct.result.projectId, code: direct.result.code, email: 'injected@example.com' }, admin.cookie);
+    assert.equal(deliveries.at(-1).email, 'direct@example.com');
+    const deliveryCount = deliveries.length;
+    assert.equal((await call('email-code', { projectId: direct.result.projectId, code: 'STALE-CODE' }, admin.cookie)).status, 409);
+    assert.equal(deliveries.length, deliveryCount);
+    mailFails = true;
+    const failedMail = await call('create-client', { email: 'saved@example.com' }, admin.cookie);
+    assert.equal(failedMail.status, 201); assert.equal(failedMail.result.invitationStatus, 'failed');
+    assert.equal((await call('login', { code: failedMail.result.code })).status, 200);
+    mailFails = false;
+    const skippedCount = deliveries.length;
+    assert.equal((await call('create-client', { email: 'manual@example.com', sendInvite: false }, admin.cookie)).result.invitationStatus, 'skipped');
+    assert.equal(deliveries.length, skippedCount);
     const directClient = await call('login', { code: direct.result.code });
     assert.equal(directClient.status, 200);
     const directProject = (await call('project', undefined, directClient.cookie)).result.project;
@@ -76,6 +116,7 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     assert.equal(directProject.survey.intakeSource, 'manager');
     assert.equal(directProject.survey.tableCount, '');
     assert.equal((await call('create-client', { email: 'other@example.com' }, directClient.cookie)).status, 403);
+    assert.equal((await call('email-code', { code: direct.result.code }, directClient.cookie)).status, 403);
     const photo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aWEcAAAAASUVORK5CYII=';
     assert.equal((await call('message', { message: '', images: [photo] }, directClient.cookie)).status, 201);
     assert.equal((await call('message', { message: 'Reply with a photo', images: [photo], projectId: direct.result.projectId }, admin.cookie)).status, 201);
