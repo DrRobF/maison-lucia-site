@@ -59,3 +59,7 @@ Smoke-test on Vercel: submit a questionnaire; verify inbox and notification; iss
 ## Owner email sign-in
 
 Owner sign-in is at `/portal/manage`, linked in the website footer. Set server-only `PORTAL_OWNER_EMAIL` to the approved owner mailbox and `PORTAL_OWNER_CODE_SECRET` to a random secret of at least 32 characters. Apply `scripts/owner-login-schema.sql` to existing installations. Resend must already be enabled. Only the configured owner mailbox can receive a code; there is no public owner registration. Codes expire after ten minutes, permit five verification attempts and can be used once. The existing management password remains a fallback.
+
+## Shared event details
+
+Every client portal has an Event details tab with the questionnaire fields. Both the owner and that project’s client can save partial details; existing questionnaire answers are prefilled. The portal email and original inspiration images are preserved. Saves use a revision check and row lock to prevent one participant from overwriting changes saved by the other. No new inquiry or access code is created by editing these details.
