@@ -63,3 +63,11 @@ Owner sign-in is at `/portal/manage`, linked in the website footer. Set server-o
 ## Shared event details
 
 Every client portal has an Event details tab with the questionnaire fields. Both the owner and that project’s client can save partial details; existing questionnaire answers are prefilled. The portal email and original inspiration images are preserved. Saves use a revision check and row lock to prevent one participant from overwriting changes saved by the other. No new inquiry or access code is created by editing these details.
+
+## Event planning agreement and working list
+
+Apply `scripts/event-agreement-schema.sql` when upgrading an existing portal. Event details now autosave after a pause and show saved/failed status. Updates submit only changed fields; edits to different fields merge, while overlapping edits require review. The portal email remains fixed.
+
+In Event details, choose Summary & working list. The owner prepares a versioned event agreement for the client to review and sign with a typed full name plus explicit consent. The stored receipt includes the client name, portal email, signature timestamp and immutable event snapshot. Pricing and payment terms are explicitly separate. The current plan must be signed before a new pricing proposal can be shared. Existing proposals and invoices remain viewable.
+
+Edits invalidate pending agreement versions. Earlier signed versions stay in the history, and updated event details require a new signature. The owner can mark items done in the shared working list. Print / Save as PDF prints the selected summary and signature receipt using the browser's PDF option; interactive form and signing controls are excluded.

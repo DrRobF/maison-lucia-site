@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import PortalShell, { InspirationLinks, portalApi, readImages } from './PortalShell';
 import EventDetails from './EventDetails';
+import { fields } from '../lib/portal-fields';
 import styles from '../styles/Portal.module.css';
 
 const money = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
@@ -118,6 +119,7 @@ export default function PortalWorkspace({ admin = false }) {
     } catch (error) { if (action === 'details' && error.status === 409) { try { await refresh(); } catch {} } setError(error.message); if (error.status === 401) setAuth(null); return false; }
     finally { setBusy(false); }
   }
+  const signedEvent = data?.agreements?.some(item => item.status === 'Signed' && fields.every(([key]) => (item.snapshot[key] || '') === (data.project.survey[key] || '')) && JSON.stringify(item.snapshot.images || []) === JSON.stringify(data.project.survey.images || []));
   const activeProposal = data?.proposals.find(item => item.status === 'Pending');
   useEffect(() => { setConfirm(false); }, [activeProposal?.id]);
   const invoices = data?.proposals.filter(item => item.status === 'Approved') || [];
@@ -144,7 +146,7 @@ export default function PortalWorkspace({ admin = false }) {
           <div className={styles.noPrint}><p className={styles.eyebrow}>{data.project.status}</p><h2>{data.project.survey.eventTitle}</h2><p>{data.project.survey.name}{data.project.survey.eventDate ? ` · ${data.project.survey.eventDate}` : ''}</p><InspirationLinks />
           {admin && <section className={styles.notice}><p>Client access: {data.project.has_code ? 'Code issued. Replacing it signs out this client’s active sessions and disables the previous code.' : 'No client code issued yet.'}</p><button disabled={busy} onClick={() => send('code', { sendInvite: emailReady })}>{data.project.has_code ? (emailReady ? 'Replace code & email invitation' : 'Replace client code') : (emailReady ? 'Create code & email invitation' : 'Create client code')}</button>{code && <ClientInvitation code={code} survey={data.project.survey} busy={busy} onCopy={copy} emailReady={emailReady} sendEmail={() => send('email-code', { code })} />}</section>}
           <div className={styles.tabs} aria-label="Event sections">{['Design ideas', 'Conversation', 'Event details', 'Proposal', 'Invoices'].map(item => <button key={item} aria-pressed={tab === item} onClick={() => { setTab(item); setConfirm(false); }} disabled={busy}>{item}{item === 'Invoices' && invoices.length ? ` (${invoices.length})` : ''}</button>)}</div></div>
-          {tab === 'Event details' && <EventDetails key={data.project.id} project={data.project} send={send} busy={busy} />}
+          {tab === 'Event details' && <EventDetails key={data.project.id} project={data.project} agreements={data.agreements || []} admin={admin} send={send} busy={busy} onSaved={project => setData(current => current?.project.id === project.id ? { ...current, project } : current)} />}
           {tab === 'Design ideas' && <>
             {data.designs.length === 0 && <section className={styles.card}><h2>Design ideas are on their way.</h2><p>Maison Lucia’s concepts will appear here. Each idea has its own space for your thoughts and requested changes.</p></section>}
             {data.designs.map(item => <article key={item.id} className={styles.card}><h2>{item.title}</h2><p className={styles.pre}>{item.description}</p><div className={styles.images}>{item.images.map((src, index) => <a key={index} href={src} download={`design-${index + 1}.jpg`}><img src={src} alt={`${item.title}, view ${index + 1}`} /></a>)}</div><Conversation messages={data.messages} designId={item.id} send={send} busy={busy} /></article>)}
@@ -161,7 +163,7 @@ export default function PortalWorkspace({ admin = false }) {
                 <label>Your full name<input required maxLength={250} value={approvalName} onChange={event => setApprovalName(event.target.value)} /></label><label className={styles.check}><input type="checkbox" checked={confirm} required onChange={event => setConfirm(event.target.checked)} />I approve proposal version {activeProposal.version}, including the scope, total of {money(activeProposal.details.totalCents)}, and stated terms.</label><button className={styles.primary} disabled={busy || !confirm}>Approve this proposal & create invoice</button><p>Need changes first? Send them in the Conversation tab.</p>
               </form>}
             </section> : <section className={styles.card}><h2>{invoices.length ? 'Your approved proposal is saved.' : 'Your proposal will appear here.'}</h2><p>{invoices.length ? 'See Invoices for the accepted details and approval record.' : 'Maison Lucia will prepare it after reviewing your event and design preferences.'}</p></section>}
-            {admin && <section className={styles.card}><h2>{data.proposals.length ? 'Prepare a revised proposal' : 'Prepare a proposal'}</h2><p>Sharing creates a new version and replaces any pending version. Accepted proposals and invoices remain unchanged.</p>
+            {admin && <section className={styles.card}><h2>{data.proposals.length ? 'Prepare a revised proposal' : 'Prepare a proposal'}</h2>{!signedEvent && <p className={styles.notice}>First prepare the event agreement in Event details and have the client sign it. Then share the pricing proposal.</p>}<p>Sharing creates a new version and replaces any pending version. Accepted proposals and invoices remain unchanged.</p>
               {data.proposals[0] && <button type="button" onClick={() => { const source = data.proposals[0].details; setProposal({ title: source.title, items: source.items.map(item => ({ description: item.description, quantity: item.quantity, price: item.unitCents / 100 })), extra: source.extraCents / 100, extraLabel: source.extraLabel, terms: source.terms }); }}>Use latest proposal as starting point</button>}
               <form className={styles.form} onSubmit={async event => { event.preventDefault(); if (await send('proposal', proposal)) setProposal(emptyProposal()); }}>
                 <label>Proposal title<input required maxLength={250} value={proposal.title} onChange={event => setProposal({ ...proposal, title: event.target.value })} /></label>
@@ -169,7 +171,7 @@ export default function PortalWorkspace({ admin = false }) {
                 <button type="button" disabled={proposal.items.length >= 50} onClick={() => setProposal({ ...proposal, items: [...proposal.items, { description: '', quantity: 1, price: '' }] })}>Add line item</button>
                 <div className={styles.grid}><label>Additional charge label<input maxLength={250} value={proposal.extraLabel} onChange={event => setProposal({ ...proposal, extraLabel: event.target.value })} /></label><label>Additional charge amount ($)<input type="number" min="0" step=".01" value={proposal.extra} onChange={event => setProposal({ ...proposal, extra: event.target.value })} /></label></div>
                 <label>Scope, exclusions, delivery / setup, taxes, and payment arrangements<textarea maxLength={8000} rows={5} value={proposal.terms} onChange={event => setProposal({ ...proposal, terms: event.target.value })} /></label>
-                <button className={styles.primary} disabled={busy}>Share proposal for client approval</button>
+                <button className={styles.primary} disabled={busy || !signedEvent}>Share proposal for client approval</button>
               </form>
             </section>}
             {data.proposals.filter(item => item.status === 'Superseded').map(item => <details className={styles.card} key={item.id}><summary>Earlier proposal · Version {item.version} · Superseded</summary><ProposalView proposal={item} project={data.project} /></details>)}
