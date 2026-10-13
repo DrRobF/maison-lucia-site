@@ -1,7 +1,7 @@
 const { randomUUID, randomBytes } = require('node:crypto');
 const { database } = require('../../../lib/portal-db');
 const { invitationsReady, sendInvitation } = require('../../../lib/portal-invitations');
-const { fields, fail, text, cleanSurvey, cleanClient, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
+const { fields, fail, text, cleanSurvey, cleanClient, cleanEventDetails, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
 const { ownerEmail, ownerReady, ownerCodeHash, newOwnerCode, sendOwnerCode } = require('../../../lib/portal-owner');
 const cookieName = 'ml_portal';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -33,7 +33,7 @@ async function projectFor(db, auth, id) {
   if (!uuid.test(projectId || '')) fail('Please select an event.');
   const result = await db.query('SELECT id,survey,status,created_at,code_hash IS NOT NULL AS has_code FROM ml_projects WHERE id=$1', [projectId]);
   if (!result.rows[0]) fail('Event not found.', 404);
-  return result.rows[0];
+  return { ...result.rows[0], surveyRevision: hash(JSON.stringify(result.rows[0].survey)) };
 }
 async function notify(survey) {
   const key = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
@@ -175,6 +175,24 @@ export default async function handler(req, res) {
         db.query('SELECT * FROM ml_proposals WHERE project_id=$1 ORDER BY version DESC', [project.id]),
       ]);
       return res.json({ project, designs: results[0].rows, messages: results[1].rows, proposals: results[2].rows, role: auth.role });
+    }
+    if (action === 'details') {
+      await rateLimit(db, req, 'event-details', 60);
+      const revision = text(body.revision ?? '', 100);
+      const client = await db.connect();
+      try {
+        await client.query('BEGIN');
+        const result = await client.query('SELECT survey FROM ml_projects WHERE id=$1 FOR UPDATE', [project.id]);
+        const current = result.rows[0].survey;
+        if (!revision || revision !== hash(JSON.stringify(current))) fail('Someone else updated the event details. Review the latest details before saving again. Your draft has been kept.', 409);
+        const survey = cleanEventDetails(body.details, current);
+        survey.detailsUpdatedAt = new Date().toISOString();
+        survey.detailsUpdatedBy = auth.role === 'admin' ? 'Maison Lucia' : 'Client';
+        await client.query('UPDATE ml_projects SET survey=$1 WHERE id=$2', [survey, project.id]);
+        await client.query('COMMIT');
+      } catch (error) { await client.query('ROLLBACK'); throw error; }
+      finally { client.release(); }
+      return res.json({ ok: true });
     }
     if (action === 'message') {
       await rateLimit(db, req, 'message', 100);

@@ -149,6 +149,21 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     assert.equal(directProject.survey.email, 'direct@example.com');
     assert.equal(directProject.survey.intakeSource, 'manager');
     assert.equal(directProject.survey.tableCount, '');
+    const ownerEdit = await call('details', { projectId: direct.result.projectId, revision: directProject.surveyRevision, details: { tableCount: '12', palette: 'Ivory and green', services: '' } }, admin.cookie);
+    assert.equal(ownerEdit.status, 200);
+    let sharedDetails = (await call('project', undefined, directClient.cookie)).result.project;
+    assert.equal(sharedDetails.survey.tableCount, '12'); assert.equal(sharedDetails.survey.services, '');
+    assert.equal(sharedDetails.survey.detailsUpdatedBy, 'Maison Lucia');
+    assert.equal((await call('details', { revision: directProject.surveyRevision, details: { palette: 'Overwrite old draft' } }, directClient.cookie)).status, 409);
+    assert.equal((await call('details', { revision: sharedDetails.surveyRevision, details: { tableCount: '-3' } }, directClient.cookie)).status, 400);
+    assert.equal((await call('details', { revision: sharedDetails.surveyRevision, details: { email: 'hijack@example.com' } }, directClient.cookie)).status, 400);
+    assert.equal((await call('details', { revision: sharedDetails.surveyRevision, details: { palette: 'Blue and white', name: '', eventTitle: '' } }, directClient.cookie)).status, 200);
+    sharedDetails = (await call('project', undefined, admin.cookie, direct.result.projectId)).result.project;
+    assert.equal(sharedDetails.survey.palette, 'Blue and white'); assert.equal(sharedDetails.survey.tableCount, '12');
+    assert.equal(sharedDetails.survey.email, 'direct@example.com'); assert.equal(sharedDetails.survey.intakeSource, 'manager');
+    assert.equal(sharedDetails.survey.detailsUpdatedBy, 'Client');
+    assert.equal((await call('details', { revision: sharedDetails.surveyRevision, details: { palette: 'Anonymous change' } })).status, 401);
+
     assert.equal((await call('create-client', { email: 'other@example.com' }, directClient.cookie)).status, 403);
     assert.equal((await call('email-code', { code: direct.result.code }, directClient.cookie)).status, 403);
     const photo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aWEcAAAAASUVORK5CYII=';
@@ -178,6 +193,13 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     assert.equal(own.designs.length, 1);
     const other = (await call('project', undefined, admin.cookie, second)).result;
     assert.equal((await call('message', { projectId: second, designId: other.designs[0].id, message: 'Trying cross-client access' }, client.cookie)).status, 403);
+    assert.equal((await call('details', { projectId: second, revision: other.project.surveyRevision, details: { palette: 'Other client' } }, client.cookie)).status, 403);
+    const beforeEdit = own.project.survey;
+    assert.equal((await call('details', { projectId: first, revision: own.project.surveyRevision, details: { venue: 'Updated together' } }, client.cookie)).status, 200);
+    const afterEdit = (await call('project', undefined, client.cookie)).result.project.survey;
+    assert.equal(afterEdit.venue, 'Updated together'); assert.equal(afterEdit.eventTitle, beforeEdit.eventTitle);
+    assert.deepEqual(afterEdit.images, beforeEdit.images);
+
     assert.equal((await call('message', { projectId: first, designId: other.designs[0].id, message: 'Trying another design' }, client.cookie)).status, 404);
     assert.equal((await call('message', { projectId: first, designId: own.designs[0].id, message: 'Can we use blue?' }, client.cookie)).status, 201);
     assert.equal((await call('design', { projectId: first, title: 'Unauthorized', description: 'No' }, client.cookie)).status, 403);
