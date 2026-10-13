@@ -1,5 +1,6 @@
 const { randomUUID, randomBytes } = require('node:crypto');
 const { database } = require('../../../lib/portal-db');
+const { invitationsReady, sendInvitation } = require('../../../lib/portal-invitations');
 const { fields, fail, text, cleanSurvey, cleanClient, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
 const cookieName = 'ml_portal';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -63,10 +64,10 @@ export default async function handler(req, res) {
     }
     if (action === 'ready') {
       const configured = Boolean(process.env.DATABASE_URL && process.env.PORTAL_ADMIN_PASSWORD?.length >= 16);
-      if (!configured) return res.json({ ready: false, configured: false });
+      if (!configured) return res.json({ ready: false, configured: false, emailInvitesReady: invitationsReady() });
       try {
         await database().query('SELECT id FROM ml_projects LIMIT 0');
-        return res.json({ ready: true, configured: true });
+        return res.json({ ready: true, configured: true, emailInvitesReady: invitationsReady() });
       } catch (error) {
         // Report only known categories, never connection strings or server messages.
         const categories = {
@@ -123,7 +124,8 @@ export default async function handler(req, res) {
       const survey = cleanClient(body);
       const projectId = randomUUID(), code = newCode();
       await db.query("INSERT INTO ml_projects(id,survey,code_hash,status) VALUES($1,$2,$3,'Designing')", [projectId, survey, hash(normalizeCode(code))]);
-      return res.status(201).json({ projectId, code });
+      const invitation = body.sendInvite === false ? { invitationStatus: 'skipped' } : await sendInvitation(survey, code, projectId);
+      return res.status(201).json({ projectId, code, ...invitation });
     }
     if (action === 'projects') {
       if (auth.role !== 'admin') fail('Access denied.', 403);
@@ -176,7 +178,15 @@ export default async function handler(req, res) {
       return res.json({ ok: true });
     }
     if (auth.role !== 'admin') fail('Access denied.', 403);
+    if (action === 'email-code') {
+      await rateLimit(db, req, 'email-code', 30);
+      const code = text(body.code, 100);
+      const match = await db.query('SELECT id FROM ml_projects WHERE id=$1 AND code_hash=$2', [project.id, hash(normalizeCode(code))]);
+      if (!match.rows[0]) fail('This code has been replaced. Create a new client code before emailing it.', 409);
+      return res.json(await sendInvitation(project.survey, code, project.id));
+    }
     if (action === 'code') {
+      await rateLimit(db, req, 'issue-code', 30);
       const code = newCode();
       const client = await db.connect();
       try {
@@ -186,7 +196,8 @@ export default async function handler(req, res) {
         await client.query('COMMIT');
       } catch (error) { await client.query('ROLLBACK'); throw error; }
       finally { client.release(); }
-      return res.json({ code });
+      const invitation = body.sendInvite === false ? { invitationStatus: 'skipped' } : await sendInvitation(project.survey, code, project.id);
+      return res.json({ code, ...invitation });
     }
     if (action === 'design') {
       const title = text(body.title, 250), description = text(body.description, 5000);

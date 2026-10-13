@@ -34,10 +34,16 @@ function ProposalView({ proposal, invoice = false, project }) {
 }
 const emptyProposal = () => ({ title: 'Event styling proposal', items: [{ description: '', quantity: 1, price: '' }], extra: '', extraLabel: 'Additional charges', terms: '' });
 const emptyClient = () => ({ email: '', name: '', eventTitle: '' });
-function ClientInvitation({ code, survey, busy, onCopy }) {
+function invitationNotice(status) {
+  if (status === 'accepted') return 'Invitation submitted for email delivery. The client can use the code below.';
+  if (status === 'failed') return 'The email could not be sent. Your portal and code are ready; copy the invitation or open an email draft to share it.';
+  if (status === 'not_configured') return 'Automatic emails are awaiting setup. Your portal and code are ready; copy the invitation or open an email draft.';
+  return 'Client portal and code are ready. Copy the invitation or open an email draft to share it.';
+}
+function ClientInvitation({ code, survey, busy, onCopy, emailReady, sendEmail }) {
   const invitation = `Hello${survey.name && survey.name !== survey.email ? ` ${survey.name}` : ''},\n\nYour private Maison Lucia portal is ready.\n\nOpen https://www.maisonluciallc.com/portal\nClient code: ${code}\n\nUse your code to exchange messages and photos, review design ideas, and approve your proposal. You do not need to complete a questionnaire to get started. Keep this code private.\n\nMaison Lucia`;
   const mailto = `mailto:${encodeURIComponent(survey.email)}?subject=${encodeURIComponent('Your Maison Lucia client portal')}&body=${encodeURIComponent(invitation)}`;
-  return <><code className={styles.code}>{code}</code><p>Copy this invitation now. The code is only shown when it is created.</p><div className={styles.actions}><button disabled={busy} onClick={() => onCopy(invitation, 'Invitation copied, including the portal link and code.')}>Copy invitation</button><button disabled={busy} onClick={() => onCopy(code, 'Code copied.')}>Copy code</button><a href={mailto}>Email invitation</a></div><p>Email invitation opens your mail app with the client’s address, link and code ready. Click Send there to deliver it.</p></>;
+  return <><code className={styles.code}>{code}</code><p>Copy this invitation now. The code is only shown when it is created.</p><div className={styles.actions}>{emailReady && <button disabled={busy} onClick={sendEmail}>Send invitation email</button>}<button disabled={busy} onClick={() => onCopy(invitation, 'Invitation copied, including the portal link and code.')}>Copy invitation</button><button disabled={busy} onClick={() => onCopy(code, 'Code copied.')}>Copy code</button><a href={mailto}>Open email draft</a></div><p>Open email draft uses your mail app with the client’s address, link and code ready. Click Send there to deliver it.</p></>;
 }
 
 export default function PortalWorkspace({ admin = false }) {
@@ -47,6 +53,13 @@ export default function PortalWorkspace({ admin = false }) {
   const [design, setDesign] = useState({ title: '', description: '', images: [] }), [uploading, setUploading] = useState(false);
   const [proposal, setProposal] = useState(emptyProposal), [approvalName, setApprovalName] = useState(''), [confirm, setConfirm] = useState(false), [invoiceId, setInvoiceId] = useState('');
   const [newClient, setNewClient] = useState(emptyClient), [addingClient, setAddingClient] = useState(false);
+  const [emailReady, setEmailReady] = useState(false), [emailInvitation, setEmailInvitation] = useState(true);
+  useEffect(() => {
+    if (!admin || !auth) return;
+    let current = true;
+    portalApi('ready').then(result => { if (current) setEmailReady(result.emailInvitesReady === true); }).catch(() => { if (current) setEmailReady(false); });
+    return () => { current = false; };
+  }, [admin, auth]);
   useEffect(() => {
     portalApi('session').then(result => { if ((result.role === 'admin') === admin) { setAuth(result); if (!admin) setSelected(result.project_id); } }).catch(error => { if (error.status !== 401) setError(error.message); }).finally(() => setChecking(false));
   }, [admin]);
@@ -71,9 +84,9 @@ export default function PortalWorkspace({ admin = false }) {
   async function createClient(event) {
     event.preventDefault(); setBusy(true); setError(''); setNotice('');
     try {
-      const result = await portalApi('create-client', newClient);
+      const result = await portalApi('create-client', { ...newClient, sendInvite: emailReady && emailInvitation });
       choose(result.projectId); setCode(result.code); setTab('Conversation'); setAddingClient(false); setNewClient(emptyClient());
-      setNotice('Client portal created. Use Email invitation or copy the invitation to share their access code.');
+      setNotice(invitationNotice(result.invitationStatus));
     } catch (error) { setError(error.message); if (error.status === 401) setAuth(null); }
     finally { setBusy(false); }
   }
@@ -88,7 +101,7 @@ export default function PortalWorkspace({ admin = false }) {
       const result = await portalApi(action, { ...values, projectId: selected });
       if (result.code) setCode(result.code);
       await refresh();
-      setNotice(action === 'approve' ? 'Proposal approved. Your invoice is ready in Invoices.' : action === 'code' ? 'Client code created. Share it privately with your client.' : 'Saved.');
+      setNotice(result.invitationStatus ? invitationNotice(result.invitationStatus) : action === 'approve' ? 'Proposal approved. Your invoice is ready in Invoices.' : 'Saved.');
       return true;
     } catch (error) { setError(error.message); if (error.status === 401) setAuth(null); return false; }
     finally { setBusy(false); }
@@ -109,9 +122,9 @@ export default function PortalWorkspace({ admin = false }) {
       {error && <p role="alert" className={styles.error}>{error}</p>}{notice && <p role="status" className={`${styles.notice} ${styles.noPrint}`}>{notice}</p>}
       <div className={admin ? styles.layout : ''}>
         {admin && <aside><h2>Inquiries & clients</h2><button className={styles.primary} disabled={busy} onClick={() => setAddingClient(value => !value)}>{addingClient ? 'Close new client form' : 'Add client'}</button>{projects.length === 0 && <p>Add a client directly, or wait for a new questionnaire.</p>}{projects.map(project => <button key={project.id} className={`${styles.projectButton} ${selected === project.id ? styles.selected : ''}`} onClick={() => choose(project.id)} disabled={busy}><strong>{project.title}</strong><span>{project.name}</span><span>{project.email}</span><span>{project.event_date || 'Date undecided'} · {project.status}</span></button>)}</aside>}
-        <div>{admin && addingClient && <section className={styles.card}><h2>Start a client portal</h2><p>Only an email address is required. Start sharing ideas, photos and proposals without a questionnaire.</p><form className={styles.form} onSubmit={createClient}><label>Client email<input type="email" required maxLength={250} autoComplete="email" value={newClient.email} onChange={event => setNewClient({ ...newClient, email: event.target.value })} /></label><label>Client name (optional)<input maxLength={250} value={newClient.name} onChange={event => setNewClient({ ...newClient, name: event.target.value })} /></label><label>Event title (optional)<input maxLength={250} value={newClient.eventTitle} onChange={event => setNewClient({ ...newClient, eventTitle: event.target.value })} /></label><button className={styles.primary} disabled={busy}>{busy ? 'Creating…' : 'Create client portal'}</button></form></section>}{!selected ? <section className={styles.card}><h2>Every event, in one place.</h2><p>Add a client directly or select an inquiry to begin the design conversation.</p><a href="/event-questionnaire">View the optional event questionnaire</a></section> : !data ? <p role="status">Loading event…</p> : <>
+        <div>{admin && addingClient && <section className={styles.card}><h2>Start a client portal</h2><p>Only an email address is required. Start sharing ideas, photos and proposals without a questionnaire.</p><form className={styles.form} onSubmit={createClient}><label>Client email<input type="email" required maxLength={250} autoComplete="email" value={newClient.email} onChange={event => setNewClient({ ...newClient, email: event.target.value })} /></label><label>Client name (optional)<input maxLength={250} value={newClient.name} onChange={event => setNewClient({ ...newClient, name: event.target.value })} /></label><label>Event title (optional)<input maxLength={250} value={newClient.eventTitle} onChange={event => setNewClient({ ...newClient, eventTitle: event.target.value })} /></label><label className={styles.check}><input type="checkbox" checked={emailReady && emailInvitation} disabled={!emailReady || busy} onChange={event => setEmailInvitation(event.target.checked)} />Email the client their portal link and code</label>{!emailReady && <p>Automatic email invitations are being set up. You can copy the invitation or send it from your mail app after creating the portal.</p>}<button className={styles.primary} disabled={busy}>{busy ? 'Creating…' : emailReady && emailInvitation ? 'Create portal & email invitation' : 'Create client portal'}</button></form></section>}{!selected ? <section className={styles.card}><h2>Every event, in one place.</h2><p>Add a client directly or select an inquiry to begin the design conversation.</p><a href="/event-questionnaire">View the optional event questionnaire</a></section> : !data ? <p role="status">Loading event…</p> : <>
           <div className={styles.noPrint}><p className={styles.eyebrow}>{data.project.status}</p><h2>{data.project.survey.eventTitle}</h2><p>{data.project.survey.name}{data.project.survey.eventDate ? ` · ${data.project.survey.eventDate}` : ''}</p><InspirationLinks />
-          {admin && <section className={styles.notice}><p>Client access: {data.project.has_code ? 'Code issued. Replacing it signs out this client’s active sessions and disables the previous code.' : 'No client code issued yet.'}</p><button disabled={busy} onClick={() => send('code')}>{data.project.has_code ? 'Replace client code' : 'Create client code'}</button>{code && <ClientInvitation code={code} survey={data.project.survey} busy={busy} onCopy={copy} />}</section>}
+          {admin && <section className={styles.notice}><p>Client access: {data.project.has_code ? 'Code issued. Replacing it signs out this client’s active sessions and disables the previous code.' : 'No client code issued yet.'}</p><button disabled={busy} onClick={() => send('code', { sendInvite: emailReady })}>{data.project.has_code ? (emailReady ? 'Replace code & email invitation' : 'Replace client code') : (emailReady ? 'Create code & email invitation' : 'Create client code')}</button>{code && <ClientInvitation code={code} survey={data.project.survey} busy={busy} onCopy={copy} emailReady={emailReady} sendEmail={() => send('email-code', { code })} />}</section>}
           <div className={styles.tabs} aria-label="Event sections">{['Design ideas', 'Conversation', 'Questionnaire', 'Proposal', 'Invoices'].map(item => <button key={item} aria-pressed={tab === item} onClick={() => { setTab(item); setConfirm(false); }} disabled={busy}>{item === 'Questionnaire' && data.project.survey.intakeSource === 'manager' ? 'Event details' : item}{item === 'Invoices' && invoices.length ? ` (${invoices.length})` : ''}</button>)}</div></div>
           {tab === 'Questionnaire' && <section className={styles.card}><h2>{data.project.survey.intakeSource === 'manager' ? 'Event details' : 'Original event questionnaire'}</h2>{data.project.survey.intakeSource === 'manager' && <p>Maison Lucia started this portal directly. No questionnaire is required; discuss the event details in Conversation.</p>}<dl className={styles.details}>{fields.filter(([key]) => data.project.survey.intakeSource !== 'manager' || data.project.survey[key]).map(([key, label]) => <div key={key} style={{ display: 'contents' }}><dt>{label}</dt><dd>{data.project.survey[key] || 'Not provided'}</dd></div>)}</dl><div className={styles.images}>{data.project.survey.images?.map((src, index) => <a key={index} href={src} download={`inspiration-${index + 1}.jpg`}><img src={src} alt={`Client inspiration ${index + 1}`} /></a>)}</div></section>}
           {tab === 'Design ideas' && <>
