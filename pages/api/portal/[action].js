@@ -1,7 +1,7 @@
 const { randomUUID, randomBytes } = require('node:crypto');
 const { database } = require('../../../lib/portal-db');
 const { invitationsReady, sendInvitation } = require('../../../lib/portal-invitations');
-const { fields, fail, text, cleanSurvey, cleanClient, cleanEventDetails, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
+const { fields, fail, text, cleanSurvey, cleanClient, cleanEventDetails, eventSnapshot, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
 const { ownerEmail, ownerReady, ownerCodeHash, newOwnerCode, sendOwnerCode } = require('../../../lib/portal-owner');
 const cookieName = 'ml_portal';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -173,26 +173,73 @@ export default async function handler(req, res) {
         db.query('SELECT * FROM ml_designs WHERE project_id=$1 ORDER BY created_at', [project.id]),
         db.query('SELECT * FROM ml_messages WHERE project_id=$1 ORDER BY created_at', [project.id]),
         db.query('SELECT * FROM ml_proposals WHERE project_id=$1 ORDER BY version DESC', [project.id]),
+        db.query('SELECT * FROM ml_event_agreements WHERE project_id=$1 ORDER BY version DESC', [project.id]),
       ]);
-      return res.json({ project, designs: results[0].rows, messages: results[1].rows, proposals: results[2].rows, role: auth.role });
+      return res.json({ project, designs: results[0].rows, messages: results[1].rows, proposals: results[2].rows, agreements: results[3].rows, role: auth.role });
     }
     if (action === 'details') {
-      await rateLimit(db, req, 'event-details', 60);
+      await rateLimit(db, req, 'event-details', 120);
       const revision = text(body.revision ?? '', 100);
       const client = await db.connect();
       try {
         await client.query('BEGIN');
         const result = await client.query('SELECT survey FROM ml_projects WHERE id=$1 FOR UPDATE', [project.id]);
         const current = result.rows[0].survey;
-        if (!revision || revision !== hash(JSON.stringify(current))) fail('Someone else updated the event details. Review the latest details before saving again. Your draft has been kept.', 409);
+        if (!revision) fail('Please reload the event details before saving.', 409);
+        if (revision !== hash(JSON.stringify(current))) {
+          // Merge edits to different fields; reject conflicting edits to the same field.
+          const changed = Object.keys(body.details || {});
+          if (!body.base || changed.some(key => !fields.some(([field]) => field === key) || body.base[key] !== current[key]))
+            fail('Someone else changed one of the same details. Your draft is kept. Load the latest details and review your change.', 409);
+        }
         const survey = cleanEventDetails(body.details, current);
         survey.detailsUpdatedAt = new Date().toISOString();
         survey.detailsUpdatedBy = auth.role === 'admin' ? 'Maison Lucia' : 'Client';
         await client.query('UPDATE ml_projects SET survey=$1 WHERE id=$2', [survey, project.id]);
+        if (hash(JSON.stringify(eventSnapshot(survey))) !== hash(JSON.stringify(eventSnapshot(current)))) await client.query("UPDATE ml_event_agreements SET status='Superseded' WHERE project_id=$1 AND status='Pending'", [project.id]);
         await client.query('COMMIT');
       } catch (error) { await client.query('ROLLBACK'); throw error; }
       finally { client.release(); }
-      return res.json({ ok: true });
+      const saved = await projectFor(db, auth, project.id);
+      return res.json({ ok: true, project: saved });
+    }
+    if (action === 'event-agreement' || action === 'sign-event') {
+      if (action === 'event-agreement' && auth.role !== 'admin') fail('Only Maison Lucia can prepare the event agreement.', 403);
+      if (action === 'sign-event' && auth.role !== 'client') fail('Only the client can sign the event agreement.', 403);
+      await rateLimit(db, req, action, 30);
+      const client = await db.connect();
+      try {
+        await client.query('BEGIN');
+        const locked = await client.query('SELECT survey FROM ml_projects WHERE id=$1 FOR UPDATE', [project.id]);
+        const survey = locked.rows[0].survey, snapshot = eventSnapshot(survey);
+        if (action === 'event-agreement') {
+          if (body.revision !== hash(JSON.stringify(survey))) fail('The details changed. Refresh and review them before preparing the agreement.', 409);
+          if (!snapshot.name || !snapshot.eventTitle || !snapshot.services || snapshot.services === 'Details to be discussed in the portal.') fail('Add the client name, event title and requested services before preparing the event agreement.');
+          const version = await client.query('SELECT coalesce(max(version),0)+1 AS version FROM ml_event_agreements WHERE project_id=$1', [project.id]);
+          await client.query("UPDATE ml_event_agreements SET status='Superseded' WHERE project_id=$1 AND status='Pending'", [project.id]);
+          await client.query('INSERT INTO ml_event_agreements(id,project_id,version,snapshot) VALUES($1,$2,$3,$4)', [randomUUID(),project.id,version.rows[0].version,snapshot]);
+        } else {
+          const name = text(body.name ?? '',250);
+          if (!name || body.confirm !== true || !uuid.test(body.agreementId || '')) fail('Enter your full name and confirm the event details.');
+          const result = await client.query('SELECT * FROM ml_event_agreements WHERE id=$1 AND project_id=$2 FOR UPDATE', [body.agreementId,project.id]);
+          const agreement = result.rows[0];
+          if (!agreement || agreement.status === 'Superseded' || hash(JSON.stringify(eventSnapshot(agreement.snapshot))) !== hash(JSON.stringify(snapshot))) fail('The event details changed. Ask Maison Lucia to prepare the updated agreement before signing.',409);
+          if (agreement.status === 'Pending') await client.query("UPDATE ml_event_agreements SET status='Signed',signed_by=$1,signed_email=$2,signed_at=now() WHERE id=$3", [name,survey.email,agreement.id]);
+        }
+        await client.query('COMMIT');
+      } catch(error) { await client.query('ROLLBACK'); throw error; }
+      finally { client.release(); }
+      return res.json({ok:true});
+    }
+    if (action === 'event-task') {
+      if (auth.role !== 'admin') fail('Only Maison Lucia can update the working checklist.',403);
+      if (!uuid.test(body.agreementId || '') || !fields.some(([key]) => key === body.field) || typeof body.done !== 'boolean') fail('Please check the working-list item.');
+      // Atomic add/remove avoids losing checkmarks from another owner tab.
+      const result = await db.query(`UPDATE ml_event_agreements SET completed_fields=(SELECT coalesce(jsonb_agg(value),'[]'::jsonb) FROM
+        (SELECT DISTINCT value FROM jsonb_array_elements_text(completed_fields || CASE WHEN $3 THEN jsonb_build_array($2::text) ELSE '[]'::jsonb END) WHERE $3 OR value<>$2) items)
+        WHERE id=$1 AND project_id=$4 AND status<>'Superseded' RETURNING id`, [body.agreementId,body.field,body.done,project.id]);
+      if (!result.rows[0]) fail('This working list is no longer current. Refresh the event.',409);
+      return res.json({ok:true});
     }
     if (action === 'message') {
       await rateLimit(db, req, 'message', 100);
@@ -262,7 +309,10 @@ export default async function handler(req, res) {
       const client = await db.connect();
       try {
         await client.query('BEGIN');
-        await client.query('SELECT id FROM ml_projects WHERE id=$1 FOR UPDATE', [project.id]);
+        const locked = await client.query('SELECT survey FROM ml_projects WHERE id=$1 FOR UPDATE', [project.id]);
+        const signed = await client.query("SELECT snapshot FROM ml_event_agreements WHERE project_id=$1 AND status='Signed' ORDER BY version DESC", [project.id]);
+        const latestPlan = hash(JSON.stringify(eventSnapshot(locked.rows[0].survey)));
+        if (!signed.rows.some(item => hash(JSON.stringify(eventSnapshot(item.snapshot))) === latestPlan)) fail('The client must sign the current event agreement before Maison Lucia shares a pricing proposal.',409);
         const result = await client.query('SELECT coalesce(max(version),0)+1 AS version FROM ml_proposals WHERE project_id=$1', [project.id]);
         await client.query("UPDATE ml_proposals SET status='Superseded' WHERE project_id=$1 AND status='Pending'", [project.id]);
         await client.query('INSERT INTO ml_proposals(id,project_id,version,details) VALUES($1,$2,$3,$4)', [randomUUID(), project.id, result.rows[0].version, details]);

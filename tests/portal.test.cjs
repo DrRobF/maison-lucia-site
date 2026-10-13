@@ -74,7 +74,7 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
   await pg.exec('CREATE ROLE anon; CREATE ROLE authenticated;');
   await pg.exec(fs.readFileSync(path.join(__dirname, '../scripts/portal-schema.sql'), 'utf8'));
   const security = await pg.query("SELECT relname, relrowsecurity FROM pg_class WHERE relname LIKE 'ml_%' AND relkind='r'");
-  assert.equal(security.rows.length, 7);
+  assert.equal(security.rows.length, 8);
   assert.ok(security.rows.every(table => table.relrowsecurity));
   const grants = await pg.query("SELECT has_table_privilege('anon','ml_projects','SELECT') AS anon_read, has_table_privilege('authenticated','ml_sessions','SELECT') AS client_sessions");
   assert.equal(grants.rows[0].anon_read, false);
@@ -154,6 +154,10 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     let sharedDetails = (await call('project', undefined, directClient.cookie)).result.project;
     assert.equal(sharedDetails.survey.tableCount, '12'); assert.equal(sharedDetails.survey.services, '');
     assert.equal(sharedDetails.survey.detailsUpdatedBy, 'Maison Lucia');
+    assert.equal((await call('details',{revision:directProject.surveyRevision,details:{venue:'Client venue'},base:directProject.survey},directClient.cookie)).status,200);
+    sharedDetails = (await call('project',undefined,directClient.cookie)).result.project;
+    assert.equal(sharedDetails.survey.tableCount,'12'); assert.equal(sharedDetails.survey.venue,'Client venue');
+
     assert.equal((await call('details', { revision: directProject.surveyRevision, details: { palette: 'Overwrite old draft' } }, directClient.cookie)).status, 409);
     assert.equal((await call('details', { revision: sharedDetails.surveyRevision, details: { tableCount: '-3' } }, directClient.cookie)).status, 400);
     assert.equal((await call('details', { revision: sharedDetails.surveyRevision, details: { email: 'hijack@example.com' } }, directClient.cookie)).status, 400);
@@ -203,6 +207,24 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     assert.equal((await call('message', { projectId: first, designId: other.designs[0].id, message: 'Trying another design' }, client.cookie)).status, 404);
     assert.equal((await call('message', { projectId: first, designId: own.designs[0].id, message: 'Can we use blue?' }, client.cookie)).status, 201);
     assert.equal((await call('design', { projectId: first, title: 'Unauthorized', description: 'No' }, client.cookie)).status, 403);
+    const plan = (await call('project', undefined, client.cookie)).result.project;
+    assert.equal((await call('proposal', { projectId:first,items:[{description:'Flowers',quantity:1,price:100}] },admin.cookie)).status,409);
+    assert.equal((await call('event-agreement',{revision:plan.surveyRevision},client.cookie)).status,403);
+    assert.equal((await call('event-agreement',{projectId:first,revision:plan.surveyRevision},admin.cookie)).status,200);
+    let agreement = (await call('project',undefined,client.cookie)).result.agreements[0];
+    assert.equal((await call('sign-event',{projectId:first,agreementId:agreement.id,name:'Owner',confirm:true},admin.cookie)).status,403);
+    assert.equal((await call('sign-event',{agreementId:agreement.id,name:'Client',confirm:false},client.cookie)).status,400);
+    assert.equal((await call('sign-event',{projectId:second,agreementId:agreement.id,name:'Client',confirm:true},client.cookie)).status,403);
+    assert.equal((await call('sign-event',{agreementId:agreement.id,name:'Client Signature',confirm:true},client.cookie)).status,200);
+    const receipt = (await call('project',undefined,client.cookie)).result.agreements[0];
+    assert.equal(receipt.status,'Signed'); assert.equal(receipt.signed_by,'Client Signature'); assert.ok(receipt.signed_at);
+    assert.equal((await call('sign-event',{agreementId:agreement.id,name:'Replace Signature',confirm:true},client.cookie)).status,200);
+    assert.equal((await call('project',undefined,client.cookie)).result.agreements[0].signed_by,'Client Signature');
+    assert.equal((await call('event-task',{agreementId:agreement.id,field:'venue',done:true},client.cookie)).status,403);
+    assert.equal((await call('event-task',{projectId:first,agreementId:agreement.id,field:'venue',done:true},admin.cookie)).status,200);
+    assert.ok((await call('project',undefined,client.cookie)).result.agreements[0].completed_fields.includes('venue'));
+    assert.equal((await call('event-task',{projectId:first,agreementId:agreement.id,field:'venue',done:false},admin.cookie)).status,200);
+    assert.equal((await call('project',undefined,client.cookie)).result.agreements[0].completed_fields.includes('venue'),false);
     const draft = { projectId: first, title: 'Tablescape', items: [{ description: 'Centerpieces', quantity: 10, price: 45.5 }], terms: 'Setup included. Payment arranged offline.' };
     assert.equal((await call('proposal', draft, admin.cookie)).status, 201);
     own = (await call('project', undefined, client.cookie)).result;
@@ -224,6 +246,19 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     const preserved = own.proposals.find(item => item.id === invoice.id);
     assert.equal(preserved.details.totalCents, 50000); assert.equal(preserved.status, 'Approved');
     assert.equal(own.proposals.filter(item => item.status === 'Pending').length, 1);
+
+    const signedPlan = (await call('project',undefined,client.cookie)).result.project;
+    assert.equal((await call('details',{revision:signedPlan.surveyRevision,details:{tableCount:'27'}},client.cookie)).status,200);
+    assert.equal((await call('proposal',draft,admin.cookie)).status,409);
+    const revisedPlan = (await call('project',undefined,client.cookie)).result.project;
+    assert.equal((await call('event-agreement',{projectId:first,revision:revisedPlan.surveyRevision},admin.cookie)).status,200);
+    const pendingAgreement = (await call('project',undefined,client.cookie)).result.agreements[0];
+    assert.equal(pendingAgreement.version,2); assert.equal(pendingAgreement.status,'Pending');
+    assert.equal((await call('details',{revision:revisedPlan.surveyRevision,details:{palette:'New colors'}},client.cookie)).status,200);
+    assert.equal((await call('sign-event',{agreementId:pendingAgreement.id,name:'Client',confirm:true},client.cookie)).status,409);
+    const history=(await call('project',undefined,client.cookie)).result.agreements;
+    assert.equal(history.find(item=>item.id===agreement.id).status,'Signed');
+    assert.equal(history.find(item=>item.id===pendingAgreement.id).status,'Superseded');
     await call('code', { projectId: first }, admin.cookie);
     assert.equal((await call('project', undefined, client.cookie)).status, 401);
     assert.equal((await call('login', { code: issued.result.code })).status, 401);
