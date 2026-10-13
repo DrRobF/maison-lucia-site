@@ -55,3 +55,7 @@ Run the schema in the new project's SQL Editor or through the connected Supabase
 Run `npm test` for PostgreSQL-backed API integration checks using PGlite (test-only in-process PostgreSQL), and `npm run build` for the complete site build. Tests exercise access isolation, designs and replies, proposal revisions, exact invoice snapshots, idempotent approvals, and code/session revocation. PGlite does not substitute for verifying a hosted connection, production concurrency, or actual Web3Forms delivery.
 
 Smoke-test on Vercel: submit a questionnaire; verify inbox and notification; issue a code; sign in separately as the client; share a design and exchange comments; send a proposal; request a revision; approve the replacement; view/save its invoice. Test a second client and confirm project isolation.
+
+## Owner email sign-in
+
+Owner sign-in is at `/portal/manage`, linked in the website footer. Set server-only `PORTAL_OWNER_EMAIL` to the approved owner mailbox and `PORTAL_OWNER_CODE_SECRET` to a random secret of at least 32 characters. Apply `scripts/owner-login-schema.sql` to existing installations. Resend must already be enabled. Only the configured owner mailbox can receive a code; there is no public owner registration. Codes expire after ten minutes, permit five verification attempts and can be used once. The existing management password remains a fallback.

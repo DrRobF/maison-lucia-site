@@ -41,6 +41,6 @@ export default function PortalShell({ title, children, privatePage = false }) {
     <Head><title>{title} | Maison Lucia</title>{privatePage && <meta name="robots" content="noindex,nofollow" />}</Head>
     <header className={styles.header}><a className={styles.brand} href="/">Maison Lucia</a><nav aria-label="Client navigation"><a href="/event-questionnaire">Plan Your Event</a><a href="/portal">Client Portal</a></nav></header>
     <main className={styles.main}>{children}</main>
-    <footer className={styles.footer}><a href="/">Maison Lucia LLC</a><a href="/#contact">Contact Maison Lucia</a></footer>
+    <footer className={styles.footer}><a href="/">Maison Lucia LLC</a><a href="/#contact">Contact Maison Lucia</a><a href="/portal/manage">Owner sign-in</a></footer>
   </div>;
 }

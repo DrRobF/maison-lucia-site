@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import PrimaryNav, { navLinks } from "../components/PrimaryNav";
 import styles from "../styles/Home.module.css";
 
-const footerNavLinks = [{ label: "Services", href: "#services" }, ...navLinks];
+const footerNavLinks = [{ label: "Services", href: "#services" }, ...navLinks, { label: "Owner sign-in", href: "/portal/manage" }];
 
 const instagramProfileUrl = "https://www.instagram.com/maisonlucia_llc/";
 

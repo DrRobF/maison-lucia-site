@@ -47,6 +47,7 @@ function ClientInvitation({ code, survey, busy, onCopy, emailReady, sendEmail })
 }
 
 export default function PortalWorkspace({ admin = false }) {
+  const [ownerEmail, setOwnerEmail] = useState(''), [ownerChallenge, setOwnerChallenge] = useState(''), [ownerCode, setOwnerCode] = useState(''), [ownerNotice, setOwnerNotice] = useState('');
   const [auth, setAuth] = useState(null), [checking, setChecking] = useState(true), [credential, setCredential] = useState('');
   const [projects, setProjects] = useState([]), [selected, setSelected] = useState(''), [data, setData] = useState(null), [tab, setTab] = useState('Design ideas');
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [code, setCode] = useState(''), [notice, setNotice] = useState('');
@@ -90,6 +91,17 @@ export default function PortalWorkspace({ admin = false }) {
     } catch (error) { setError(error.message); if (error.status === 401) setAuth(null); }
     finally { setBusy(false); }
   }
+  async function ownerSignIn(event) {
+    event.preventDefault(); setBusy(true); setError(''); setOwnerNotice('');
+    try {
+      if (!ownerChallenge) {
+        const result = await portalApi('owner-code', { email: ownerEmail }); setOwnerChallenge(result.challengeId); setOwnerNotice(result.message);
+      } else {
+        const result = await portalApi('login', { owner: true, challengeId: ownerChallenge, code: ownerCode });
+        setAuth(result); setOwnerCode(''); setOwnerChallenge('');
+      }
+    } catch (error) { setError(error.message); } finally { setBusy(false); }
+  }
   async function login(event) {
     event.preventDefault(); setBusy(true); setError('');
     try { const result = await portalApi('login', admin ? { admin: true, password: credential } : { code: credential }); setAuth(result); setCredential(''); if (!admin) setSelected(result.projectId); }
@@ -112,11 +124,17 @@ export default function PortalWorkspace({ admin = false }) {
   const invoice = invoices.find(item => item.id === invoiceId) || invoices[0];
   return <PortalShell title={admin ? 'Client Management' : 'Your Client Portal'} privatePage>
     {checking ? <p role="status">Opening your portal…</p> : !auth ? <section className={`${styles.card} ${styles.login}`}>
-      <p className={styles.eyebrow}>{admin ? 'Maison Lucia management' : 'Your private event workspace'}</p><h1>{admin ? 'Client management' : 'Welcome to your portal.'}</h1>
+      <p className={styles.eyebrow}>{admin ? 'Maison Lucia management' : 'Your private event workspace'}</p><h1>{admin ? 'Owner sign-in' : 'Welcome to your portal.'}</h1>
       <p>{admin ? 'Sign in to review inquiries and manage your clients.' : 'Enter the client code Maison Lucia gave you. You can paste it with or without hyphens.'}</p>
-      <form onSubmit={login} className={styles.form}><label>{admin ? 'Management password' : 'Client code'}<input type={admin ? 'password' : 'text'} autoComplete={admin ? 'current-password' : 'off'} maxLength={500} value={credential} onChange={event => setCredential(event.target.value)} required spellCheck={false} /></label>
+      {admin && <form onSubmit={ownerSignIn} className={styles.form}>
+        {!ownerChallenge ? <label>Owner email<input type="email" autoComplete="email" required maxLength={250} value={ownerEmail} onChange={event => setOwnerEmail(event.target.value)} /></label> : <><p>Enter the code sent to your owner email. It expires in 10 minutes.</p><label>Eight-digit sign-in code<input type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{8}" maxLength={8} required value={ownerCode} onChange={event => setOwnerCode(event.target.value.replace(/\D/g, ''))} /></label></>}
+        {ownerNotice && <p role="status">{ownerNotice}</p>}{error && <p className={styles.error} role="alert">{error}</p>}
+        <button className={styles.primary} disabled={busy}>{busy ? 'Please wait…' : ownerChallenge ? 'Open owner workspace' : 'Email me a sign-in code'}</button>
+        {ownerChallenge && <button type="button" disabled={busy} onClick={() => { setOwnerChallenge(''); setOwnerCode(''); setOwnerNotice(''); setError(''); }}>Request a new code</button>}
+      </form>}
+      {admin ? <details><summary>Use management password instead</summary><form onSubmit={login} className={styles.form}><label>Management password<input type="password" autoComplete="current-password" required maxLength={500} value={credential} onChange={event => setCredential(event.target.value)} /></label><button className={styles.primary} disabled={busy}>Open owner workspace</button></form></details> : <form onSubmit={login} className={styles.form}><label>{admin ? 'Management password' : 'Client code'}<input type={admin ? 'password' : 'text'} autoComplete={admin ? 'current-password' : 'off'} maxLength={500} value={credential} onChange={event => setCredential(event.target.value)} required spellCheck={false} /></label>
         {error && <p className={styles.error} role="alert">{error}</p>}<button className={styles.primary} disabled={busy}>{busy ? 'Opening…' : 'Open my workspace'}</button>
-      </form>{!admin && <p>Planning a new event? <a href="/event-questionnaire">Complete the questionnaire</a>.</p>}
+      </form>}{!admin && <p>Planning a new event? <a href="/event-questionnaire">Complete the questionnaire</a>.</p>}
     </section> : <>
       <div className={`${styles.actions} ${styles.noPrint}`}><h1>{admin ? 'Client management' : 'Your event workspace'}</h1><button disabled={busy} onClick={async () => { setBusy(true); try { await refresh(); setError(''); } catch (error) { setError(error.message); } finally { setBusy(false); } }}>Refresh</button><button disabled={busy} onClick={async () => { try { await portalApi('logout', {}); setAuth(null); setData(null); setCode(''); } catch (error) { setError(error.message); } }}>Sign out</button></div>
       {error && <p role="alert" className={styles.error}>{error}</p>}{notice && <p role="status" className={`${styles.notice} ${styles.noPrint}`}>{notice}</p>}
