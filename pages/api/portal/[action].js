@@ -2,6 +2,7 @@ const { randomUUID, randomBytes } = require('node:crypto');
 const { database } = require('../../../lib/portal-db');
 const { invitationsReady, sendInvitation } = require('../../../lib/portal-invitations');
 const { fields, fail, text, cleanSurvey, cleanClient, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
+const { ownerEmail, ownerReady, ownerCodeHash, newOwnerCode, sendOwnerCode } = require('../../../lib/portal-owner');
 const cookieName = 'ml_portal';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -64,10 +65,10 @@ export default async function handler(req, res) {
     }
     if (action === 'ready') {
       const configured = Boolean(process.env.DATABASE_URL && process.env.PORTAL_ADMIN_PASSWORD?.length >= 16);
-      if (!configured) return res.json({ ready: false, configured: false, emailInvitesReady: invitationsReady() });
+      if (!configured) return res.json({ ready: false, configured: false, emailInvitesReady: invitationsReady(), ownerLoginReady: ownerReady() });
       try {
         await database().query('SELECT id FROM ml_projects LIMIT 0');
-        return res.json({ ready: true, configured: true, emailInvitesReady: invitationsReady() });
+        return res.json({ ready: true, configured: true, emailInvitesReady: invitationsReady(), ownerLoginReady: ownerReady() });
       } catch (error) {
         // Report only known categories, never connection strings or server messages.
         const categories = {
@@ -92,10 +93,43 @@ export default async function handler(req, res) {
       const notified = await notify(survey);
       return res.status(201).json({ saved: true, notified });
     }
+    if (action === 'owner-code') {
+      await rateLimit(db, req, 'owner-code', 5);
+      if (!ownerReady()) fail('Owner email sign-in is being prepared. Please use the management password for now.', 503);
+      const email = text(body.email, 250).trim().toLowerCase(), id = randomUUID();
+      if (email === ownerEmail()) {
+        await rateLimit(db, { ...req, socket: { remoteAddress: ownerEmail() }, headers: { ...req.headers, 'x-forwarded-for': ownerEmail() } }, 'owner-mailbox', 5);
+        const code = newOwnerCode();
+        await db.query("INSERT INTO ml_owner_codes(id,email,code_hash,expires_at) VALUES($1,$2,$3,now()+interval '10 minutes')", [id, email, ownerCodeHash(id, code)]);
+        if (!await sendOwnerCode(code, id)) {
+          await db.query('UPDATE ml_owner_codes SET consumed_at=now() WHERE id=$1', [id]);
+          fail('The sign-in email could not be sent. Please try again later or use the management password.', 503);
+        }
+      }
+      return res.json({ challengeId: id, message: 'If this is the owner email, a sign-in code has been sent. Check your inbox and spam folder.' });
+    }
     if (action === 'login') {
       await rateLimit(db, req, 'login', 10);
       let role, projectId = null;
-      if (body.admin === true) {
+      if (body.owner === true) {
+        if (!ownerReady()) fail('Owner email sign-in is unavailable.', 503);
+        const id = text(body.challengeId, 100), code = text(body.code, 100).replace(/\s/g, '');
+        if (!uuid.test(id) || !/^\d{8}$/.test(code)) fail('Please enter the eight-digit email code.', 401);
+        const client = await db.connect(); let verified = false;
+        try {
+          await client.query('BEGIN');
+          const found = await client.query('SELECT * FROM ml_owner_codes WHERE id=$1 AND email=$2 AND expires_at>now() AND consumed_at IS NULL AND attempts<5 FOR UPDATE', [id, ownerEmail()]);
+          const challenge = found.rows[0];
+          if (challenge) {
+            verified = matches(ownerCodeHash(id, code), challenge.code_hash);
+            await client.query('UPDATE ml_owner_codes SET attempts=attempts+1,consumed_at=CASE WHEN $2 THEN now() ELSE consumed_at END WHERE id=$1', [id, verified]);
+          }
+          await client.query('COMMIT');
+        } catch (error) { await client.query('ROLLBACK'); throw error; }
+        finally { client.release(); }
+        if (!verified) fail('This code is incorrect, expired or already used. Request a new sign-in code.', 401);
+        role = 'admin';
+      } else if (body.admin === true) {
         if (!process.env.PORTAL_ADMIN_PASSWORD || process.env.PORTAL_ADMIN_PASSWORD.length < 16) fail('The management login has not been configured yet.', 503);
         if (!matches(text(body.password, 500), process.env.PORTAL_ADMIN_PASSWORD)) fail('Please check your password.', 401);
         role = 'admin';

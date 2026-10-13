@@ -28,6 +28,20 @@ test('invitation emails use the configured sender, escape client data and retry 
   assert.equal((await sendInvitation(survey, 'TEST-CODE', 'project', { env, request: async () => { throw new Error('timeout'); } })).invitationStatus, 'failed');
 });
 
+test('owner email codes go only to the configured owner and keep credentials private', async () => {
+  const { ownerReady, sendOwnerCode, ownerCodeHash } = require('../lib/portal-owner');
+  const env = { PORTAL_OWNER_EMAIL: 'vero@example.com', PORTAL_OWNER_CODE_SECRET: 'test-secret-at-least-32-characters', RESEND_API_KEY: 'private-test-key', PORTAL_INVITE_FROM: 'portal@example.com', PORTAL_INVITES_ENABLED: 'true' };
+  let sent;
+  const request = async (url, options) => { sent = options; return { ok: true, json: async () => ({ id: 'test-email' }) }; };
+  assert.equal(ownerReady({ ...env, PORTAL_OWNER_CODE_SECRET: '' }), false);
+  assert.equal(await sendOwnerCode('12345678', 'challenge', { env, request }), true);
+  const body = JSON.parse(sent.body); assert.deepEqual(body.to, ['vero@example.com']);
+  assert.match(body.text, /12345678/); assert.match(body.text, /portal\/manage/);
+  assert.ok(!sent.body.includes(env.PORTAL_OWNER_CODE_SECRET)); assert.ok(!sent.body.includes(env.RESEND_API_KEY));
+  assert.notEqual(ownerCodeHash('one', '12345678', env), ownerCodeHash('two', '12345678', env));
+  assert.equal(await sendOwnerCode('12345678', 'challenge', { env, request: async () => ({ ok: false, json: async () => ({}) }) }), false);
+});
+
 test('questionnaire and financial validation reject malformed inputs', () => {
   assert.throws(() => cleanSurvey({ name: 'A', email: 'bad', eventTitle: 'Party', services: 'Florals' }));
   assert.throws(() => cleanSurvey({ name: 'A', email: 'a@b.co', eventTitle: 'Party', services: 'Florals', tableCount: '-1' }));
@@ -60,7 +74,7 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
   await pg.exec('CREATE ROLE anon; CREATE ROLE authenticated;');
   await pg.exec(fs.readFileSync(path.join(__dirname, '../scripts/portal-schema.sql'), 'utf8'));
   const security = await pg.query("SELECT relname, relrowsecurity FROM pg_class WHERE relname LIKE 'ml_%' AND relkind='r'");
-  assert.equal(security.rows.length, 6);
+  assert.equal(security.rows.length, 7);
   assert.ok(security.rows.every(table => table.relrowsecurity));
   const grants = await pg.query("SELECT has_table_privilege('anon','ml_projects','SELECT') AS anon_read, has_table_privilege('authenticated','ml_sessions','SELECT') AS client_sessions");
   assert.equal(grants.rows[0].anon_read, false);
@@ -73,7 +87,10 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     deliveries.push({ email: survey.email, code, id });
     return { invitationStatus: mailFails ? 'failed' : 'accepted' };
   } };
-  const context = { require: name => name === '../../../lib/portal-db' ? { database: () => db } : name === '../../../lib/portal-invitations' ? emailService : originalRequire(name), module: { exports: {} }, process: { env: { PORTAL_ADMIN_PASSWORD: 'test-only-long-password' } }, console, URL, AbortSignal, fetch };
+  const ownerEnv = { PORTAL_OWNER_EMAIL: 'vero@example.com', PORTAL_OWNER_CODE_SECRET: 'test-only-owner-secret-with-32-characters', RESEND_API_KEY: 'test-key', PORTAL_INVITE_FROM: 'portal@example.com', PORTAL_INVITES_ENABLED: 'true' };
+  const ownerModule = require('../lib/portal-owner'); const ownerDeliveries = [];
+  const ownerService = { ownerEmail: () => ownerModule.ownerEmail(ownerEnv), ownerReady: () => ownerModule.ownerReady(ownerEnv), ownerCodeHash: (id, code) => ownerModule.ownerCodeHash(id, code, ownerEnv), newOwnerCode: ownerModule.newOwnerCode, sendOwnerCode: async (code, id) => { ownerDeliveries.push({ code, id }); return !mailFails; } };
+  const context = { require: name => name === '../../../lib/portal-owner' ? ownerService : name === '../../../lib/portal-db' ? { database: () => db } : name === '../../../lib/portal-invitations' ? emailService : originalRequire(name), module: { exports: {} }, process: { env: { PORTAL_ADMIN_PASSWORD: 'test-only-long-password' } }, console, URL, AbortSignal, fetch };
   const source = fs.readFileSync(filename, 'utf8').replace('export default async function handler', 'async function handler').replace(/export const config =[^\n]+/, 'module.exports = handler;');
   vm.runInNewContext(source, context, { filename });
   const handler = context.module.exports;
@@ -90,6 +107,23 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     assert.equal((await call('create-client', { email: 'client@example.com' })).status, 401);
     assert.equal((await call('login', { admin: true, password: 'test-only-long-password' }, '', null, 'https://evil.test')).status, 403);
     assert.equal((await call('login', { admin: true, password: 'wrong' })).status, 401);
+    const unknown = await call('owner-code', { email: 'client@example.com' });
+    assert.equal(unknown.status, 200); assert.equal(ownerDeliveries.length, 0);
+    assert.equal((await call('login', { owner: true, challengeId: unknown.result.challengeId, code: '12345678' })).status, 401);
+    const start = await call('owner-code', { email: 'VERO@EXAMPLE.COM' });
+    assert.equal(start.status, 200); const ownerMail = ownerDeliveries.at(-1);
+    const loginBody = { owner: true, challengeId: start.result.challengeId, code: ownerMail.code };
+    assert.equal((await call('login', { ...loginBody, code: ownerMail.code === '00000000' ? '11111111' : '00000000' })).status, 401);
+    const owner = await call('login', loginBody); assert.equal(owner.status, 200); assert.equal(owner.result.role, 'admin');
+    assert.equal((await call('projects', undefined, owner.cookie)).status, 200);
+    assert.equal((await call('login', loginBody)).status, 401);
+    const expiring = await call('owner-code', { email: 'vero@example.com' }); const expiredMail = ownerDeliveries.at(-1);
+    await pg.query("UPDATE ml_owner_codes SET expires_at=now()-interval '1 minute' WHERE id=$1", [expiring.result.challengeId]);
+    assert.equal((await call('login', { owner: true, challengeId: expiring.result.challengeId, code: expiredMail.code })).status, 401);
+    const locked = await call('owner-code', { email: 'vero@example.com' }); const lockedMail = ownerDeliveries.at(-1);
+    for (let attempt=0; attempt<5; attempt++) assert.equal((await call('login', { owner: true, challengeId: locked.result.challengeId, code: lockedMail.code === '00000000' ? '11111111' : '00000000' })).status, 401);
+    assert.equal((await call('login', { owner: true, challengeId: locked.result.challengeId, code: lockedMail.code })).status, 401);
+    mailFails = true; assert.equal((await call('owner-code', { email: 'vero@example.com' })).status, 503); mailFails = false;
     const admin = await call('login', { admin: true, password: 'test-only-long-password' });
     assert.equal(admin.status, 200); assert.match(admin.headers['Set-Cookie'], /HttpOnly/);
     assert.equal((await call('create-client', { email: 'bad' }, admin.cookie)).status, 400);
