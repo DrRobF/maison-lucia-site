@@ -93,6 +93,30 @@ export default async function handler(req, res) {
       const notified = await notify(survey);
       return res.status(201).json({ saved: true, notified });
     }
+    if (action === 'client-code') {
+      await rateLimit(db, req, 'client-code', 5);
+      if (!invitationsReady() || !ownerReady()) fail('Email sign-in is temporarily unavailable.', 503);
+      const email = text(body.email, 250).trim().toLowerCase();
+      if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) fail('Enter a valid email address.');
+      const id = randomUUID();
+      const found = await db.query("SELECT id FROM ml_projects WHERE lower(trim(survey->>'email'))=$1 AND code_hash IS NOT NULL LIMIT 2", [email]);
+      if (found.rows.length === 1) {
+        await rateLimit(db, { ...req, socket: { remoteAddress: email }, headers: { ...req.headers, 'x-forwarded-for': email } }, 'client-mailbox', 5);
+        const code = newOwnerCode();
+        await db.query("INSERT INTO ml_owner_codes(id,email,code_hash,expires_at) VALUES($1,$2,$3,now()+interval '10 minutes')", [id,email,ownerCodeHash(id,code)]);
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST', headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: process.env.PORTAL_INVITE_FROM, to: [email], subject: 'Your Maison Lucia sign-in code',
+            text: `Your Maison Lucia client portal sign-in code is ${code}. It expires in 10 minutes. Open https://www.maisonluciallc.com/portal to sign in. If you did not request this, ignore this email.` }),
+          signal: AbortSignal.timeout(8000),
+        }).catch(() => null);
+        if (!response?.ok) {
+          await db.query('UPDATE ml_owner_codes SET consumed_at=now() WHERE id=$1', [id]);
+          fail('Unable to send the sign-in email. Please try again later or use your original client code.', 503);
+        }
+      }
+      return res.json({ challengeId: id, message: 'If this email belongs to one client event, a sign-in code has been sent. Check your inbox.' });
+    }
     if (action === 'owner-code') {
       await rateLimit(db, req, 'owner-code', 5);
       if (!ownerReady()) fail('Owner email sign-in is being prepared. Please use the management password for now.', 503);
@@ -111,7 +135,23 @@ export default async function handler(req, res) {
     if (action === 'login') {
       await rateLimit(db, req, 'login', 10);
       let role, projectId = null;
-      if (body.owner === true) {
+      if (body.clientEmail === true) {
+        if (!ownerReady()) fail('Client email sign-in is unavailable.',503);
+        const id = text(body.challengeId,100), code = text(body.code,100).replace(/\\s/g,'');
+        if (!uuid.test(id) || !/^\\d{8}$/.test(code)) fail('Enter the eight-digit email code.',401);
+        const client = await db.connect();
+        try {
+          await client.query('BEGIN');
+          const found = await client.query('SELECT * FROM ml_owner_codes WHERE id=$1 AND expires_at>now() AND consumed_at IS NULL AND attempts<5 FOR UPDATE',[id]);
+          const challenge = found.rows[0];
+          const matching = challenge ? await client.query("SELECT id FROM ml_projects WHERE lower(trim(survey->>'email'))=$1 AND code_hash IS NOT NULL LIMIT 2",[challenge.email]) : {rows:[]};
+          const verified = matching.rows.length === 1 && matches(ownerCodeHash(id,code),challenge.code_hash);
+          if (challenge) await client.query('UPDATE ml_owner_codes SET attempts=attempts+1,consumed_at=CASE WHEN $2 THEN now() ELSE consumed_at END WHERE id=$1',[id,verified]);
+          if (!verified) fail('Code incorrect or expired. Request a new code.',401);
+          role='client'; projectId=matching.rows[0].id;
+          await client.query('COMMIT');
+        } catch(error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
+      } else if (body.owner === true) {
         if (!ownerReady()) fail('Owner email sign-in is unavailable.', 503);
         const id = text(body.challengeId, 100), code = text(body.code, 100).replace(/\s/g, '');
         if (!uuid.test(id) || !/^\d{8}$/.test(code)) fail('Please enter the eight-digit email code.', 401);
