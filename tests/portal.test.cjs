@@ -29,11 +29,13 @@ test('invitation emails use the configured sender, escape client data and retry 
 });
 
 test('owner email codes go only to the configured owner and keep credentials private', async () => {
-  const { ownerReady, sendOwnerCode, ownerCodeHash } = require('../lib/portal-owner');
+  const { ownerReady, sendOwnerCode, ownerCodeHash, managerAuthorized } = require('../lib/portal-owner');
   const env = { PORTAL_OWNER_EMAIL: 'vero@example.com', PORTAL_OWNER_CODE_SECRET: 'test-secret-at-least-32-characters', RESEND_API_KEY: 'private-test-key', PORTAL_INVITE_FROM: 'portal@example.com', PORTAL_INVITES_ENABLED: 'true' };
   let sent;
   const request = async (url, options) => { sent = options; return { ok: true, json: async () => ({ id: 'test-email' }) }; };
   assert.equal(ownerReady({ ...env, PORTAL_OWNER_CODE_SECRET: '' }), false);
+  assert.equal(managerAuthorized('DRROBFURMAN@GMAIL.COM', {...env, PORTAL_MANAGER_EMAILS:'drrobfurman@gmail.com'}),true);
+  assert.equal(managerAuthorized('intruder@example.com', {...env, PORTAL_MANAGER_EMAILS:'drrobfurman@gmail.com'}),false);
   assert.equal(await sendOwnerCode('12345678', 'challenge', { env, request }), true);
   const body = JSON.parse(sent.body); assert.deepEqual(body.to, ['vero@example.com']);
   assert.match(body.text, /12345678/); assert.match(body.text, /portal\/manage/);
@@ -92,7 +94,7 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
   } };
   const ownerEnv = { PORTAL_OWNER_EMAIL: 'vero@example.com', PORTAL_OWNER_CODE_SECRET: 'test-only-owner-secret-with-32-characters', RESEND_API_KEY: 'test-key', PORTAL_INVITE_FROM: 'portal@example.com', PORTAL_INVITES_ENABLED: 'true' };
   const ownerModule = require('../lib/portal-owner'); const ownerDeliveries = [];
-  const ownerService = { ownerEmail: () => ownerModule.ownerEmail(ownerEnv), ownerReady: () => ownerModule.ownerReady(ownerEnv), ownerCodeHash: (id, code) => ownerModule.ownerCodeHash(id, code, ownerEnv), newOwnerCode: ownerModule.newOwnerCode, sendOwnerCode: async (code, id) => { ownerDeliveries.push({ code, id }); return !mailFails; } };
+  const ownerService = { managerAuthorized: email => email === 'vero@example.com' || email === 'drrobfurman@gmail.com', ownerEmail: () => ownerModule.ownerEmail(ownerEnv), ownerReady: () => ownerModule.ownerReady(ownerEnv), ownerCodeHash: (id, code) => ownerModule.ownerCodeHash(id, code, ownerEnv), newOwnerCode: ownerModule.newOwnerCode, sendOwnerCode: async (code, id) => { ownerDeliveries.push({ code, id }); return !mailFails; } };
   const context = { require: name => name === '../../../lib/portal-owner' ? ownerService : name === '../../../lib/portal-db' ? { database: () => db } : name === '../../../lib/portal-invitations' ? emailService : originalRequire(name), module: { exports: {} }, process: { env: { PORTAL_ADMIN_PASSWORD: 'test-only-long-password' } }, console, URL, AbortSignal, fetch };
   const source = fs.readFileSync(filename, 'utf8').replace('export default async function handler', 'async function handler').replace(/export const config =[^\n]+/, 'module.exports = handler;');
   vm.runInNewContext(source, context, { filename });
