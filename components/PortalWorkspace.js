@@ -47,6 +47,42 @@ function ClientInvitation({ code, survey, busy, onCopy, emailReady, sendEmail })
   return <><code className={styles.code}>{code}</code><p>Copy this invitation now. The code is only shown when it is created.</p><div className={styles.actions}>{emailReady && <button disabled={busy} onClick={sendEmail}>Send invitation email</button>}<button disabled={busy} onClick={() => onCopy(invitation, 'Invitation copied, including the portal link and code.')}>Copy invitation</button><button disabled={busy} onClick={() => onCopy(code, 'Code copied.')}>Copy code</button><a href={mailto}>Open email draft</a></div><p>Open email draft uses your mail app with the client’s address, link and code ready. Click Send there to deliver it.</p></>;
 }
 
+
+function ContractsPanel({data,admin,selected,busy,send,setError}) {
+  const [uploading,setUploading]=useState(false);
+  const current=data.contracts?.[0];
+  const files=data.contractFiles || [];
+  const [fileKey,setFileKey]=useState(0);
+  async function upload(event) {
+    const chosen=Array.from(event.target.files || []);
+    if (!chosen.length) return;
+    setUploading(true); setError('');
+    try {
+      for (const file of chosen) {
+        if (file.size > 2*1024*1024) throw new Error('Each file must be under 2 MB. Compress the PDF or photos first.');
+        const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('Could not read file.'));reader.readAsDataURL(file);});
+        const ok=await send('contract-upload',{filename:file.name,mimeType:file.type,base64});
+        if (!ok) break;
+      }
+    } catch(error){setError(error.message);} finally {setUploading(false);setFileKey(value=>value+1);}
+  }
+  const link=(file)=><a key={file.id} href={`/api/portal/contract-file?projectId=${encodeURIComponent(selected)}&documentId=${encodeURIComponent(file.id)}`}>{file.filename} · {new Date(file.created_at).toLocaleDateString()}</a>;
+  return <section className={styles.card}>
+    <h2>Contracts & Signatures</h2>
+    <p>Contracts are separate from your proposal and invoice. Maison Lucia provides the agreement; the client prints, signs and returns the complete signed copy.</p>
+    {current ? <><p><strong>Contract version {current.version}</strong> · {current.status}</p>
+      <h3>Contract to sign</h3><div className={styles.actions}>{files.filter(f=>f.contract_id===current.id && f.kind==='original').map(link)}</div>
+      <h3>Returned signed documents</h3><div className={styles.actions}>{files.filter(f=>f.contract_id===current.id && f.kind==='signed').map(link)}</div>
+      {!files.some(f=>f.contract_id===current.id && f.kind==='signed') && <p>No signed copy returned yet.</p>}
+      {admin && current.status==='Returned' && <div className={styles.actions}><button disabled={busy} onClick={()=>send('contract-review',{contractId:current.id,status:'Accepted'})}>Accept signed contract</button><button disabled={busy} onClick={()=>send('contract-review',{contractId:current.id,status:'Corrections Requested'})}>Request corrected copy</button></div>}
+    </> : <p>No contract has been shared yet.</p>}
+    {admin ? <div className={styles.form}><h3>{current?'Upload a revised contract':'Upload a contract'}</h3><p>PDF only. Uploading a revision preserves the earlier version and makes the new version current.</p><input key={fileKey} type="file" accept="application/pdf" disabled={busy||uploading} onChange={upload}/></div> :
+      current && ['Awaiting Signature','Returned','Corrections Requested'].includes(current.status) && <div className={styles.form}><h3>Return your signed contract</h3><p>Download the full contract, print and sign it, then upload every signed page. You can return one complete PDF or several clear page photos (PDF, JPG or PNG, 2 MB per file). Upload all pages before Maison Lucia reviews them.</p><input key={fileKey} type="file" accept="application/pdf,image/jpeg,image/png" multiple disabled={busy||uploading} onChange={upload}/></div>}
+    {uploading && <p role="status">Uploading documents…</p>}
+    {data.contracts?.slice(1).map(c=><details key={c.id}><summary>Earlier contract · Version {c.version} · {c.status}</summary><div className={styles.actions}>{files.filter(f=>f.contract_id===c.id).map(link)}</div></details>)}
+  </section>;
+}
+
 export default function PortalWorkspace({ admin = false }) {
   const [ownerEmail, setOwnerEmail] = useState(''), [ownerChallenge, setOwnerChallenge] = useState(''), [ownerCode, setOwnerCode] = useState(''), [ownerNotice, setOwnerNotice] = useState('');
   const [auth, setAuth] = useState(null), [checking, setChecking] = useState(true), [credential, setCredential] = useState('');
@@ -145,8 +181,9 @@ export default function PortalWorkspace({ admin = false }) {
         <div>{admin && addingClient && <section className={styles.card}><h2>Start a client portal</h2><p>Only an email address is required. Start sharing ideas, photos and proposals without a questionnaire.</p><form className={styles.form} onSubmit={createClient}><label>Client email<input type="email" required maxLength={250} autoComplete="email" value={newClient.email} onChange={event => setNewClient({ ...newClient, email: event.target.value })} /></label><label>Client name (optional)<input maxLength={250} value={newClient.name} onChange={event => setNewClient({ ...newClient, name: event.target.value })} /></label><label>Event title (optional)<input maxLength={250} value={newClient.eventTitle} onChange={event => setNewClient({ ...newClient, eventTitle: event.target.value })} /></label><label className={styles.check}><input type="checkbox" checked={emailReady && emailInvitation} disabled={!emailReady || busy} onChange={event => setEmailInvitation(event.target.checked)} />Email the client their portal link and code</label>{!emailReady && <p>Automatic email invitations are being set up. You can copy the invitation or send it from your mail app after creating the portal.</p>}<button className={styles.primary} disabled={busy}>{busy ? 'Creating…' : emailReady && emailInvitation ? 'Create portal & email invitation' : 'Create client portal'}</button></form></section>}{!selected ? <section className={styles.card}><h2>Every event, in one place.</h2><p>Add a client directly or select an inquiry to begin the design conversation.</p><a href="/event-questionnaire">View the optional event questionnaire</a></section> : !data ? <p role="status">Loading event…</p> : <>
           <div className={styles.noPrint}><p className={styles.eyebrow}>{data.project.status}</p><h2>{data.project.survey.eventTitle}</h2><p>{data.project.survey.name}{data.project.survey.eventDate ? ` · ${data.project.survey.eventDate}` : ''}</p><InspirationLinks />
           {admin && <section className={styles.notice}><p>Client access: {data.project.has_code ? 'Code issued. Replacing it signs out this client’s active sessions and disables the previous code.' : 'No client code issued yet.'}</p><button disabled={busy} onClick={() => send('code', { sendInvite: emailReady })}>{data.project.has_code ? (emailReady ? 'Replace code & email invitation' : 'Replace client code') : (emailReady ? 'Create code & email invitation' : 'Create client code')}</button>{code && <ClientInvitation code={code} survey={data.project.survey} busy={busy} onCopy={copy} emailReady={emailReady} sendEmail={() => send('email-code', { code })} />}</section>}
-          <div className={styles.tabs} aria-label="Event sections">{['Design ideas', 'Conversation', 'Event details', 'Proposal', 'Invoices'].map(item => <button key={item} aria-pressed={tab === item} onClick={() => { setTab(item); setConfirm(false); }} disabled={busy}>{item}{item === 'Invoices' && invoices.length ? ` (${invoices.length})` : ''}</button>)}</div></div>
+          <div className={styles.tabs} aria-label="Event sections">{['Design ideas', 'Conversation', 'Event details', 'Proposal', 'Contracts', 'Invoices'].map(item => <button key={item} aria-pressed={tab === item} onClick={() => { setTab(item); setConfirm(false); }} disabled={busy}>{item}{item === 'Invoices' && invoices.length ? ` (${invoices.length})` : ''}</button>)}</div></div>
           {tab === 'Event details' && <EventDetails key={data.project.id} project={data.project} agreements={data.agreements || []} admin={admin} send={send} busy={busy} onSaved={project => setData(current => current?.project.id === project.id ? { ...current, project } : current)} />}
+          {tab === 'Contracts' && <ContractsPanel data={data} admin={admin} selected={selected} busy={busy} send={send} setError={setError} />}
           {tab === 'Design ideas' && <>
             {data.designs.length === 0 && <section className={styles.card}><h2>Design ideas are on their way.</h2><p>Maison Lucia’s concepts will appear here. Each idea has its own space for your thoughts and requested changes.</p></section>}
             {data.designs.map(item => <article key={item.id} className={styles.card}><h2>{item.title}</h2><p className={styles.pre}>{item.description}</p><div className={styles.images}>{item.images.map((src, index) => <a key={index} href={src} download={`design-${index + 1}.jpg`}><img src={src} alt={`${item.title}, view ${index + 1}`} /></a>)}</div><Conversation messages={data.messages} designId={item.id} send={send} busy={busy} /></article>)}
