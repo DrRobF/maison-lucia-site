@@ -125,3 +125,40 @@ BEGIN
  END LOOP;
 END
 $security$;
+
+
+-- Hand-signed contract workflow; content is stored privately in PostgreSQL.
+CREATE TABLE IF NOT EXISTS ml_contracts (
+ id uuid PRIMARY KEY,
+ project_id uuid NOT NULL REFERENCES ml_projects(id) ON DELETE CASCADE,
+ version integer NOT NULL,
+ status text NOT NULL DEFAULT 'Awaiting Signature' CHECK(status IN ('Awaiting Signature','Returned','Accepted','Corrections Requested','Superseded')),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ reviewed_at timestamptz,
+ UNIQUE(project_id,version)
+);
+CREATE TABLE IF NOT EXISTS ml_contract_files (
+ id uuid PRIMARY KEY,
+ project_id uuid NOT NULL REFERENCES ml_projects(id) ON DELETE CASCADE,
+ contract_id uuid NOT NULL REFERENCES ml_contracts(id) ON DELETE CASCADE,
+ kind text NOT NULL CHECK(kind IN ('original','signed')),
+ filename text NOT NULL,
+ mime_type text NOT NULL,
+ content bytea NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS ml_contracts_project ON ml_contracts(project_id,version);
+CREATE INDEX IF NOT EXISTS ml_contract_files_contract ON ml_contract_files(contract_id);
+ALTER TABLE ml_contracts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ml_contract_files ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE ml_contracts, ml_contract_files FROM PUBLIC;
+DO $security$
+DECLARE role_name text;
+BEGIN
+ FOREACH role_name IN ARRAY ARRAY['anon','authenticated'] LOOP
+  IF EXISTS(SELECT 1 FROM pg_roles WHERE rolname=role_name) THEN
+   EXECUTE format('REVOKE ALL ON TABLE ml_contracts, ml_contract_files FROM %I',role_name);
+  END IF;
+ END LOOP;
+END
+$security$;
