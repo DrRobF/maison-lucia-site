@@ -51,7 +51,7 @@ async function notify(survey) {
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   const action = req.query.action;
-  const reads = ['session', 'projects', 'project', 'ready'];
+  const reads = ['session', 'projects', 'project', 'ready', 'contract-file'];
   try {
     if (!reads.includes(action) && req.method !== 'POST') fail('Method not allowed.', 405);
     if (reads.includes(action) && req.method !== 'GET') fail('Method not allowed.', 405);
@@ -168,14 +168,71 @@ export default async function handler(req, res) {
       return res.json({ projects: result.rows });
     }
     const project = await projectFor(db, auth, req.query.projectId || body.projectId);
+    if (action === 'contract-file') {
+      const id = String(req.query.documentId || '');
+      if (!uuid.test(id)) fail('Document not found.',404);
+      const result = await db.query('SELECT filename,mime_type,content FROM ml_contract_files WHERE id=$1 AND project_id=$2',[id,project.id]);
+      if (!result.rows[0]) fail('Document not found.',404);
+      const file = result.rows[0];
+      res.setHeader('Content-Type',file.mime_type);
+      res.setHeader('X-Content-Type-Options','nosniff');
+      res.setHeader('Content-Disposition',`attachment; filename="${file.filename.replace(/[^a-zA-Z0-9._-]/g,'_')}"`);
+      return res.status(200).send(file.content);
+    }
+    if (action === 'contract-upload') {
+      await rateLimit(db,req,'contract-upload',20);
+      const manager = auth.role === 'admin';
+      const name = text(body.filename || '',180);
+      const mime = text(body.mimeType || '',80);
+      const permitted = manager ? ['application/pdf'] : ['application/pdf','image/jpeg','image/png'];
+      if (!permitted.includes(mime) || !/^[a-zA-Z0-9 _().-]{1,180}$/.test(name)) fail('Please upload a PDF, or a signed PDF/photo for the client return.');
+      const encoded = String(body.base64 || '');
+      if (!/^[A-Za-z0-9+/]+={0,2}$/.test(encoded) || encoded.length > 2800000) fail('File must be smaller than 2 MB. Please compress or scan your document.');
+      const bytes = Buffer.from(encoded,'base64');
+      if (!bytes.length || bytes.length > 2*1024*1024) fail('File must be smaller than 2 MB.');
+      if (mime === 'application/pdf' && bytes.subarray(0,5).toString() !== '%PDF-') fail('Invalid PDF.');
+      if (mime === 'image/png' && bytes.subarray(0,8).toString('hex') !== '89504e470d0a1a0a') fail('Invalid PNG.');
+      if (mime === 'image/jpeg' && bytes.subarray(0,3).toString('hex') !== 'ffd8ff') fail('Invalid JPEG.');
+      const client = await db.connect();
+      try {
+        await client.query('BEGIN');
+        const latest = await client.query("SELECT id,version,status FROM ml_contracts WHERE project_id=$1 ORDER BY version DESC LIMIT 1 FOR UPDATE",[project.id]);
+        if (manager) {
+          const version = (latest.rows[0]?.version || 0)+1;
+          await client.query("UPDATE ml_contracts SET status='Superseded' WHERE project_id=$1 AND status<>'Superseded'",[project.id]);
+          const id = randomUUID();
+          await client.query("INSERT INTO ml_contracts(id,project_id,version,status) VALUES($1,$2,$3,'Awaiting Signature')",[id,project.id,version]);
+          await client.query('INSERT INTO ml_contract_files(id,project_id,contract_id,kind,filename,mime_type,content) VALUES($1,$2,$3,$4,$5,$6,$7)',[randomUUID(),project.id,id,'original',name,mime,bytes]);
+        } else {
+          const contract = latest.rows[0];
+          if (!contract || !['Awaiting Signature','Corrections Requested','Returned'].includes(contract.status)) fail('There is no contract ready for a signed return.',409);
+          const count = await client.query("SELECT count(*)::int AS count FROM ml_contract_files WHERE contract_id=$1 AND kind='signed'",[contract.id]);
+          if (count.rows[0].count >= 12) fail('Maximum of 12 signed pages. Please combine your pages into a PDF.');
+          await client.query('INSERT INTO ml_contract_files(id,project_id,contract_id,kind,filename,mime_type,content) VALUES($1,$2,$3,$4,$5,$6,$7)',[randomUUID(),project.id,contract.id,'signed',name,mime,bytes]);
+          await client.query("UPDATE ml_contracts SET status='Returned',reviewed_at=NULL WHERE id=$1",[contract.id]);
+        }
+        await client.query('COMMIT');
+      } catch(error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
+      return res.json({ok:true});
+    }
+    if (action === 'contract-review') {
+      if (auth.role !== 'admin') fail('Only Maison Lucia can review signed contracts.',403);
+      const status = body.status;
+      if (!['Accepted','Corrections Requested'].includes(status) || !uuid.test(body.contractId || '')) fail('Invalid review.');
+      const result = await db.query("UPDATE ml_contracts SET status=$1,reviewed_at=now() WHERE id=$2 AND project_id=$3 AND status='Returned' RETURNING id",[status,body.contractId,project.id]);
+      if (!result.rows[0]) fail('A returned contract is required before review.',409);
+      return res.json({ok:true});
+    }
     if (action === 'project') {
       const results = await Promise.all([
         db.query('SELECT * FROM ml_designs WHERE project_id=$1 ORDER BY created_at', [project.id]),
         db.query('SELECT * FROM ml_messages WHERE project_id=$1 ORDER BY created_at', [project.id]),
         db.query('SELECT * FROM ml_proposals WHERE project_id=$1 ORDER BY version DESC', [project.id]),
         db.query('SELECT * FROM ml_event_agreements WHERE project_id=$1 ORDER BY version DESC', [project.id]),
+        db.query('SELECT id,version,status,created_at,reviewed_at FROM ml_contracts WHERE project_id=$1 ORDER BY version DESC',[project.id]),
+        db.query('SELECT id,contract_id,kind,filename,mime_type,created_at FROM ml_contract_files WHERE project_id=$1 ORDER BY created_at',[project.id]),
       ]);
-      return res.json({ project, designs: results[0].rows, messages: results[1].rows, proposals: results[2].rows, agreements: results[3].rows, role: auth.role });
+      return res.json({ project, designs: results[0].rows, messages: results[1].rows, proposals: results[2].rows, agreements: results[3].rows, contracts: results[4].rows, contractFiles: results[5].rows, role: auth.role });
     }
     if (action === 'details') {
       await rateLimit(db, req, 'event-details', 120);
