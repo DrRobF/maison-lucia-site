@@ -2,7 +2,7 @@ const { randomUUID, randomBytes } = require('node:crypto');
 const { database } = require('../../../lib/portal-db');
 const { invitationsReady, sendInvitation } = require('../../../lib/portal-invitations');
 const { fields, fail, text, cleanSurvey, cleanClient, cleanEventDetails, eventSnapshot, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
-const { ownerEmail, ownerReady, ownerCodeHash, newOwnerCode, sendOwnerCode } = require('../../../lib/portal-owner');
+const { ownerEmail, managerAuthorized, ownerReady, ownerCodeHash, newOwnerCode, sendOwnerCode } = require('../../../lib/portal-owner');
 const cookieName = 'ml_portal';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -97,11 +97,11 @@ export default async function handler(req, res) {
       await rateLimit(db, req, 'owner-code', 5);
       if (!ownerReady()) fail('Owner email sign-in is being prepared. Please use the management password for now.', 503);
       const email = text(body.email, 250).trim().toLowerCase(), id = randomUUID();
-      if (email === ownerEmail()) {
-        await rateLimit(db, { ...req, socket: { remoteAddress: ownerEmail() }, headers: { ...req.headers, 'x-forwarded-for': ownerEmail() } }, 'owner-mailbox', 5);
+      if (managerAuthorized(email)) {
+        await rateLimit(db, { ...req, socket: { remoteAddress: email }, headers: { ...req.headers, 'x-forwarded-for': email } }, 'owner-mailbox', 5);
         const code = newOwnerCode();
         await db.query("INSERT INTO ml_owner_codes(id,email,code_hash,expires_at) VALUES($1,$2,$3,now()+interval '10 minutes')", [id, email, ownerCodeHash(id, code)]);
-        if (!await sendOwnerCode(code, id)) {
+        if (!await sendOwnerCode(code, id, { email })) {
           await db.query('UPDATE ml_owner_codes SET consumed_at=now() WHERE id=$1', [id]);
           fail('The sign-in email could not be sent. Please try again later or use the management password.', 503);
         }
@@ -118,9 +118,9 @@ export default async function handler(req, res) {
         const client = await db.connect(); let verified = false;
         try {
           await client.query('BEGIN');
-          const found = await client.query('SELECT * FROM ml_owner_codes WHERE id=$1 AND email=$2 AND expires_at>now() AND consumed_at IS NULL AND attempts<5 FOR UPDATE', [id, ownerEmail()]);
+          const found = await client.query('SELECT * FROM ml_owner_codes WHERE id=$1 AND expires_at>now() AND consumed_at IS NULL AND attempts<5 FOR UPDATE', [id]);
           const challenge = found.rows[0];
-          if (challenge) {
+          if (challenge && managerAuthorized(challenge.email)) {
             verified = matches(ownerCodeHash(id, code), challenge.code_hash);
             await client.query('UPDATE ml_owner_codes SET attempts=attempts+1,consumed_at=CASE WHEN $2 THEN now() ELSE consumed_at END WHERE id=$1', [id, verified]);
           }
