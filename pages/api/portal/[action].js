@@ -1,6 +1,7 @@
 const { randomUUID, randomBytes } = require('node:crypto');
 const { database } = require('../../../lib/portal-db');
 const { invitationsReady, sendInvitation } = require('../../../lib/portal-invitations');
+const { contractNotification } = require('../../../lib/portal-contract-notifications');
 const { fields, fail, text, cleanSurvey, cleanClient, cleanEventDetails, eventSnapshot, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
 const { ownerEmail, managerAuthorized, ownerReady, ownerCodeHash, newOwnerCode, sendOwnerCode } = require('../../../lib/portal-owner');
 const cookieName = 'ml_portal';
@@ -234,6 +235,7 @@ export default async function handler(req, res) {
       if (mime === 'image/png' && bytes.subarray(0,8).toString('hex') !== '89504e470d0a1a0a') fail('Invalid PNG.');
       if (mime === 'image/jpeg' && bytes.subarray(0,3).toString('hex') !== 'ffd8ff') fail('Invalid JPEG.');
       const client = await db.connect();
+      let notificationContractId = null;
       try {
         await client.query('BEGIN');
         const latest = await client.query("SELECT id,version,status FROM ml_contracts WHERE project_id=$1 ORDER BY version DESC LIMIT 1 FOR UPDATE",[project.id]);
@@ -241,10 +243,12 @@ export default async function handler(req, res) {
           const version = (latest.rows[0]?.version || 0)+1;
           await client.query("UPDATE ml_contracts SET status='Superseded' WHERE project_id=$1 AND status<>'Superseded'",[project.id]);
           const id = randomUUID();
+          notificationContractId = id;
           await client.query("INSERT INTO ml_contracts(id,project_id,version,status) VALUES($1,$2,$3,'Awaiting Signature')",[id,project.id,version]);
           await client.query('INSERT INTO ml_contract_files(id,project_id,contract_id,kind,filename,mime_type,content) VALUES($1,$2,$3,$4,$5,$6,$7)',[randomUUID(),project.id,id,'original',name,mime,bytes]);
         } else {
           const contract = latest.rows[0];
+          notificationContractId = contract?.id;
           if (!contract || !['Awaiting Signature','Corrections Requested','Returned'].includes(contract.status)) fail('There is no contract ready for a signed return.',409);
           const count = await client.query("SELECT count(*)::int AS count FROM ml_contract_files WHERE contract_id=$1 AND kind='signed'",[contract.id]);
           if (count.rows[0].count >= 12) fail('Maximum of 12 signed pages. Please combine your pages into a PDF.');
@@ -253,7 +257,8 @@ export default async function handler(req, res) {
         }
         await client.query('COMMIT');
       } catch(error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
-      return res.json({ok:true});
+      const notified = await contractNotification({kind: manager ? 'uploaded' : 'returned', survey: project.survey, projectId: project.id, contractId: notificationContractId});
+      return res.json({ok:true, notificationSent:notified});
     }
     if (action === 'contract-review') {
       if (auth.role !== 'admin') fail('Only Maison Lucia can review signed contracts.',403);
@@ -261,7 +266,8 @@ export default async function handler(req, res) {
       if (!['Accepted','Corrections Requested'].includes(status) || !uuid.test(body.contractId || '')) fail('Invalid review.');
       const result = await db.query("UPDATE ml_contracts SET status=$1,reviewed_at=now() WHERE id=$2 AND project_id=$3 AND status='Returned' RETURNING id",[status,body.contractId,project.id]);
       if (!result.rows[0]) fail('A returned contract is required before review.',409);
-      return res.json({ok:true});
+      const notified = await contractNotification({kind: status === 'Accepted' ? 'accepted' : 'corrections', survey: project.survey, projectId: project.id, contractId: body.contractId});
+      return res.json({ok:true, notificationSent:notified});
     }
     if (action === 'project') {
       const results = await Promise.all([
