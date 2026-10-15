@@ -97,7 +97,7 @@ export default async function handler(req, res) {
       await rateLimit(db, req, 'client-code', 5);
       if (!invitationsReady() || !ownerReady()) fail('Email sign-in is temporarily unavailable.', 503);
       const email = text(body.email, 250).trim().toLowerCase();
-      if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) fail('Enter a valid email address.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fail('Enter a valid email address.');
       const id = randomUUID();
       const found = await db.query("SELECT id FROM ml_projects WHERE lower(trim(survey->>'email'))=$1 AND code_hash IS NOT NULL LIMIT 2", [email]);
       if (found.rows.length === 1) {
@@ -137,8 +137,8 @@ export default async function handler(req, res) {
       let role, projectId = null;
       if (body.clientEmail === true) {
         if (!ownerReady()) fail('Client email sign-in is unavailable.',503);
-        const id = text(body.challengeId,100), code = text(body.code,100).replace(/\\s/g,'');
-        if (!uuid.test(id) || !/^\\d{8}$/.test(code)) fail('Enter the eight-digit email code.',401);
+        const id = text(body.challengeId,100), code = text(body.code,100).replace(/\s/g,'');
+        if (!uuid.test(id) || !/^\d{8}$/.test(code)) fail('Enter the eight-digit email code.',401);
         const client = await db.connect();
         try {
           await client.query('BEGIN');
