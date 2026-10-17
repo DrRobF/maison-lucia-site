@@ -77,7 +77,7 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
   await pg.exec(fs.readFileSync(path.join(__dirname, '../scripts/portal-schema.sql'), 'utf8'));
   await pg.exec(fs.readFileSync(path.join(__dirname, '../scripts/payments-schema.sql'), 'utf8'));
   const security = await pg.query("SELECT relname, relrowsecurity FROM pg_class WHERE relname LIKE 'ml_%' AND relkind='r'");
-  assert.equal(security.rows.length, 13);
+  assert.equal(security.rows.length, 14);
   assert.ok(security.rows.every(table => table.relrowsecurity));
   const contractsSecurity = await pg.query("SELECT has_table_privilege('anon','ml_contract_files','SELECT') AS anon_files, has_table_privilege('authenticated','ml_contracts','SELECT') AS client_contracts");
   assert.equal(contractsSecurity.rows[0].anon_files, false);
@@ -151,6 +151,13 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     assert.equal(deliveries.length, skippedCount);
     const directClient = await call('login', { code: direct.result.code });
     assert.equal(directClient.status, 200);
+    const standaloneInput={projectId:direct.result.projectId,requestId:require('node:crypto').randomUUID(),description:'No-proposal invoice',amount:'50',dueDate:'2099-01-01'};
+    assert.equal((await call('invoice-create',standaloneInput,directClient.cookie)).status,403);
+    assert.equal((await call('invoice-create',standaloneInput)).status,401);
+    assert.equal((await call('invoice-create',standaloneInput,admin.cookie)).status,201);
+    assert.equal((await call('project',undefined,directClient.cookie)).result.payments.standalone.length,1);
+    assert.equal((await call('invoice-email',{installmentId:standaloneInput.requestId,standalone:true},directClient.cookie)).status,403);
+
     const directProject = (await call('project', undefined, directClient.cookie)).result.project;
     assert.equal(directProject.survey.email, 'direct@example.com');
     assert.equal(directProject.survey.intakeSource, 'manager');

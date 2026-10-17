@@ -4,7 +4,7 @@ const { invitationsReady, sendInvitation } = require('../../../lib/portal-invita
 const { contractNotification } = require('../../../lib/portal-contract-notifications');
 const { fields, fail, text, cleanSurvey, cleanClient, cleanEventDetails, eventSnapshot, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
 const { ownerEmail, managerAuthorized, ownerReady, ownerCodeHash, newOwnerCode, sendOwnerCode } = require('../../../lib/portal-owner');
-const { paymentData, createPlan, manageInvoice } = require('../../../lib/portal-payments');
+const { paymentData, createPlan, createStandalone, manageInvoice } = require('../../../lib/portal-payments');
 const cookieName = 'ml_portal';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -382,12 +382,16 @@ export default async function handler(req, res) {
       return res.json({ ok: true });
     }
     if (auth.role !== 'admin') fail('Access denied.', 403);
+    if (action === 'invoice-create') {
+      await rateLimit(db,req,'payment-invoice',60);
+      return res.status(201).json(await createStandalone(db,project,body));
+    }
     if (action === 'payment-plan') {
       await rateLimit(db,req,'payment-plan',30);
       await createPlan(db,project,body);
       return res.status(201).json({ok:true});
     }
-    if (['payment-prepare','payment-publish','payment-refresh'].includes(action)) {
+    if (['payment-prepare','payment-publish','payment-refresh','invoice-email'].includes(action)) {
       await rateLimit(db,req,'payment-invoice',60);
       if (!uuid.test(body.installmentId || '')) fail('Payment installment not found.',404);
       return res.json(await manageInvoice(db,project,body,action));

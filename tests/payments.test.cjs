@@ -125,3 +125,56 @@ test('webhook endpoint verifies each event with its own live or test secret befo
   assert.equal(await deliver(true,'whsec_production'),503);
   assert.equal(received.length,2);
 });
+
+for (const live of [false,true]) test(`${live ? 'live' : 'test'} standalone invoices need no proposal, preserve distinct amounts, and reconcile signed-event state`, async () => {
+  const {createStandalone} = require('../lib/portal-payments');
+  const pg = new PGlite();
+  await pg.exec('CREATE ROLE anon; CREATE ROLE authenticated;');
+  await pg.exec(fs.readFileSync('scripts/portal-schema.sql','utf8'));
+  await pg.exec(fs.readFileSync('scripts/payments-schema.sql','utf8'));
+  const query = (sql,args) => sql.includes('pg_advisory_') ? Promise.resolve({rows:[]}) : pg.query(sql,args);
+  const db = {query,connect:async()=>({query,release(){}})}, env={STRIPE_MODE:live?'live':'test'};
+  const project={id:randomUUID(),survey:{name:'Invoice client',email:'client@example.com',eventTitle:''}};
+  await query('INSERT INTO ml_projects(id,survey) VALUES($1,$2)',[project.id,project.survey]);
+  const input={requestId:randomUUID(),description:'Additional event services',amount:'125.50',dueDate:'2099-01-01'};
+  await createStandalone(db,project,input,env);await createStandalone(db,project,input,env);
+  await assert.rejects(createStandalone(db,project,{...input,amount:'126'},env),/request has changed/);
+  for (const amount of ['0','-1','1.001','1e3','1000000']) await assert.rejects(createStandalone(db,project,{...input,requestId:randomUUID(),amount},env));
+  await assert.rejects(createStandalone(db,project,{...input,requestId:randomUUID(),description:''},env));
+  await assert.rejects(createStandalone(db,project,{...input,requestId:randomUUID(),dueDate:'2099-02-31'},env));
+  await createStandalone(db,project,{...input,requestId:randomUUID(),description:'Separate invoice',amount:'75'},env);
+  let data=await paymentData(db,project.id,true,env);
+  assert.equal(data.plan,null);assert.equal(data.standalone.length,2);
+  assert.equal((await query('SELECT count(*)::int AS n FROM ml_proposals')).rows[0].n,0);
+  const perms=(await query("SELECT relrowsecurity,has_table_privilege('anon',oid,'SELECT') AS anon_read,has_table_privilege('authenticated',oid,'SELECT') AS client_read FROM pg_class WHERE relname='ml_standalone_invoices'")).rows[0];
+  assert.ok(perms.relrowsecurity && !perms.anon_read && !perms.client_read);
+  const invoices=new Map();let created=0,emailed=0;
+  const stripe={customers:{create:async()=>({id:'cus_standalone',livemode:live})},invoices:{
+    create:async params=>{assert.equal(params.description,'Additional event services');assert.ok(!params.metadata.ml_proposal_id);assert.equal(params.auto_advance,false);const invoice={id:`in_standalone_${++created}`,livemode:live,currency:'usd',subtotal:0,total:0,amount_paid:0,amount_remaining:0,status:'draft'};invoices.set(invoice.id,invoice);return invoice;},
+    retrieve:async id=>({...invoices.get(id)}),listLineItems:async id=>({data:invoices.get(id).total?[{}]:[]}),
+    finalizeInvoice:async id=>{const invoice=invoices.get(id);invoice.status='open';invoice.hosted_invoice_url='https://invoice.stripe.com/i/standalone';return {...invoice};},
+    sendInvoice:async()=>{emailed++;return {};}
+  },invoiceItems:{create:async params=>{const invoice=invoices.get(params.invoice);invoice.total=invoice.subtotal=invoice.amount_remaining=params.amount;return {};}}};
+  const action={installmentId:input.requestId,standalone:true,confirmLive:true};
+  await assert.rejects(manageInvoice(db,{...project,id:randomUUID()},action,'payment-prepare',stripe,env),/not found/);
+  await assert.rejects(manageInvoice(db,project,action,'payment-prepare',stripe,{STRIPE_MODE:live?'test':'live'}),/different Stripe mode/);
+  await manageInvoice(db,project,action,'payment-prepare',stripe,env);
+  await manageInvoice(db,project,action,'payment-prepare',stripe,env);
+  assert.equal(created,1);assert.equal(invoices.get('in_standalone_1').total,12550);assert.equal(emailed,0);
+  await assert.rejects(manageInvoice(db,project,action,'invoice-email',stripe,env),/Publish/);
+  assert.equal((await paymentData(db,project.id,false,env)).standalone.find(r=>r.id===input.requestId).hosted_url,null);
+  if(live) await assert.rejects(manageInvoice(db,project,{...action,confirmLive:false},'payment-publish',stripe,env),/Review and confirm/);
+  await manageInvoice(db,project,action,'payment-publish',stripe,env);assert.equal(emailed,0);
+  await manageInvoice(db,project,action,'invoice-email',stripe,env);
+  await manageInvoice(db,project,action,'invoice-email',stripe,env);assert.equal(emailed,1);
+  const invoice=invoices.get('in_standalone_1');invoice.status='paid';invoice.amount_paid=12550;invoice.amount_remaining=0;
+  const event={id:`evt_standalone_${live}`,livemode:live,type:'invoice.paid',data:{object:{object:'invoice',id:invoice.id}}};
+  await reconcileEvent(db,event,stripe);await reconcileEvent(db,event,stripe);
+  data=await paymentData(db,project.id,false,env);const paid=data.standalone.find(r=>r.id===input.requestId);
+  assert.equal(paid.stripe_status,'paid');assert.equal(paid.amount_paid,12550);assert.equal(paid.amount_remaining,0);
+  assert.equal(data.standalone.find(r=>r.id!==input.requestId).stripe_status,'not_created');
+  await reconcileEvent(db,{...event,id:`evt_credit_${live}`,type:'credit_note.created',data:{object:{object:'credit_note',invoice:invoice.id}}},stripe);
+  assert.equal((await paymentData(db,project.id,true,env)).standalone.find(r=>r.id===input.requestId).review_required,true);
+  if(live) await assert.rejects(createStandalone(db,{...project,survey:{...project.survey,testFixture:true}},{...input,requestId:randomUUID()},env),/Sandbox/);
+  await pg.close();
+});

@@ -55,3 +55,8 @@ Automatic tax is disabled, and the admin portal displays this. The API uses the 
 `npm test` covers test and simulated-live deposit/balance flows, credential prefix isolation, existing test records, synthetic fixture guards, exact totals, interrupted retries, repeated publishing, stale/duplicate events, client permissions, and raw webhook signatures with separate live/test secrets. `npm run build` checks Next.js compilation.
 
 The sandbox's $25 deposit and $75 final balance were successfully paid, and the portal recorded both through Stripe notifications after the signing-secret mismatch was corrected. Mock live tests do not prove the live account is activated or credentials are installed. Live status and a legitimate first real payment must be verified separately.
+
+## Standalone invoices
+Owner → client → Invoices → Create invoice accepts a description, total and due date without any proposal, agreement, contract or client signature. Multiple standalone invoices can coexist with a proposal-linked deposit/balance plan. Save draft → Prepare Stripe invoice → Publish payment link; the separate Email invoice to client action sends the published invoice using Stripe only on explicit owner request. Retries reuse the same creation request and Stripe idempotency keys. Existing sandbox fixtures remain blocked from real invoicing.
+
+Automatic tax remains disabled until sales-tax registrations, product/service categories and address handling are configured. An EIN alone does not establish state sales-tax registration. Do not mark an unregistered business registered in Stripe Tax.

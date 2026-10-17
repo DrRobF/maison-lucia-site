@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from '../styles/Portal.module.css';
+import StandaloneInvoices from './StandaloneInvoices';
 
 const money = cents => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100);
 const date = value => String(value || '').slice(0,10);
@@ -12,12 +13,12 @@ export default function PaymentsPanel({ payments, proposal, admin, busy, send })
   const depositCents = Math.round(Number(deposit)*100);
   const valid = Number.isSafeInteger(depositCents) && depositCents > 0 && depositCents <= total;
   const paid = rows.reduce((sum,row) => sum+row.amount_paid,0);
-  return <section className={styles.card} aria-label="Invoices and payments">
+  return <><StandaloneInvoices payments={payments} admin={admin} busy={busy} send={send} /><section className={styles.card} aria-label="Invoices and payments">
     <h2>Deposits & final balance</h2>
     {testMode ? <p className={styles.notice}><strong>Test mode — no real money is collected.</strong> Use test cards only.</p> : <p className={styles.notice}><strong>Secure card payments</strong> · Payments are processed by Stripe for Maison Lucia LLC.</p>}
     {archived && <p className={styles.notice}>These are historical sandbox payment records. They are read-only while the portal is in live mode and cannot be converted into real charges.</p>}
     {admin && !archived && !payments?.ready && <p>Payment connection awaiting setup. Maison Lucia can prepare the schedule now; payment links become available once the secure connection is configured.</p>}
-    {admin && <p>Automatic tax is awaiting configuration. Invoices use the approved proposal total without automatically adding tax. Review applicable taxes and the agreed total before publishing.</p>}
+    {admin && <p>Automatic tax is awaiting configuration. Proposal-linked invoices use the approved proposal total without automatically adding tax. Review applicable taxes and the agreed total before publishing.</p>}
     {!plan || editing ? admin && proposal ? <form className={styles.form} onSubmit={async event => { event.preventDefault(); if (await send('payment-plan',{proposalId:proposal.id,deposit,depositDue,balanceDue})) {setReview(false);setEditing(false);} }}>
       <p>Approved project total: <strong>{money(total)}</strong>. Enter a fixed deposit or choose a percentage.</p>
       <div className={styles.actions}>{[25,50].map(percent => <button type="button" key={percent} disabled={busy} onClick={() => {setDeposit((Math.round(total*percent/100)/100).toFixed(2));setReview(false);}}>Use {percent}% deposit</button>)}</div>
@@ -26,7 +27,7 @@ export default function PaymentsPanel({ payments, proposal, admin, busy, send })
       <div className={styles.grid}><label>Deposit due<input type="date" required min={new Date().toLocaleDateString('en-CA')} value={depositDue} onChange={event => {setDepositDue(event.target.value);setReview(false);}} /></label>{depositCents < total && <label>Final balance due<input type="date" required min={depositDue} value={balanceDue} onChange={event => {setBalanceDue(event.target.value);setReview(false);}} /></label>}</div>
       <label className={styles.check}><input type="checkbox" required checked={review} onChange={event => setReview(event.target.checked)} />I have reviewed the amounts and dates. This links the payment schedule to approved proposal version {proposal.version}.</label>
       <button className={styles.primary} disabled={busy || !valid || !review}>Save payment schedule</button>
-    </form> : <p>{proposal ? 'Maison Lucia will prepare your deposit and final-balance payment schedule here.' : 'Payments become available after a proposal is approved.'}</p> : <>
+    </form> : <p>{proposal ? 'Maison Lucia will prepare your deposit and final-balance payment schedule here.' : admin ? 'Optional: approve a proposal to create a linked deposit and balance schedule. You can create an invoice above at any time.' : 'Any invoices from Maison Lucia will appear here.'}</p> : <>
       {admin && !archived && rows.every(row => row.stripe_status === 'not_created') && <button disabled={busy} onClick={() => {const first=rows.find(row => row.kind === 'deposit');setDeposit((first.amount_cents/100).toFixed(2));setDepositDue(date(first.due_date));setBalanceDue(date(rows.find(row => row.kind === 'balance')?.due_date));setReview(false);setEditing(true);}}>Edit amounts or dates</button>}
       <div className={styles.paymentSummary}><p>Approved total<strong>{money(total)}</strong></p><p>Payments recorded<strong>{money(paid)}</strong></p><p>Remaining scheduled<strong>{money(rows.reduce((sum,row) => sum+(['void','uncollectible'].includes(row.stripe_status) ? 0 : row.amount_remaining),0))}</strong></p></div>
       {rows.map(row => <div className={styles.installment} key={row.id}>
@@ -45,5 +46,5 @@ export default function PaymentsPanel({ payments, proposal, admin, busy, send })
       <p>Card details are entered securely on Stripe. Payment status updates automatically after Stripe confirms payment.</p>
       {admin && <p>Payment links are available inside this client portal. Publishing does not email or charge the client. Changes to an existing schedule, refunds, and credit notes require review before any replacement invoice is issued.</p>}
     </>}
-  </section>;
+  </section></>;
 }
