@@ -4,6 +4,7 @@ const { invitationsReady, sendInvitation } = require('../../../lib/portal-invita
 const { contractNotification } = require('../../../lib/portal-contract-notifications');
 const { fields, fail, text, cleanSurvey, cleanClient, cleanEventDetails, eventSnapshot, cleanImages, cleanProposal, hash, matches, newCode, normalizeCode } = require('../../../lib/portal-model');
 const { ownerEmail, managerAuthorized, ownerReady, ownerCodeHash, newOwnerCode, sendOwnerCode } = require('../../../lib/portal-owner');
+const { paymentData, createPlan, manageInvoice } = require('../../../lib/portal-payments');
 const cookieName = 'ml_portal';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -278,7 +279,8 @@ export default async function handler(req, res) {
         db.query('SELECT id,version,status,created_at,reviewed_at FROM ml_contracts WHERE project_id=$1 ORDER BY version DESC',[project.id]),
         db.query('SELECT id,contract_id,kind,filename,mime_type,created_at FROM ml_contract_files WHERE project_id=$1 ORDER BY created_at',[project.id]),
       ]);
-      return res.json({ project, designs: results[0].rows, messages: results[1].rows, proposals: results[2].rows, agreements: results[3].rows, contracts: results[4].rows, contractFiles: results[5].rows, role: auth.role });
+      const payments = await paymentData(db,project.id,auth.role === 'admin');
+      return res.json({ project, designs: results[0].rows, messages: results[1].rows, proposals: results[2].rows, agreements: results[3].rows, contracts: results[4].rows, contractFiles: results[5].rows, payments, role: auth.role });
     }
     if (action === 'details') {
       await rateLimit(db, req, 'event-details', 120);
@@ -380,6 +382,16 @@ export default async function handler(req, res) {
       return res.json({ ok: true });
     }
     if (auth.role !== 'admin') fail('Access denied.', 403);
+    if (action === 'payment-plan') {
+      await rateLimit(db,req,'payment-plan',30);
+      await createPlan(db,project,body);
+      return res.status(201).json({ok:true});
+    }
+    if (['payment-prepare','payment-publish','payment-refresh'].includes(action)) {
+      await rateLimit(db,req,'payment-invoice',60);
+      if (!uuid.test(body.installmentId || '')) fail('Payment installment not found.',404);
+      return res.json(await manageInvoice(db,project,body,action));
+    }
     if (action === 'email-code') {
       await rateLimit(db, req, 'email-code', 30);
       const code = text(body.code, 100);

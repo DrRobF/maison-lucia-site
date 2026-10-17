@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import PortalShell, { InspirationLinks, portalApi, readImages } from './PortalShell';
 import EventDetails from './EventDetails';
+import PaymentsPanel from './PaymentsPanel';
 import { fields } from '../lib/portal-fields';
 import styles from '../styles/Portal.module.css';
 
@@ -30,7 +31,7 @@ function ProposalView({ proposal, invoice = false, project }) {
     <p className={styles.total}>Total: {money(details.totalCents)}</p>
     {details.terms && <><h3>Scope, terms & payment arrangements</h3><p className={styles.pre}>{details.terms}</p></>}
     {proposal.approved_at && <p>Approved by {proposal.approved_by} on {when(proposal.approved_at)} · Proposal version {proposal.version}</p>}
-    {invoice && <p>Payment status: awaiting offline payment confirmation. This portal does not collect payments.</p>}
+    {invoice && <p>Accepted proposal record. See the deposit and final-balance schedule below for payable Stripe invoices.</p>}
   </div>;
 }
 const emptyProposal = () => ({ title: 'Event styling proposal', items: [{ description: '', quantity: 1, price: '' }], extra: '', extraLabel: 'Additional charges', terms: '' });
@@ -163,7 +164,7 @@ export default function PortalWorkspace({ admin = false }) {
       const result = await portalApi(action, { ...values, projectId: selected });
       if (result.code) setCode(result.code);
       await refresh();
-      setNotice(result.invitationStatus ? invitationNotice(result.invitationStatus) : action === 'approve' ? 'Proposal approved. Your invoice is ready in Invoices.' : 'Saved.');
+      setNotice(result.invitationStatus ? invitationNotice(result.invitationStatus) : action === 'approve' ? 'Proposal approved. Your accepted details are saved in Invoices; Maison Lucia will prepare the payment schedule.' : 'Saved.');
       return true;
     } catch (error) { if (action === 'details' && error.status === 409) { try { await refresh(); } catch {} } setError(error.message); if (error.status === 401) setAuth(null); return false; }
     finally { setBusy(false); }
@@ -218,7 +219,7 @@ export default function PortalWorkspace({ admin = false }) {
           {tab === 'Proposal' && <>
             {activeProposal ? <section className={styles.card}><ProposalView proposal={activeProposal} project={data.project} />
               {!admin && <form className={styles.form} onSubmit={async event => { event.preventDefault(); if (await send('approve', { proposalId: activeProposal.id, name: approvalName, confirm })) { setTab('Invoices'); setConfirm(false); } }}>
-                <label>Your full name<input required maxLength={250} value={approvalName} onChange={event => setApprovalName(event.target.value)} /></label><label className={styles.check}><input type="checkbox" checked={confirm} required onChange={event => setConfirm(event.target.checked)} />I approve proposal version {activeProposal.version}, including the scope, total of {money(activeProposal.details.totalCents)}, and stated terms.</label><button className={styles.primary} disabled={busy || !confirm}>Approve this proposal & create invoice</button><p>Need changes first? Send them in the Conversation tab.</p>
+                <label>Your full name<input required maxLength={250} value={approvalName} onChange={event => setApprovalName(event.target.value)} /></label><label className={styles.check}><input type="checkbox" checked={confirm} required onChange={event => setConfirm(event.target.checked)} />I approve proposal version {activeProposal.version}, including the scope, total of {money(activeProposal.details.totalCents)}, and stated terms.</label><button className={styles.primary} disabled={busy || !confirm}>Approve this proposal</button><p>Need changes first? Send them in the Conversation tab.</p>
               </form>}
             </section> : <section className={styles.card}><h2>{invoices.length ? 'Your approved proposal is saved.' : 'Your proposal will appear here.'}</h2><p>{invoices.length ? 'See Invoices for the accepted details and approval record.' : 'Maison Lucia will prepare it after reviewing your event and design preferences.'}</p></section>}
             {admin && <section className={styles.card}><h2>{data.proposals.length ? 'Prepare a revised proposal' : 'Prepare a proposal'}</h2>{!signedEvent && <p className={styles.notice}>First prepare the event agreement in Event details and have the client sign it. Then share the pricing proposal.</p>}<p>Sharing creates a new version and replaces any pending version. Accepted proposals and invoices remain unchanged.</p>
@@ -234,6 +235,7 @@ export default function PortalWorkspace({ admin = false }) {
             </section>}
             {data.proposals.filter(item => item.status === 'Superseded').map(item => <details className={styles.card} key={item.id}><summary>Earlier proposal · Version {item.version} · Superseded</summary><ProposalView proposal={item} project={data.project} /></details>)}
           </>}
+          {tab === 'Invoices' && <PaymentsPanel key={selected} payments={data.payments} proposal={invoices[0]} admin={admin} busy={busy} send={send} />}
           {tab === 'Invoices' && (invoice ? <section className={styles.card}><div className={`${styles.actions} ${styles.noPrint}`}><label>Invoice<select value={invoice.id} onChange={event => setInvoiceId(event.target.value)}>{invoices.map(item => <option key={item.id} value={item.id}>{item.invoice_number} · Version {item.version}</option>)}</select></label><button onClick={() => window.print()}>Print / save PDF</button></div><p className={styles.brand}>Maison Lucia LLC</p><ProposalView proposal={invoice} invoice project={data.project} /></section> : <section className={styles.card}><h2>No invoice yet.</h2><p>An invoice appears automatically when the client approves a proposal.</p></section>)}
         </>}</div>
       </div>
