@@ -1,4 +1,4 @@
--- Stripe sandbox integration: server access only, no browser Data API grants.
+-- Stripe payment integration: server access only, no browser Data API grants.
 CREATE TABLE IF NOT EXISTS ml_payment_plans (
  project_id uuid PRIMARY KEY REFERENCES ml_projects(id),
  proposal_id uuid NOT NULL REFERENCES ml_proposals(id),
@@ -41,3 +41,7 @@ BEGIN
  END LOOP;
 END
 $security$;
+
+-- Existing sandbox records stay explicitly marked as test data.
+ALTER TABLE ml_payment_plans ADD COLUMN IF NOT EXISTS livemode boolean NOT NULL DEFAULT false;
+ALTER TABLE ml_payment_installments ADD COLUMN IF NOT EXISTS livemode boolean NOT NULL DEFAULT false;
