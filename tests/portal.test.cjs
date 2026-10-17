@@ -75,8 +75,9 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
   const pg = new PGlite();
   await pg.exec('CREATE ROLE anon; CREATE ROLE authenticated;');
   await pg.exec(fs.readFileSync(path.join(__dirname, '../scripts/portal-schema.sql'), 'utf8'));
+  await pg.exec(fs.readFileSync(path.join(__dirname, '../scripts/payments-schema.sql'), 'utf8'));
   const security = await pg.query("SELECT relname, relrowsecurity FROM pg_class WHERE relname LIKE 'ml_%' AND relkind='r'");
-  assert.equal(security.rows.length, 10);
+  assert.equal(security.rows.length, 13);
   assert.ok(security.rows.every(table => table.relrowsecurity));
   const contractsSecurity = await pg.query("SELECT has_table_privilege('anon','ml_contract_files','SELECT') AS anon_files, has_table_privilege('authenticated','ml_contracts','SELECT') AS client_contracts");
   assert.equal(contractsSecurity.rows[0].anon_files, false);
@@ -242,6 +243,8 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     assert.equal((await call('approve', { proposalId: pending.id, name: 'Client', confirm: false }, client.cookie)).status, 400);
     assert.equal((await call('approve', { proposalId: pending.id, name: 'Client', confirm: true }, client.cookie)).status, 200);
     const invoice = (await call('project', undefined, client.cookie)).result.proposals[0];
+    assert.equal((await call('payment-plan',{proposalId:invoice.id,deposit:'100',depositDue:'2099-01-01',balanceDue:'2099-02-01'},client.cookie)).status,403);
+    assert.equal((await call('payment-publish',{installmentId:'00000000-0000-0000-0000-000000000000'},client.cookie)).status,403);
     assert.equal(invoice.status, 'Approved'); assert.equal(invoice.approved_by, 'Client'); assert.ok(invoice.invoice_number); assert.equal(invoice.details.totalCents, 50000);
     await call('approve', { proposalId: pending.id, name: 'Changed name', confirm: true }, client.cookie);
     const repeated = (await call('project', undefined, client.cookie)).result.proposals[0];

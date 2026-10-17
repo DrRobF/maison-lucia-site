@@ -30,3 +30,12 @@
 @media print { .header,.footer,.tabs,.actions,.tools,.noPrint { display:none !important; }.main { width:100%; margin:0; }.card { border:none; break-inside:avoid; }.page { background:white; }.tableWrap { overflow:visible; }.layout { display:block; }.layout aside { display:none; } }
 
 @media print { .eventSummary { color:#000; font-size:11pt; } .eventSummary h2 { font-size:18pt; } .eventSummary dt,.eventSummary dd { break-inside:avoid; } .eventSummary dd { white-space:pre-wrap; } }
+
+
+.paymentSummary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin:1.5rem 0; }
+.paymentSummary p { background:#f6f3ee; padding:1rem; margin:0; }
+.paymentSummary strong { display:block; font-size:1.3rem; margin-top:.5rem; }
+.installment { border-top:1px solid #d9d3ca; padding:1rem 0; }
+.payButton { display:inline-block; background:#4e4034; color:#fff !important; padding:.75rem 1rem; border-radius:4px; text-decoration:none; }
+.payButton:focus-visible { outline:3px solid #9d784e; outline-offset:3px; }
+@media(max-width:600px) { .paymentSummary { grid-template-columns:1fr; } }
