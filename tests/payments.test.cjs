@@ -171,6 +171,8 @@ for (const live of [false,true]) test(`${live ? 'live' : 'test'} standalone invo
   const event={id:`evt_standalone_${live}`,livemode:live,type:'invoice.paid',data:{object:{object:'invoice',id:invoice.id}}};
   await reconcileEvent(db,event,stripe);await reconcileEvent(db,event,stripe);
   data=await paymentData(db,project.id,false,env);const paid=data.standalone.find(r=>r.id===input.requestId);
+  assert.equal(paid.stripe_invoice_id,null);
+  assert.equal((await paymentData(db,project.id,true,env)).standalone.find(r=>r.id===input.requestId).stripe_invoice_id,'in_standalone_1');
   assert.equal(paid.stripe_status,'paid');assert.equal(paid.amount_paid,12550);assert.equal(paid.amount_remaining,0);
   assert.equal(data.standalone.find(r=>r.id!==input.requestId).stripe_status,'not_created');
   await reconcileEvent(db,{...event,id:`evt_credit_${live}`,type:'credit_note.created',data:{object:{object:'credit_note',invoice:invoice.id}}},stripe);

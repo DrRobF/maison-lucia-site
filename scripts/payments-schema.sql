@@ -80,3 +80,6 @@ BEGIN
  END LOOP;
 END
 $security$;
+
+-- Private client-specific payment instructions, maintained by the owner.
+ALTER TABLE ml_projects ADD COLUMN IF NOT EXISTS payment_options jsonb NOT NULL DEFAULT '{}'::jsonb;

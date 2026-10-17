@@ -39,3 +39,6 @@
 .payButton { display:inline-block; background:#4e4034; color:#fff !important; padding:.75rem 1rem; border-radius:4px; text-decoration:none; }
 .payButton:focus-visible { outline:3px solid #9d784e; outline-offset:3px; }
 @media(max-width:600px) { .paymentSummary { grid-template-columns:1fr; } }
+
+.paymentChoices { flex-basis:100%; width:100%; border:1px solid #d9d3ca; padding:1rem; border-radius:4px; background:#faf8f4; }
+.paymentChoices button[aria-pressed=true] { background:#4d3927; color:#fff; }

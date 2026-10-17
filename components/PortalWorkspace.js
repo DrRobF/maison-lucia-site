@@ -235,7 +235,7 @@ export default function PortalWorkspace({ admin = false }) {
             </section>}
             {data.proposals.filter(item => item.status === 'Superseded').map(item => <details className={styles.card} key={item.id}><summary>Earlier proposal · Version {item.version} · Superseded</summary><ProposalView proposal={item} project={data.project} /></details>)}
           </>}
-          {tab === 'Invoices' && <PaymentsPanel key={selected} payments={data.payments} proposal={invoices[0]} admin={admin} busy={busy} send={send} />}
+          {tab === 'Invoices' && <PaymentsPanel key={selected} payments={data.payments} proposal={invoices[0]} admin={admin} busy={busy} send={send} onConversation={() => setTab('Conversation')} />}
           {tab === 'Invoices' && (invoice ? <section className={styles.card}><div className={`${styles.actions} ${styles.noPrint}`}><label>Invoice<select value={invoice.id} onChange={event => setInvoiceId(event.target.value)}>{invoices.map(item => <option key={item.id} value={item.id}>{item.invoice_number} · Version {item.version}</option>)}</select></label><button onClick={() => window.print()}>Print / save PDF</button></div><p className={styles.brand}>Maison Lucia LLC</p><ProposalView proposal={invoice} invoice project={data.project} /></section> : <section className={styles.card}><h2>No proposal-linked invoice.</h2><p>Standalone invoices appear above. An approved proposal also creates a printable project invoice here.</p></section>)}
         </>}</div>
       </div>

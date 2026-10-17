@@ -1,3 +1,4 @@
+const { savePaymentOptions } = require('../../../lib/portal-payment-options');
 const { randomUUID, randomBytes } = require('node:crypto');
 const { database } = require('../../../lib/portal-db');
 const { invitationsReady, sendInvitation } = require('../../../lib/portal-invitations');
@@ -382,6 +383,10 @@ export default async function handler(req, res) {
       return res.json({ ok: true });
     }
     if (auth.role !== 'admin') fail('Access denied.', 403);
+    if (action === 'payment-options') {
+      await rateLimit(db,req,'payment-options',30);
+      return res.json(await savePaymentOptions(db,project.id,body.options));
+    }
     if (action === 'invoice-create') {
       await rateLimit(db,req,'payment-invoice',60);
       return res.status(201).json(await createStandalone(db,project,body));

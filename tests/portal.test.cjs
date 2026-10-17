@@ -156,6 +156,21 @@ test('private portal end-to-end PostgreSQL workflow and authorization', async ()
     assert.equal((await call('invoice-create',standaloneInput)).status,401);
     assert.equal((await call('invoice-create',standaloneInput,admin.cookie)).status,201);
     assert.equal((await call('project',undefined,directClient.cookie)).result.payments.standalone.length,1);
+    const choices={checkEnabled:true,bankTransferEnabled:true,checkInstructions:'Make payable to Maison Lucia LLC; arrange delivery in Conversation.',bankTransferInstructions:'Request and verify instructions directly with Maison Lucia.'};
+    assert.equal((await call('payment-options',{options:choices},directClient.cookie)).status,403);
+    assert.equal((await call('payment-options',{projectId:direct.result.projectId,options:choices})).status,401);
+    assert.equal((await call('payment-options',{projectId:direct.result.projectId,options:{...choices,checkEnabled:'yes'}},admin.cookie)).status,400);
+    assert.equal((await call('payment-options',{projectId:direct.result.projectId,options:{...choices,checkInstructions:''}},admin.cookie)).status,400);
+    assert.equal((await call('payment-options',{projectId:direct.result.projectId,options:{...choices,surchargePercent:3}},admin.cookie)).status,200);
+    const afterOptions=(await call('project',undefined,directClient.cookie)).result.payments;
+    assert.equal(afterOptions.options.checkInstructions,choices.checkInstructions);
+    assert.equal(afterOptions.options.surchargePercent,undefined);
+    assert.equal(afterOptions.standalone[0].stripe_status,'not_created');
+    assert.equal(afterOptions.standalone[0].amount_paid,0);
+    assert.equal(afterOptions.standalone[0].stripe_invoice_id,null);
+    const otherOptions=(await call('project',undefined,admin.cookie,failedMail.result.projectId)).result.payments.options;
+    assert.notEqual(otherOptions.checkInstructions,choices.checkInstructions);
+
     assert.equal((await call('invoice-email',{installmentId:standaloneInput.requestId,standalone:true},directClient.cookie)).status,403);
 
     const directProject = (await call('project', undefined, directClient.cookie)).result.project;
