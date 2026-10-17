@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import styles from '../styles/Portal.module.css';
+import PaymentChoices from './PaymentChoices';
 const money = cents => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100);
 const date = value => String(value || '').slice(0,10);
-export default function StandaloneInvoices({payments,admin,busy,send}) {
+export default function StandaloneInvoices({payments,admin,busy,send,onConversation}) {
   const [creating,setCreating] = useState(false);
   const [description,setDescription] = useState(''), [amount,setAmount] = useState(''), [dueDate,setDueDate] = useState('');
   const [requestId,setRequestId] = useState('');
@@ -41,10 +42,11 @@ export default function StandaloneInvoices({payments,admin,busy,send}) {
         <div className={styles.actions}>
           {admin && row.stripe_status === 'not_created' && <button disabled={busy || !ready} onClick={()=>act('payment-prepare',row)}>{busy ? 'Working…' : 'Prepare Stripe invoice'}</button>}
           {admin && !row.published && ['draft','open'].includes(row.stripe_status) && <button className={styles.primary} disabled={busy || !ready} onClick={()=>{if (!activeLive || window.confirm(`Publish a real ${money(row.amount_cents)} invoice for ${row.description}? Confirm the amount, due date and applicable taxes.`)) act('payment-publish',row,{confirmLive:activeLive});}}>Publish payment link</button>}
-          {row.published && row.stripe_status === 'open' && row.hosted_url && ready && <a className={styles.payButton} href={row.hosted_url} target="_blank" rel="noopener noreferrer">Pay invoice{!row.livemode ? ' (test)' : ''}</a>}
+          {row.published && row.stripe_status === 'open' && row.hosted_url && ready && <PaymentChoices row={row} options={payments.options} onConversation={onConversation} testMode={!row.livemode} />}
           {admin && row.published && row.stripe_status === 'open' && <button disabled={busy || !ready || row.email_sent} onClick={()=>{if(window.confirm('Email this invoice and payment link to this client using Stripe?')) act('invoice-email',row);}}>{row.email_sent ? 'Invoice emailed' : 'Email invoice to client'}</button>}
           {row.published && row.stripe_status === 'paid' && row.hosted_url && <a href={row.hosted_url} target="_blank" rel="noopener noreferrer">View paid invoice</a>}
           {row.pdf_url && <a href={row.pdf_url} target="_blank" rel="noopener noreferrer">Download invoice PDF</a>}
+          {admin && row.stripe_invoice_id && !historical && <a href={`https://dashboard.stripe.com/${row.livemode ? '' : 'test/'}invoices/${row.stripe_invoice_id}`} target="_blank" rel="noopener noreferrer">Open invoice in Stripe</a>}
           {admin && row.stripe_status !== 'not_created' && <button disabled={busy || !ready} onClick={()=>act('payment-refresh',row)}>Refresh payment status</button>}
         </div>
       </div>;
