@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import PortalShell, { InspirationLinks, portalApi, readImages } from './PortalShell';
+import PortalShell, { InspirationLinks, portalApi, readImages, readConversationAttachments } from './PortalShell';
 import EventDetails from './EventDetails';
 import PaymentsPanel from './PaymentsPanel';
 import { fields } from '../lib/portal-fields';
@@ -10,14 +10,14 @@ const when = value => new Date(value).toLocaleString();
 function Conversation({ messages, designId = null, send, busy }) {
   const [draft, setDraft] = useState(''), [images, setImages] = useState([]), [uploading, setUploading] = useState(false), [imageError, setImageError] = useState(''), [fileKey, setFileKey] = useState(0);
   return <section><h3>{designId ? 'Thoughts & suggested changes' : 'Your conversation'}</h3>
-    {messages.filter(message => message.design_id === designId).map(message => <div key={message.id} className={styles.message}><strong>{message.role === 'admin' ? 'Maison Lucia' : 'Client'}</strong><time dateTime={message.created_at}>{when(message.created_at)}</time>{message.body}<div className={styles.images}>{message.images?.map((src, index) => <a key={index} href={src} download={`conversation-${index + 1}.jpg`}><img src={src} alt={`Photo shared by ${message.role === 'admin' ? 'Maison Lucia' : 'the client'}, ${index + 1}`} /></a>)}</div></div>)}
+    {messages.filter(message => message.design_id === designId).map(message => <div key={message.id} className={styles.message}><strong>{message.role === 'admin' ? 'Maison Lucia' : 'Client'}</strong><time dateTime={message.created_at}>{when(message.created_at)}</time>{message.body}<div className={styles.images}>{message.images?.map((src, index) => src.startsWith('data:application/pdf;') ? <a key={index} href={src} download={`conversation-${index + 1}.pdf`}>📄 Download PDF attachment {index + 1}</a> : <a key={index} href={src} download={`conversation-${index + 1}.jpg`}><img src={src} alt={`Photo shared by ${message.role === 'admin' ? 'Maison Lucia' : 'the client'}, ${index + 1}`} /></a>)}</div></div>)}
     <form onSubmit={async event => { event.preventDefault(); if (await send('message', { message: draft, designId, images })) { setDraft(''); setImages([]); setFileKey(value => value + 1); setImageError(''); } }} className={styles.form}>
       <label>{designId ? 'Comment on this design' : 'Write to Maison Lucia or your client'}<textarea rows={3} maxLength={5000} value={draft} disabled={busy} onChange={event => setDraft(event.target.value)} /></label>
-      <label>Attach photos (up to three)<input key={fileKey} type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || uploading} onChange={async event => { setUploading(true); setImageError(''); try { setImages(await readImages(event.target.files)); } catch (error) { setImages([]); setImageError(error.message); event.target.value = ''; } finally { setUploading(false); } }} /></label>
+      <label>Attach photos or PDFs (up to three)<input key={fileKey} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" multiple disabled={busy || uploading} onChange={async event => { setUploading(true); setImageError(''); try { setImages(await readConversationAttachments(event.target.files)); } catch (error) { setImages([]); setImageError(error.message); event.target.value = ''; } finally { setUploading(false); } }} /></label>
       {imageError && <p role="alert" className={styles.error}>{imageError}</p>}
-      <div className={styles.images}>{images.map((src, index) => <img key={index} src={src} alt={`Attachment preview ${index + 1}`} />)}</div>
+      <div className={styles.images}>{images.map((src, index) => src.startsWith('data:application/pdf;') ? <a key={index} href={src} download={`attachment-${index + 1}.pdf`}>📄 PDF attached {index + 1}</a> : <img key={index} src={src} alt={`Attachment preview ${index + 1}`} />)}</div>
       {images.length > 0 && <button type="button" disabled={busy || uploading} onClick={() => { setImages([]); setFileKey(value => value + 1); }}>Remove attachments</button>}
-      <button disabled={busy || uploading || (!draft.trim() && !images.length)} type="submit">{uploading ? 'Preparing photos…' : 'Send message'}</button>
+      <button disabled={busy || uploading || (!draft.trim() && !images.length)} type="submit">{uploading ? 'Preparing attachments…' : 'Send message'}</button>
     </form>
   </section>;
 }

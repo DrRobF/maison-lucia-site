@@ -33,6 +33,21 @@ export async function readImages(files) {
     reader.readAsDataURL(file);
   })));
 }
+export async function readConversationAttachments(files) {
+  if (files.length > 3) throw new Error('Choose up to three photos or PDFs.');
+  return Promise.all(Array.from(files).map(async file => {
+    if (file.type !== 'application/pdf') return (await readImages([file]))[0];
+    if (file.size > 1200 * 1024) throw new Error('PDFs must be smaller than 1.2 MB.');
+    const header = await file.slice(0, 5).text();
+    if (header !== '%PDF-') throw new Error('That file is not a valid PDF.');
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('The PDF could not be read.'));
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+  }));
+}
 export function InspirationLinks() {
   return <div className={styles.tools}><a href="https://atmos.maisonluciallc.com/" target="_blank" rel="noopener noreferrer">Explore Atmos</a><a href="https://color.adobe.com/create/color-wheel" target="_blank" rel="noopener noreferrer">Explore color palettes</a></div>;
 }
