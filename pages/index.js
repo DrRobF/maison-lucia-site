@@ -49,7 +49,7 @@ const features = [
   },
   {
     title: "Rooted in South Florida",
-    copy: "Proudly styling refined events across West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, and South Florida with warmth and ease.",
+    copy: "Proudly styling refined events from Miami and the Palm Beaches through Vero Beach, the Treasure Coast, Space Coast, and greater Orlando with warmth and ease.",
   },
 ];
 
@@ -269,22 +269,39 @@ const servicePages = [
 ];
 
 const serviceAreas = [
-  "West Palm Beach",
-  "Palm Beach",
-  "Wellington",
-  "Boca Raton",
-  "Jupiter",
-  "Palm Beach Gardens",
-  "Delray Beach",
-  "Fort Lauderdale",
   "Miami",
   "Coral Gables",
+  "Fort Lauderdale",
+  "Boca Raton",
+  "Delray Beach",
+  "Boynton Beach",
+  "Wellington",
+  "Royal Palm Beach",
+  "West Palm Beach",
+  "Palm Beach",
+  "Palm Beach Gardens",
+  "Jupiter",
+  "Tequesta",
+  "Hobe Sound",
+  "Stuart",
+  "Palm City",
+  "Port St. Lucie",
+  "Fort Pierce",
+  "Vero Beach",
+  "Sebastian",
+  "Melbourne",
+  "Palm Bay",
+  "Cocoa Beach",
+  "Kissimmee",
+  "Lake Buena Vista",
+  "Winter Park",
+  "Orlando",
 ];
 
 const faqs = [
   {
     question: "What areas does Maison Lucia serve?",
-    answer: "Maison Lucia styles events throughout South Florida, including West Palm Beach, Palm Beach, Wellington, Royal Palm Beach, Palm Beach Gardens, Jupiter, Delray Beach, Boca Raton, Fort Lauderdale, Miami, Coral Gables, and surrounding communities.",
+    answer: "Maison Lucia styles events across South and Central Florida, from Miami, Fort Lauderdale, Boca Raton, and Palm Beach through Stuart, Port St. Lucie, Fort Pierce, Vero Beach, Sebastian, Melbourne, and the greater Orlando area, including Kissimmee and Winter Park. Contact us to discuss event location and travel details.",
   },
   {
     question: "What types of events does Maison Lucia style?",
@@ -303,8 +320,8 @@ const faqs = [
     answer: "Yes. Maison Lucia works with clients in Wellington, West Palm Beach, Palm Beach, and surrounding South Florida communities.",
   },
   {
-    question: "Do you style events in Miami or Fort Lauderdale?",
-    answer: "Yes. Maison Lucia accepts select events in Miami, Fort Lauderdale, Coral Gables, and nearby South Florida areas.",
+    question: "Do you style events in Miami, Vero Beach, or Orlando?",
+    answer: "Yes. Maison Lucia serves Miami and Fort Lauderdale as well as the Treasure Coast, Vero Beach, Melbourne, and greater Orlando. Get in touch to discuss event location and travel details.",
   },
   {
     question: "How do I inquire about an event?",
@@ -335,6 +352,14 @@ const structuredData = [
     url: "https://www.maisonluciallc.com",
     areaServed: [
       "South Florida",
+      "Central Florida",
+      "Vero Beach",
+      "Port St. Lucie",
+      "Fort Pierce",
+      "Stuart",
+      "Melbourne",
+      "Kissimmee",
+      "Orlando",
       "West Palm Beach",
       "Palm Beach",
       "Wellington",
@@ -505,10 +530,10 @@ export default function Home() {
         <title>Maison Lucia | Luxury Event Styling, Florals &amp; Tablescapes in South Florida</title>
         <meta
           name="description"
-          content="Maison Lucia creates luxury event styling, floral styling, and refined tablescapes for weddings, private dinners, corporate gatherings, and celebrations throughout West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, and South Florida."
+          content="Maison Lucia creates luxury event styling, floral styling, and refined tablescapes for weddings, private dinners, corporate gatherings, and celebrations throughout West Palm Beach, Vero Beach, Orlando, Miami, and communities across South and Central Florida."
         />
         <meta property="og:title" content="Maison Lucia | Luxury Event Styling, Florals & Tablescapes in South Florida" />
-        <meta property="og:description" content="Luxury event styling, floral styling, and refined tablescapes for weddings, private dinners, corporate gatherings, and celebrations throughout West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, and South Florida." />
+        <meta property="og:description" content="Luxury event styling, floral styling, and refined tablescapes for weddings, private dinners, corporate gatherings, and celebrations throughout West Palm Beach, Vero Beach, Orlando, Miami, and communities across South and Central Florida." />
         <meta property="og:url" content="https://www.maisonluciallc.com" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
@@ -544,8 +569,8 @@ export default function Home() {
               Maison Lucia creates luxury event styling, floral styling, and refined
               tablescapes for weddings, private dinners, corporate gatherings,
               bridal showers, baby showers, and beautiful celebrations across
-              West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, Fort
-              Lauderdale, and South Florida.
+              West Palm Beach, Vero Beach, Melbourne, Orlando, Miami,
+              Fort Lauderdale, and communities across South and Central Florida.
             </p>
             <div className={styles.heroActions}>
               <a href="#contact" className={styles.primaryButton}>
@@ -871,8 +896,8 @@ export default function Home() {
 
         <section className={styles.serviceAreaSection} aria-labelledby="service-area-title">
           <p className={styles.kicker}>Service Area</p>
-          <h2 id="service-area-title">Serving South Florida’s Most Beautiful Gatherings</h2>
-          <p>Based in South Florida, Maison Lucia styles refined celebrations across West Palm Beach, Palm Beach, Wellington, Royal Palm Beach, Palm Beach Gardens, Jupiter, Delray Beach, Boca Raton, Boynton Beach, Fort Lauderdale, Miami, Coral Gables, and surrounding communities.</p>
+          <h2 id="service-area-title">Serving South & Central Florida’s Most Beautiful Gatherings</h2>
+          <p>Maison Lucia styles refined celebrations across South and Central Florida—from Miami and the Palm Beaches north through Stuart, Port St. Lucie, Fort Pierce, Vero Beach, Sebastian, Melbourne, and the greater Orlando area. Additional travel considerations may apply depending on event location.</p>
           <div className={styles.cityPills} aria-label="Featured service areas">
             {serviceAreas.map((city) => <span key={city}>{city}</span>)}
           </div>
@@ -1082,7 +1107,7 @@ export default function Home() {
 
         <footer className={styles.footer}>
           <p className={styles.footerBrand}>Maison Lucia</p>
-          <p className={styles.footerSeo}>Luxury event styling, floral styling, and tablescape design for weddings, private dinners, corporate gatherings, and refined celebrations throughout West Palm Beach, Palm Beach, Wellington, Boca Raton, Miami, and South Florida.</p>
+          <p className={styles.footerSeo}>Luxury event styling, floral styling, and tablescape design for weddings, private dinners, corporate gatherings, and refined celebrations throughout West Palm Beach, Vero Beach, Orlando, Miami, and communities across South and Central Florida.</p>
           <ul className={styles.footerNav}>
             {footerNavLinks.map((link) => (
               <li key={link.label}>
