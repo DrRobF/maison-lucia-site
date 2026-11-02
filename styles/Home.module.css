@@ -2566,7 +2566,7 @@
 }
 .filmHero .heroTextCol { padding: 0; }
 .filmHero .heroTextCol h1 {
-  font-size: clamp(2.5rem, 4.2vw, 3.65rem);
+  font-size: clamp(2.5rem, 4vw, 3.25rem);
   max-width: none;
   line-height: 1.09;
   letter-spacing: -0.035em;
@@ -2608,4 +2608,12 @@
   .heroFilmPanel { width: min(100%, 320px); justify-self: center; }
   .heroWatermark { width: 95%; left: 0; top: 25%; opacity: 0.045; }
   .heroFilmBar { padding: 0.3rem 0.5rem 0; }
+}
+
+.heroFilmScreen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, #fcfbf8 0%, #fcfbf8 10%, rgba(252,251,248,0) 24%, rgba(252,251,248,0) 76%, #fcfbf8 90%, #fcfbf8 100%);
 }
