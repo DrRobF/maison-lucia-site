@@ -1,0 +1,5 @@
+.logo { display: block; height: auto; mix-blend-mode: multiply; }
+.header { width: 150px; }
+.footer { width: 210px; margin-bottom: 1rem; }
+.watermark { width: 100%; }
+@media (max-width: 768px) { .header { width: 125px; } .footer { width: 180px; } }

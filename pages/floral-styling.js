@@ -1,3 +1,4 @@
+import BrandLogo from "../components/BrandLogo";
 import Head from "next/head";
 import PrimaryNav from "../components/PrimaryNav";
 import styles from "../styles/Home.module.css";
@@ -72,7 +73,7 @@ export default function FloralStyling() {
       <main className={styles.page}>
         <header className={styles.header}>
           <div className={styles.brandWrap}>
-            <a href="/" className={styles.brandName}>Maison Lucia</a>
+            <a href="/" className={styles.brandName} aria-label="Maison Lucia home"><BrandLogo /></a>
             <p className={styles.tagline}>South Florida Event Styling</p>
           </div>
           <PrimaryNav />
@@ -131,7 +132,7 @@ export default function FloralStyling() {
         </section>
 
         <footer className={styles.footer}>
-          <p className={styles.footerBrand}>Maison Lucia</p>
+          <a href="/" className={styles.footerBrand} aria-label="Maison Lucia home"><BrandLogo variant="footer" /></a>
           <ul className={styles.footerServiceNav}>
             <li><a href="/floral-styling">Floral Styling</a></li>
             <li><a href="/tablescapes">Tablescapes</a></li>

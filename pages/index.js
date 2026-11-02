@@ -1,3 +1,4 @@
+import BrandLogo from "../components/BrandLogo";
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import PrimaryNav, { navLinks } from "../components/PrimaryNav";
@@ -598,11 +599,11 @@ export default function Home() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </Head>
 
-      <main className={styles.page}>
+      <main className={styles.page} id="top">
         <header className={styles.header}>
           <div className={styles.brandWrap}>
-            <a href="#top" className={styles.brandName}>
-              Maison Lucia
+            <a href="#top" className={styles.brandName} aria-label="Maison Lucia home">
+              <BrandLogo />
             </a>
             <p className={styles.tagline}>South Florida Event Styling</p>
           </div>
@@ -614,7 +615,8 @@ export default function Home() {
           </a>
         </header>
 
-        <section className={`${styles.hero} ${styles.filmHero}`} id="top">
+        <section className={`${styles.hero} ${styles.filmHero}`} aria-label="Maison Lucia event styling">
+          <div className={styles.heroWatermark} aria-hidden="true"><BrandLogo variant="watermark" decorative /></div>
           <div className={styles.heroTextCol}>
             <h1>
               Modern Tables.
@@ -1159,7 +1161,7 @@ export default function Home() {
         </section>
 
         <footer className={styles.footer}>
-          <p className={styles.footerBrand}>Maison Lucia</p>
+          <a href="/" className={styles.footerBrand} aria-label="Maison Lucia home"><BrandLogo variant="footer" /></a>
           <p className={styles.footerSeo}>Luxury event styling, floral styling, and tablescape design for weddings, private dinners, corporate gatherings, and refined celebrations throughout West Palm Beach, Vero Beach, Orlando, Miami, and communities across South and Central Florida.</p>
           <ul className={styles.footerNav}>
             {footerNavLinks.map((link) => (

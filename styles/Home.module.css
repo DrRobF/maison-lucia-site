@@ -2537,40 +2537,75 @@
 }
 
 
-/* Homepage film: isolated from the image treatments used elsewhere. */
+/* Branded homepage hero. Logo and film retain their original artwork. */
+.header { padding-top: 0.6rem; padding-bottom: 0.65rem; }
+.brandWrap { align-items: center; }
+.brandName { display: block; }
+.brandWrap .tagline { font-size: 0.56rem; letter-spacing: 0.14em; }
+.footerBrand { display: inline-block; text-decoration: none; }
 .filmHero {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+  position: relative;
+  isolation: isolate;
+  max-width: 1080px;
+  grid-template-columns: minmax(0, 520px) minmax(0, 330px);
+  justify-content: center;
   align-items: center;
-  gap: clamp(1.5rem, 3vw, 3rem);
-  padding-top: clamp(2rem, 4vw, 4rem);
-  padding-bottom: clamp(2rem, 4vw, 4rem);
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  padding: 1.4rem 1.5rem 2.5rem;
 }
+.heroWatermark {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  width: min(70%, 680px);
+  top: 50%;
+  left: -3%;
+  transform: translateY(-50%);
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+}
+.filmHero .heroTextCol { padding: 0; }
 .filmHero .heroTextCol h1 {
-  font-size: clamp(2.6rem, 4.3vw, 4.3rem);
-  max-width: 11ch;
-  line-height: 1.04;
+  font-size: clamp(2.5rem, 4.2vw, 3.65rem);
+  max-width: none;
+  line-height: 1.09;
+  letter-spacing: -0.035em;
 }
-.filmHero .heroCopy { font-size: 1rem; line-height: 1.7; margin: 1.25rem 0 1.5rem; }
-.heroFilmPanel { width: min(100%, 390px); justify-self: end; min-width: 0; background: #171714; box-shadow: 0 18px 48px rgba(40, 30, 16, 0.1); }
-.heroFilmScreen { position: relative; aspect-ratio: 9 / 16; background: #000; overflow: hidden; }
-.heroFilmPoster, .heroFilmVideo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.filmHero .heroTagline { font-size: 0.65rem; letter-spacing: 0.15em; line-height: 1.65; margin-top: 1.35rem; }
+.filmHero .heroCopy { font-size: 0.95rem; line-height: 1.8; margin: 1.15rem 0 1.5rem; max-width: 48ch; }
+.filmHero .heroActions { gap: 0.6rem; }
+.filmHero .heroActions a { padding: 0.9rem 1.1rem; font-size: 0.67rem; letter-spacing: 0.12em; }
+.heroFilmPanel { width: 100%; min-width: 0; position: relative; }
+.heroFilmScreen {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 10px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 9%, #000 89%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 9%, #000 89%, transparent);
+}
+.heroFilmPoster, .heroFilmVideo {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
 .heroFilmPoster { object-fit: cover; }
 .heroFilmVideo { object-fit: contain; }
-.heroFilmBar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem; padding: 0.75rem 1rem; color: #f5f0e5; }
-.heroFilmCaption { font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase; }
+.heroFilmBar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem; padding: 0.3rem 1rem 0; color: #6b5c47; }
+.heroFilmCaption { font-size: 0.61rem; letter-spacing: 0.16em; text-transform: uppercase; }
 .heroFilmControls { display: flex; gap: 0.5rem; }
-.heroFilmControls button { display: inline-flex; gap: 0.5rem; align-items: center; justify-content: center; min-height: 44px; padding: 0.5rem 0.7rem; border: 1px solid #746e61; background: transparent; color: #fff9ed; font: inherit; font-size: 0.75rem; cursor: pointer; }
-.heroFilmControls button:hover { background: #36332b; }
-.heroFilmControls button:focus-visible { outline: 2px solid #edce94; outline-offset: 3px; }
-@media (max-width: 1040px) {
-  .filmHero { grid-template-columns: 1fr; }
-  .heroFilmPanel { grid-row: 1; justify-self: center; width: min(100%, 360px); }
-  .filmHero .heroTextCol h1 { max-width: none; font-size: clamp(2.5rem, 6vw, 4rem); }
+.heroFilmControls button { display: inline-flex; gap: 0.5rem; align-items: center; justify-content: center; min-height: 44px; padding: 0.5rem 0.7rem; border: 1px solid #c9bca6; border-radius: 22px; background: transparent; color: #433a2d; font: inherit; font-size: 0.72rem; cursor: pointer; }
+.heroFilmControls button:hover { background: #eee8dc; }
+.heroFilmControls button:focus-visible { outline: 2px solid #8d6a37; outline-offset: 3px; }
+@media (max-width: 1040px) and (min-width: 769px) {
+  .filmHero { grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 1.5rem; }
+  .filmHero .heroTextCol h1 { font-size: 2.8rem; }
 }
-@media (max-width: 600px) {
-  .filmHero { gap: 1.8rem; padding-top: 1rem; }
-  .heroFilmBar { padding: 0.5rem 0.65rem; }
-  .heroFilmCaption { font-size: 0.58rem; letter-spacing: 0.1em; }
-  .heroFilmControls { gap: 0.3rem; }
-  .heroFilmControls button { padding: 0.4rem 0.5rem; font-size: 0.7rem; }
+@media (max-width: 768px) {
+  .filmHero { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; padding: 1.5rem 1.1rem 2rem; }
+  .filmHero .heroTextCol { max-width: 560px; justify-self: center; }
+  .filmHero .heroTextCol h1 { font-size: clamp(2.3rem, 8.5vw, 3.4rem); }
+  .heroFilmPanel { width: min(100%, 320px); justify-self: center; }
+  .heroWatermark { width: 95%; left: 0; top: 25%; opacity: 0.045; }
+  .heroFilmBar { padding: 0.3rem 0.5rem 0; }
 }
