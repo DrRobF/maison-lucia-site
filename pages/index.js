@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PrimaryNav, { navLinks } from "../components/PrimaryNav";
 import styles from "../styles/Home.module.css";
 
@@ -390,6 +390,73 @@ const structuredData = [
   },
 ];
 
+function HeroFilm() {
+  const videoRef = useRef(null);
+  const [muted, setMuted] = useState(true);
+  const [paused, setPaused] = useState(true);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const applyMotionPreference = () => {
+      if (motion.matches) video.pause();
+      else video.play().catch(() => setPaused(true));
+    };
+    applyMotionPreference();
+    motion.addEventListener("change", applyMotionPreference);
+    return () => motion.removeEventListener("change", applyMotionPreference);
+  }, []);
+
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (video.paused) video.play().catch(() => setPaused(true));
+    else video.pause();
+  };
+
+  const toggleSound = () => {
+    const video = videoRef.current;
+    video.muted = !video.muted;
+    setMuted(video.muted);
+  };
+
+  return (
+    <div className={styles.heroFilmPanel}>
+      <div className={styles.heroFilmScreen}>
+        <img src="/whiteblue%20.webp" alt="Maison Lucia floral arrangements and refined table styling" className={styles.heroFilmPoster} />
+        <video
+          ref={videoRef}
+          id="maison-hero-film"
+          className={styles.heroFilmVideo}
+          style={failed ? { display: "none" } : undefined}
+          src="/final_video_cover.mp4"
+          poster="/whiteblue%20.webp"
+          muted={muted}
+          loop
+          playsInline
+          preload="metadata"
+          aria-label="Maison Lucia event styling film"
+          onPlay={() => setPaused(false)}
+          onPause={() => setPaused(true)}
+          onVolumeChange={(event) => setMuted(event.currentTarget.muted)}
+          onError={() => setFailed(true)}
+        />
+      </div>
+      <div className={styles.heroFilmBar}>
+        <span className={styles.heroFilmCaption}>The art of gathering</span>
+        {!failed && <div className={styles.heroFilmControls}>
+          <button type="button" onClick={togglePlayback} aria-controls="maison-hero-film" aria-label={paused ? "Play film" : "Pause film"}>
+            <span aria-hidden="true">{paused ? "▶" : "Ⅱ"}</span> {paused ? "Play" : "Pause"}
+          </button>
+          <button type="button" onClick={toggleSound} aria-controls="maison-hero-film" aria-label={muted ? "Turn sound on" : "Turn sound off"} aria-pressed={!muted}>
+            Sound {muted ? "off" : "on"}
+          </button>
+        </div>}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const floralCarouselRef = useRef(null);
   const [inquiryForm, setInquiryForm] = useState(initialInquiryForm);
@@ -555,7 +622,7 @@ export default function Home() {
           </a>
         </header>
 
-        <section className={styles.hero} id="top">
+        <section className={`${styles.hero} ${styles.filmHero}`} id="top">
           <div className={styles.heroTextCol}>
             <h1>
               Modern Tables.
@@ -590,13 +657,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className={styles.heroImageCol}>
-            <img
-              src="/whiteblue%20.webp"
-              alt="Elegant white and blue Maison Lucia table styling with refined floral details"
-              className={styles.heroImage}
-            />
-          </div>
+          <HeroFilm />
         </section>
 
         <section className={styles.featureSection} id="services">
