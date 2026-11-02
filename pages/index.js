@@ -392,7 +392,6 @@ const structuredData = [
 
 function HeroFilm() {
   const videoRef = useRef(null);
-  const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(true);
   const [failed, setFailed] = useState(false);
 
@@ -414,11 +413,7 @@ function HeroFilm() {
     else video.pause();
   };
 
-  const toggleSound = () => {
-    const video = videoRef.current;
-    video.muted = !video.muted;
-    setMuted(video.muted);
-  };
+
 
   return (
     <div className={styles.heroFilmPanel}>
@@ -429,16 +424,15 @@ function HeroFilm() {
           id="maison-hero-film"
           className={styles.heroFilmVideo}
           style={failed ? { display: "none" } : undefined}
-          src="/final_video_cover.mp4"
+          src="/hero-film-portrait-silent.mp4"
           poster="/whiteblue%20.webp"
-          muted={muted}
+          muted
           loop
           playsInline
           preload="metadata"
           aria-label="Maison Lucia event styling film"
           onPlay={() => setPaused(false)}
           onPause={() => setPaused(true)}
-          onVolumeChange={(event) => setMuted(event.currentTarget.muted)}
           onError={() => setFailed(true)}
         />
       </div>
@@ -448,9 +442,7 @@ function HeroFilm() {
           <button type="button" onClick={togglePlayback} aria-controls="maison-hero-film" aria-label={paused ? "Play film" : "Pause film"}>
             <span aria-hidden="true">{paused ? "▶" : "Ⅱ"}</span> {paused ? "Play" : "Pause"}
           </button>
-          <button type="button" onClick={toggleSound} aria-controls="maison-hero-film" aria-label={muted ? "Turn sound on" : "Turn sound off"} aria-pressed={!muted}>
-            Sound {muted ? "off" : "on"}
-          </button>
+
         </div>}
       </div>
     </div>

@@ -2539,7 +2539,7 @@
 
 /* Homepage film: isolated from the image treatments used elsewhere. */
 .filmHero {
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.45fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
   align-items: center;
   gap: clamp(1.5rem, 3vw, 3rem);
   padding-top: clamp(2rem, 4vw, 4rem);
@@ -2551,8 +2551,8 @@
   line-height: 1.04;
 }
 .filmHero .heroCopy { font-size: 1rem; line-height: 1.7; margin: 1.25rem 0 1.5rem; }
-.heroFilmPanel { min-width: 0; background: #171714; box-shadow: 0 18px 48px rgba(40, 30, 16, 0.1); }
-.heroFilmScreen { position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; }
+.heroFilmPanel { width: min(100%, 390px); justify-self: end; min-width: 0; background: #171714; box-shadow: 0 18px 48px rgba(40, 30, 16, 0.1); }
+.heroFilmScreen { position: relative; aspect-ratio: 9 / 16; background: #000; overflow: hidden; }
 .heroFilmPoster, .heroFilmVideo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .heroFilmPoster { object-fit: cover; }
 .heroFilmVideo { object-fit: contain; }
@@ -2564,7 +2564,7 @@
 .heroFilmControls button:focus-visible { outline: 2px solid #edce94; outline-offset: 3px; }
 @media (max-width: 1040px) {
   .filmHero { grid-template-columns: 1fr; }
-  .heroFilmPanel { grid-row: 1; }
+  .heroFilmPanel { grid-row: 1; justify-self: center; width: min(100%, 360px); }
   .filmHero .heroTextCol h1 { max-width: none; font-size: clamp(2.5rem, 6vw, 4rem); }
 }
 @media (max-width: 600px) {
