@@ -2617,3 +2617,11 @@
   pointer-events: none;
   background: linear-gradient(to bottom, #fcfbf8 0%, #fcfbf8 10%, rgba(252,251,248,0) 24%, rgba(252,251,248,0) 76%, #fcfbf8 90%, #fcfbf8 100%);
 }
+
+/* Coastal hospitality update: a wrapping nav preserves access on small screens. */
+.menuList { flex-wrap: wrap; gap: .7rem clamp(.7rem,1.4vw,1.3rem); align-items:center; }
+.menuList a { letter-spacing: 1.2px; }
+.filmHero { max-width: 1180px; padding-top: clamp(2rem,4vw,4rem); padding-bottom: clamp(2.5rem,5vw,4rem); }
+.filmHero .heroTextCol h1 { color:#363b35; font-weight:400; font-size:clamp(2.5rem,4.5vw,4.2rem); }
+.filmHero .heroTagline { color:#66563e; }
+@media(max-width:768px){.filmHero .heroTextCol h1{font-size:clamp(2.3rem,8.5vw,3.4rem)}.menuList{justify-content:center}}
