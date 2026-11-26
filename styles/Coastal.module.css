@@ -30,3 +30,35 @@
 @media(max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.hero,.editorial{gap:2rem}}
 @media(max-width:640px){.hero,.editorial,.cards,.formGrid{grid-template-columns:1fr}.hero img,.editorial img{aspect-ratio:4/3;max-height:380px}.cardBody{padding:1.25rem}.hero{margin-top:0}.hero h1{font-size:2.6rem}}
 @media(prefers-reduced-motion:reduce){.button{transition:none}}
+
+/* Editorial coastal redesign. Lifestyle images remain separate from the Maison Lucia portfolio. */
+.cover{position:relative;isolation:isolate;min-height:clamp(540px,79vh,800px);display:flex;align-items:center;justify-content:center;text-align:center;background:#50544e;color:#fffdf8;padding:4rem 1.25rem 5rem;overflow:hidden}
+.coverPhoto{position:absolute!important;inset:0;z-index:-2;margin:0!important;max-width:none!important;height:100%!important;width:100%}
+.coverPhoto img{width:100%;height:100%;object-fit:cover;object-position:center 52%;aspect-ratio:auto!important;max-height:none!important}
+.cover:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(25,30,27,.57),rgba(25,30,27,.42)),linear-gradient(0deg,rgba(20,24,22,.28),transparent 42%)}
+.coverContent{position:relative;max-width:1100px;margin:auto;padding:1rem;animation:coastalEnter .65s ease-out both}
+.coverContent h1{font-size:clamp(3.1rem,6.5vw,6.6rem);font-weight:400;letter-spacing:-.038em;line-height:1.04;margin:1.2rem 0;color:#fffdf8;text-shadow:0 2px 24px rgba(0,0,0,.22)}
+.coverKicker{font-size:.72rem;letter-spacing:.23em;text-transform:uppercase;font-weight:600}
+.coverLead{font-family:var(--font-heading);font-size:clamp(1.25rem,2.4vw,2rem);font-weight:400;margin:1.2rem 0 2.1rem}
+.coverActions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.lightButton,.outlineButton{display:inline-flex;min-height:48px;align-items:center;justify-content:center;text-decoration:none;text-transform:uppercase;letter-spacing:.12em;font-size:.7rem;font-weight:600;padding:1rem 1.6rem;border:1px solid #fffdf8;transition:background .2s,color .2s}
+.lightButton{background:#fffdf8;color:#343c35}.outlineButton{color:#fffdf8;background:rgba(0,0,0,.14)}.lightButton:hover,.outlineButton:hover{background:#dfd5c4;color:#343c35}
+.lightButton:focus-visible,.outlineButton:focus-visible,.textLink:focus-visible{outline:2px solid #b89967;outline-offset:4px}
+.lifestylePhoto{margin:0;position:relative;min-width:0}.lifestylePhoto img{width:100%;display:block;object-fit:cover;aspect-ratio:5/4}.lifestylePhoto figcaption{font-size:.64rem;letter-spacing:.035em;line-height:1.4;color:#6b6156;padding:.6rem 0;text-align:right}.lifestylePhoto figcaption a{text-decoration:underline;text-underline-offset:2px}
+.coverPhoto figcaption{position:absolute;z-index:3;bottom:.65rem;right:1.2rem;color:#fffdf8;background:rgba(0,0,0,.72);padding:.35rem .6rem;pointer-events:auto}
+.coverPhoto{z-index:0}.cover:after{z-index:1;pointer-events:none}.coverContent{z-index:2}.coverPhoto figcaption{z-index:4}.coverPhoto{z-index:auto}.coverPhoto img{position:absolute;inset:0}
+.manifesto{text-align:center;padding:clamp(3.5rem,8vw,7.5rem) 1.5rem;max-width:860px;margin:auto;color:#3f443b}
+.manifesto h2,.coastBand h2,.filmEditorial h2{font-weight:400;font-size:clamp(2.3rem,4.4vw,4.2rem);line-height:1.12;letter-spacing:-.025em;margin:.6rem 0 1.6rem}
+.manifesto p:not(.eyebrow):not(.signature){font-size:1.02rem;line-height:1.95;max-width:68ch;margin:0 auto 1.5rem}
+.textLink{display:inline-block;text-decoration:none;border-bottom:1px solid #958064;padding-bottom:.35rem;color:#66563e;font-size:.75rem;text-transform:uppercase;letter-spacing:.13em}
+.editorial,.section{max-width:1370px;padding:clamp(3.5rem,7vw,6.6rem) clamp(1.3rem,5vw,5rem)}
+.editorial{border:0;background:#f5f1e9;gap:clamp(2rem,6vw,6rem)}.editorial:nth-of-type(even){background:transparent}
+.editorial h2,.section h2,.callout h2{font-size:clamp(2.35rem,4.2vw,3.9rem);letter-spacing:-.02em}
+.editorial img{max-height:610px;aspect-ratio:4/5}.editorial .lifestylePhoto img{aspect-ratio:4/5;max-height:610px}
+.cards{gap:clamp(1.2rem,3vw,2.7rem);margin:3rem 0}.card{border:0;background:transparent}.card img{aspect-ratio:4/5;object-fit:cover}.cardBody{padding:1.4rem 0 1.8rem;border-bottom:1px solid #d9d2c4}.card h3{font-size:clamp(1.55rem,2.2vw,2.15rem)}.card .button{background:transparent;border:0;border-bottom:1px solid #8e7b5f;color:#4a5146;padding:.35rem 0;min-height:44px}.card .button:hover{color:#8e7b5f}
+.coastBand{position:relative;display:grid;grid-template-columns:1.3fr 1fr;background:#e9e5d9;align-items:center;max-width:1500px;margin:0 auto}.coastBand .lifestylePhoto img{aspect-ratio:5/4;min-height:420px}.coastBand .lifestylePhoto figcaption{padding-right:.7rem}.coastBand>div{padding:clamp(2.5rem,6vw,6rem);color:#3f443b}.coastBand p{line-height:1.8}
+.filmEditorial{max-width:1050px;margin:auto;padding:clamp(2.5rem,6vw,5rem) 1.5rem;display:grid;grid-template-columns:1fr minmax(0,300px);align-items:center;gap:clamp(2rem,7vw,6rem);color:#3f443b}.filmEditorial p{line-height:1.8}
+.portfolioGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem;margin-top:2.5rem;text-align:left}.portfolioGrid figure{margin:0;min-width:0}.portfolioGrid img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover}.portfolioGrid figcaption{font-size:.75rem;line-height:1.5;color:#6b6156;padding:.65rem 0}
+@keyframes coastalEnter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:760px){.cover{min-height:600px;padding:3rem 1rem 4.5rem}.coverContent h1{font-size:clamp(2.9rem,9vw,4.5rem)}.coverActions{gap:.6rem}.coverActions a{padding:.85rem 1rem}.coastBand,.filmEditorial{grid-template-columns:1fr}.coastBand .lifestylePhoto img{min-height:0;aspect-ratio:4/3}.filmEditorial>div:last-child{max-width:300px;justify-self:center}.portfolioGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.editorial img,.editorial .lifestylePhoto img{aspect-ratio:4/3;max-height:400px}.coverPhoto figcaption{right:.65rem;bottom:.55rem}}
+@media(prefers-reduced-motion:reduce){.coverContent{animation:none}.lightButton,.outlineButton{transition:none}}

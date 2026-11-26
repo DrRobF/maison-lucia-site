@@ -5,6 +5,7 @@ import PrimaryNav, { navLinks } from "../components/PrimaryNav";
 import styles from "../styles/Home.module.css";
 import { ExperienceCards, experiences } from "../components/ExperienceCards";
 import coastal from "../styles/Coastal.module.css";
+import LifestylePhoto from "../components/LifestylePhoto";
 
 const footerNavLinks = [...navLinks, { label: "Plan Your Event", href: "/event-questionnaire" }, { label: "FAQ", href: "#faq" }, { label: "Atmos AI", href: "https://atmos.maisonluciallc.com/" }, { label: "Owner sign-in", href: "/portal/manage" }];
 
@@ -649,54 +650,38 @@ export default function Home() {
           </a>
         </header>
 
-        <section className={`${styles.hero} ${styles.filmHero}`} aria-label="Maison Lucia event styling">
-          <div className={styles.heroWatermark} aria-hidden="true"><BrandLogo variant="watermark" decorative /></div>
-          <div className={styles.heroTextCol}>
-            <h1>
-              Modern Tables.
-              <br />
-              Meaningful Moments.
-            </h1>
-            <p className={styles.heroTagline}>
-              Beautiful gatherings. Effortless hosting.
-            </p>
-            <p className={styles.heroCopy}>
-              Maison Lucia is a boutique event styling and private entertaining company serving Vero Beach, the Treasure Coast, Palm Beach and South Florida. From intimate dinners at home to beautifully curated celebrations, we bring together refined tablescapes, thoughtful florals and personalized hospitality to create memorable experiences.
-            </p>
-            <p className={coastal.signature}>Leave everything to us and just show up to enjoy.</p>
-            <div className={styles.heroActions}>
-              <a href="#contact" className={styles.primaryButton}>
-                Plan Your Gathering
-              </a>
-              <a href="/experiences" className={styles.secondaryButton}>
-                Explore Our Services
-              </a>
-            </div>
-            <a
-              href="https://atmos.maisonluciallc.com/"
-              className={styles.atmosLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Explore Atmos AI
-            </a>
+        <section className={coastal.cover} aria-label="Maison Lucia private entertaining">
+          <LifestylePhoto kind="residence" priority className={coastal.coverPhoto} />
+          <div className={coastal.coverContent}>
+            <p className={coastal.coverKicker}>Vero Beach · Treasure Coast · Palm Beach</p>
+            <h1>Modern Tables.<br />Meaningful Moments.</h1>
+            <p className={coastal.coverLead}>Beautiful gatherings. Effortless hosting.</p>
+            <div className={coastal.coverActions}><a href="#contact" className={coastal.lightButton}>Plan Your Gathering</a><a href="/experiences" className={coastal.outlineButton}>Explore Our Services</a></div>
           </div>
-
-          <HeroFilm />
         </section>
-
+        <section className={coastal.manifesto}>
+          <p className={coastal.eyebrow}>The art of gathering</p>
+          <h2>Thoughtfully hosted.<br />Beautifully remembered.</h2>
+          <p>Maison Lucia is a boutique event styling and private entertaining company serving Vero Beach, the Treasure Coast, Palm Beach and South Florida. From intimate dinners at home to beautifully curated celebrations, we bring together refined tablescapes, thoughtful florals and personalized hospitality to create memorable experiences.</p>
+          <p className={coastal.signature}>Leave everything to us and just show up to enjoy.</p>
+          <a href="https://atmos.maisonluciallc.com/" className={coastal.textLink} target="_blank" rel="noopener noreferrer">Explore Atmos AI</a>
+        </section>
         <section className={coastal.editorial} aria-labelledby="hospitality-heading">
           <div><p className={coastal.eyebrow}>The pleasure of hosting</p><h2 id="hospitality-heading">Be a Guest at Your Own Event</h2>
             <p>Entertaining should be a pleasure, not a responsibility that keeps you away from your guests. From the initial concept to the finishing touches, Maison Lucia thoughtfully manages the details that bring your gathering together.</p>
             <p>One point of contact. Personalized attention. Beautiful execution.</p>
             <p className={coastal.signature}>Leave everything to us and just show up to enjoy.</p>
             <a className={coastal.button} href="/vero-beach">Discover Vero Beach</a>
-          </div><img src="/table%20blue%20setup%201.jpg" alt="Blue-toned table setting with glassware and florals" loading="lazy" />
+          </div><LifestylePhoto kind="dinner" />
         </section>
         <section className={coastal.section} aria-labelledby="experience-heading">
           <p className={coastal.eyebrow}>Private entertaining & hospitality</p><h2 id="experience-heading">Experiences, thoughtfully curated.</h2>
           <ExperienceCards limit={3} />
           <a className={coastal.button} href="/experiences">Explore all experiences</a>
+        </section>
+        <section className={coastal.coastBand}>
+          <LifestylePhoto kind="sunset" />
+          <div><p className={coastal.eyebrow}>An invitation to slow down</p><h2>The Art of Entertaining in Vero Beach</h2><p>Refined gatherings inspired by coastal living.</p><a className={coastal.button} href="/vero-beach">Discover Vero Beach</a></div>
         </section>
         <section className={styles.featureSection} id="services">
           <div className={styles.featureIntro}>
@@ -818,7 +803,6 @@ export default function Home() {
 
             <div
               className={styles.approachImages}
-              id="gallery"
               aria-label="Maison Lucia table setting details"
             >
               <figure className={styles.approachHeroImage}>
@@ -922,6 +906,23 @@ export default function Home() {
           </div>
         </section>
 
+        <section id="gallery" className={coastal.section} aria-labelledby="portfolio-title">
+          <p className={coastal.eyebrow}>From the Maison Lucia collection</p><h2 id="portfolio-title">A closer look at the details</h2>
+          <div className={coastal.portfolioGrid}>
+            {[
+              ["beige-floral1.jpg","Neutral floral arrangement"],
+              ["beige-floral2.jpg","Soft beige floral details"],
+              ["cocktail detail 1.jpg","Cocktail styling detail"],
+              ["floral-blue-2.jpg","Blue floral composition"],
+              ["floral-blue1.jpg","Blue floral detail"],
+              ["green-purple-gold.PNG","Green, purple and gold styling palette"],
+              ["napkin detail 1 .jpg","Refined napkin detail"],
+              ["napkin-setting 2.jpg","Styled napkin and place setting"],
+              ["table setup 2.jpg","Layered table setting"]
+            ].map(([image,alt]) => <figure key={image}><img loading="lazy" src={"/"+encodeURIComponent(image)} alt={alt}/><figcaption>{alt}</figcaption></figure>)}
+          </div>
+        </section>
+        <section className={coastal.filmEditorial}><div><p className={coastal.eyebrow}>A moment with Maison Lucia</p><h2>The art of gathering, in motion.</h2><p>Discover the considered details and thoughtful styling that shape the Maison Lucia aesthetic.</p><a className={coastal.textLink} href="/experiences">Explore our experiences</a></div><HeroFilm /></section>
         <section className={coastal.editorial} id="about" aria-labelledby="founder-heading">
           <img src="/lacesilverwhite.webp" alt="Refined white floral and silver table details" loading="lazy" />
           <div><p className={coastal.eyebrow}>Meet our founder</p><h2 id="founder-heading">A Personal Approach to Exceptional Hospitality</h2>

@@ -2625,3 +2625,11 @@
 .filmHero .heroTextCol h1 { color:#363b35; font-weight:400; font-size:clamp(2.5rem,4.5vw,4.2rem); }
 .filmHero .heroTagline { color:#66563e; }
 @media(max-width:768px){.filmHero .heroTextCol h1{font-size:clamp(2.3rem,8.5vw,3.4rem)}.menuList{justify-content:center}}
+
+/* Public-site editorial refinements; portal styles remain untouched. */
+.header{max-width:1500px;background:#fcfbf8;padding:1.05rem clamp(1rem,3vw,2.5rem)}
+.page .featureCard,.page .serviceSeoCard,.page .journalCard{box-shadow:none;border-radius:0}
+.page .featureEditorialImageWrap{box-shadow:none;border-radius:0}
+.page .featureEditorialImage{border-radius:0}
+.page .featureSection{background:#f5f1e9}
+.page .serviceSeoSection,.page .journalSection{padding-top:clamp(3rem,6vw,5rem);padding-bottom:clamp(3rem,6vw,5rem)}
