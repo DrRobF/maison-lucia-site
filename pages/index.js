@@ -6,6 +6,7 @@ import styles from "../styles/Home.module.css";
 import { ExperienceCards, experiences } from "../components/ExperienceCards";
 import coastal from "../styles/Coastal.module.css";
 import LifestylePhoto from "../components/LifestylePhoto";
+import PortfolioViewer from "../components/PortfolioViewer";
 
 const footerNavLinks = [...navLinks, { label: "Plan Your Event", href: "/event-questionnaire" }, { label: "FAQ", href: "#faq" }, { label: "Atmos AI", href: "https://atmos.maisonluciallc.com/" }, { label: "Owner sign-in", href: "/portal/manage" }];
 
@@ -405,65 +406,6 @@ const structuredData = [
   },
 ];
 
-function HeroFilm() {
-  const videoRef = useRef(null);
-  const [paused, setPaused] = useState(true);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const applyMotionPreference = () => {
-      if (motion.matches) video.pause();
-      else video.play().catch(() => setPaused(true));
-    };
-    applyMotionPreference();
-    motion.addEventListener("change", applyMotionPreference);
-    return () => motion.removeEventListener("change", applyMotionPreference);
-  }, []);
-
-  const togglePlayback = () => {
-    const video = videoRef.current;
-    if (video.paused) video.play().catch(() => setPaused(true));
-    else video.pause();
-  };
-
-
-
-  return (
-    <div className={styles.heroFilmPanel}>
-      <div className={styles.heroFilmScreen}>
-        <img src="/whiteblue%20.webp" alt="Maison Lucia floral arrangements and refined table styling" className={styles.heroFilmPoster} />
-        <video
-          ref={videoRef}
-          id="maison-hero-film"
-          className={styles.heroFilmVideo}
-          style={failed ? { display: "none" } : undefined}
-          src="/hero-film-portrait-silent.mp4"
-          poster="/whiteblue%20.webp"
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-label="Maison Lucia event styling film"
-          onPlay={() => setPaused(false)}
-          onPause={() => setPaused(true)}
-          onError={() => setFailed(true)}
-        />
-      </div>
-      <div className={styles.heroFilmBar}>
-        <span className={styles.heroFilmCaption}>The art of gathering</span>
-        {!failed && <div className={styles.heroFilmControls}>
-          <button type="button" onClick={togglePlayback} aria-controls="maison-hero-film" aria-label={paused ? "Play film" : "Pause film"}>
-            <span aria-hidden="true">{paused ? "▶" : "Ⅱ"}</span> {paused ? "Play" : "Pause"}
-          </button>
-
-        </div>}
-      </div>
-    </div>
-  );
-}
-
 export default function Home() {
   const floralCarouselRef = useRef(null);
   const [inquiryForm, setInquiryForm] = useState(initialInquiryForm);
@@ -672,7 +614,7 @@ export default function Home() {
             <p>One point of contact. Personalized attention. Beautiful execution.</p>
             <p className={coastal.signature}>Leave everything to us and just show up to enjoy.</p>
             <a className={coastal.button} href="/vero-beach">Discover Vero Beach</a>
-          </div><LifestylePhoto kind="dinner" />
+          </div><img src="/Blueandraffia.JPG" alt="Maison Lucia blue botanical plates with woven raffia chargers and hydrangeas" loading="lazy" />
         </section>
         <section className={coastal.section} aria-labelledby="experience-heading">
           <p className={coastal.eyebrow}>Private entertaining & hospitality</p><h2 id="experience-heading">Experiences, thoughtfully curated.</h2>
@@ -906,7 +848,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="gallery" className={coastal.section} aria-labelledby="portfolio-title">
+        <section className={coastal.section} aria-labelledby="portfolio-title">
           <p className={coastal.eyebrow}>From the Maison Lucia collection</p><h2 id="portfolio-title">A closer look at the details</h2>
           <div className={coastal.portfolioGrid}>
             {[
@@ -922,7 +864,7 @@ export default function Home() {
             ].map(([image,alt]) => <figure key={image}><img loading="lazy" src={"/"+encodeURIComponent(image)} alt={alt}/><figcaption>{alt}</figcaption></figure>)}
           </div>
         </section>
-        <section className={coastal.filmEditorial}><div><p className={coastal.eyebrow}>A moment with Maison Lucia</p><h2>The art of gathering, in motion.</h2><p>Discover the considered details and thoughtful styling that shape the Maison Lucia aesthetic.</p><a className={coastal.textLink} href="/experiences">Explore our experiences</a></div><HeroFilm /></section>
+        <section id="gallery" className={coastal.viewerSection} aria-labelledby="viewer-heading"><div className={coastal.viewerIntro}><p className={coastal.eyebrow}>The Maison Lucia portfolio</p><h2 id="viewer-heading">Beautiful details. Real inspiration.</h2><p>Explore our tablescapes, florals and thoughtful styling, one detail at a time.</p></div><PortfolioViewer /><a className={coastal.textLink} href="/experiences">Explore our experiences</a></section>
         <section className={coastal.editorial} id="about" aria-labelledby="founder-heading">
           <img src="/lacesilverwhite.webp" alt="Refined white floral and silver table details" loading="lazy" />
           <div><p className={coastal.eyebrow}>Meet our founder</p><h2 id="founder-heading">A Personal Approach to Exceptional Hospitality</h2>

@@ -62,3 +62,22 @@
 @keyframes coastalEnter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:760px){.cover{min-height:600px;padding:3rem 1rem 4.5rem}.coverContent h1{font-size:clamp(2.9rem,9vw,4.5rem)}.coverActions{gap:.6rem}.coverActions a{padding:.85rem 1rem}.coastBand,.filmEditorial{grid-template-columns:1fr}.coastBand .lifestylePhoto img{min-height:0;aspect-ratio:4/3}.filmEditorial>div:last-child{max-width:300px;justify-self:center}.portfolioGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.editorial img,.editorial .lifestylePhoto img{aspect-ratio:4/3;max-height:400px}.coverPhoto figcaption{right:.65rem;bottom:.55rem}}
 @media(prefers-reduced-motion:reduce){.coverContent{animation:none}.lightButton,.outlineButton{transition:none}}
+
+/* Wide, responsive portfolio viewer; images remain uncropped in the principal frame. */
+.viewerSection{max-width:1500px;margin:0 auto;padding:clamp(3rem,6vw,6rem) clamp(1rem,4vw,3.5rem);text-align:center;background:#f4f0e8;color:#363b35;scroll-margin-top:1rem}
+.viewerIntro{max-width:760px;margin:0 auto 2rem}.viewerIntro h2{font-family:var(--font-heading);font-weight:400;font-size:clamp(2.2rem,4.5vw,4rem);line-height:1.1;margin:.7rem 0 1rem}.viewerIntro p:last-child{line-height:1.8}
+.viewer{margin:0 auto 2rem;max-width:1300px}
+.viewerStage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr) minmax(0,1fr);gap:clamp(.5rem,2vw,1.5rem);align-items:center;min-width:0}
+.viewerMain{margin:0;min-width:0;height:clamp(360px,58vw,700px);max-height:78vh;background:#e7e2d8;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.viewerImage{display:block;width:100%;height:100%;object-fit:contain;animation:portfolioReveal .4s ease-out}
+.viewerSide{border:0;padding:0;background:#e7e2d8;cursor:pointer;overflow:hidden;min-width:0;opacity:.75;transition:opacity .2s ease}
+.viewerSide:hover,.viewerSide:focus-visible{opacity:1}.viewerSide img{display:block;width:100%;height:clamp(180px,31vw,400px);object-fit:cover}
+.viewerBar{display:flex;justify-content:space-between;align-items:center;gap:1rem;text-align:left;padding:1rem 0;border-bottom:1px solid #d4cab9}
+.viewerCaption{display:flex;gap:.7rem 1.4rem;flex-wrap:wrap;font-size:.8rem;line-height:1.5}.viewerCaption span:first-child{font-weight:600;color:#77634c;white-space:nowrap}
+.viewerControls{display:flex;gap:.5rem;flex-shrink:0}.viewerControls button{min-width:44px;min-height:44px;border:1px solid #a59780;background:transparent;color:#353c34;padding:.5rem .9rem;cursor:pointer;font:inherit;font-size:.8rem}
+.viewerControls button:hover{background:#e5ddce}.viewer button:focus-visible{outline:2px solid #6c573a;outline-offset:3px}
+.viewerThumbs{display:flex;gap:.6rem;overflow-x:auto;padding:.8rem .2rem .7rem;scrollbar-width:thin;scrollbar-color:#a59780 transparent}
+.viewerThumbs button{flex:0 0 70px;padding:2px;border:1px solid transparent;background:transparent;cursor:pointer}.viewerThumbs button[aria-current="true"]{border:2px solid #65543d;padding:1px}.viewerThumbs img{display:block;width:100%;height:65px;object-fit:cover}
+@keyframes portfolioReveal{from{opacity:.5}to{opacity:1}}
+@media(max-width:700px){.viewerStage{grid-template-columns:1fr}.viewerSide{display:none}.viewerMain{height:clamp(340px,120vw,620px);max-height:70vh}.viewerBar{align-items:flex-start;flex-direction:column}.viewerControls{align-self:center}.viewerThumbs button{flex-basis:58px}.viewerThumbs img{height:55px}}
+@media(prefers-reduced-motion:reduce){.viewerImage{animation:none}.viewerSide{transition:none}}

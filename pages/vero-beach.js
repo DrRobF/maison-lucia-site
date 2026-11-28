@@ -12,9 +12,9 @@ export default function VeroBeach() {
       <p>Whether you are welcoming friends into your oceanfront residence, hosting a seasonal gathering, celebrating a milestone or planning an intimate dinner, we create an atmosphere that feels sophisticated, personal and inviting.</p>
       <p>Our approach combines beautifully curated details with seamless coordination, allowing you to spend less time preparing and more time enjoying your guests.</p>
       <a className={styles.button} href="/#contact">Discover the Maison Lucia Experience</a></div>
-      <LifestylePhoto kind="residence" />
+      <img src="/coastal-blue-outdoor.jpg" alt="Maison Lucia outdoor blue-and-white tablescape with woven chargers and hydrangeas" loading="lazy" />
     </section>
-    <section className={styles.editorial}><img src="/lacesilverwhite.webp" alt="White floral centerpiece and silver table accents" loading="lazy" /><div>
+    <section className={styles.editorial}><img src="/Bluewhiteandgold.JPG" alt="Blue-and-white Maison Lucia porcelain, gold flatware and blue glassware" loading="lazy" /><div>
       <p className={styles.eyebrow}>Personalized hospitality</p><h2>Thoughtfully designed for your lifestyle</h2>
       <ul className={styles.list}><li>Private dinners and at-home entertaining</li><li>Seasonal celebrations and holiday gatherings</li><li>Luxury tablescapes and floral styling</li><li>Intimate weddings and rehearsal dinners</li><li>Cocktail receptions and elegant luncheons</li><li>Private estate celebrations</li></ul>
       <p className={styles.signature}>Because the true luxury of entertaining is being able to enjoy it yourself.</p></div>
