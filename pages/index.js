@@ -593,7 +593,7 @@ export default function Home() {
         </header>
 
         <section className={coastal.cover} aria-label="Maison Lucia private entertaining">
-          <LifestylePhoto kind="residence" priority className={coastal.coverPhoto} />
+          <figure className={`${coastal.coverPhoto} ${coastal.originalHero}`}><img src="/Bluewhiteandgold.JPG" alt="Maison Lucia blue-and-white porcelain, gold flatware and blue glassware, styled by Veronica" fetchPriority="high" /></figure>
           <div className={coastal.coverContent}>
             <p className={coastal.coverKicker}>Vero Beach · Treasure Coast · Palm Beach</p>
             <h1>Modern Tables.<br />Meaningful Moments.</h1>

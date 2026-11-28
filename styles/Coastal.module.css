@@ -81,3 +81,7 @@
 @keyframes portfolioReveal{from{opacity:.5}to{opacity:1}}
 @media(max-width:700px){.viewerStage{grid-template-columns:1fr}.viewerSide{display:none}.viewerMain{height:clamp(340px,120vw,620px);max-height:70vh}.viewerBar{align-items:flex-start;flex-direction:column}.viewerControls{align-self:center}.viewerThumbs button{flex-basis:58px}.viewerThumbs img{height:55px}}
 @media(prefers-reduced-motion:reduce){.viewerImage{animation:none}.viewerSide{transition:none}}
+
+/* Homepage hero is original Maison Lucia photography, not lifestyle stock. */
+.originalHero img{object-position:center 50%}
+@media(max-width:760px){.originalHero img{object-position:46% center}}
