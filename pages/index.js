@@ -3,12 +3,8 @@ import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import PrimaryNav, { navLinks } from "../components/PrimaryNav";
 import styles from "../styles/Home.module.css";
-import { ExperienceCards, experiences } from "../components/ExperienceCards";
-import coastal from "../styles/Coastal.module.css";
-import LifestylePhoto from "../components/LifestylePhoto";
-import PortfolioViewer from "../components/PortfolioViewer";
 
-const footerNavLinks = [...navLinks, { label: "Plan Your Event", href: "/event-questionnaire" }, { label: "FAQ", href: "#faq" }, { label: "Atmos AI", href: "https://atmos.maisonluciallc.com/" }, { label: "Owner sign-in", href: "/portal/manage" }];
+const footerNavLinks = [{ label: "Services", href: "#services" }, ...navLinks, { label: "Owner sign-in", href: "/portal/manage" }];
 
 const instagramProfileUrl = "https://www.instagram.com/maisonlucia_llc/";
 
@@ -214,7 +210,6 @@ const tableSettingFeatures = [
 ];
 
 const inquiryOptions = [
-  ...experiences.map((experience) => experience.title),
   "Tablescape Styling",
   "Floral Styling & Decor",
   "Full Event Styling",
@@ -225,12 +220,6 @@ const inquiryOptions = [
 const initialInquiryForm = {
   name: "",
   email: "",
-  phone: "",
-  location: "",
-  eventDate: "",
-  guestCount: "",
-  eventType: "",
-  budget: "",
   services: [],
   eventNotes: "",
 };
@@ -342,10 +331,6 @@ const faqs = [
 ];
 
 const journalTopics = [
-  { title: "The Art of Hosting an Elegant Dinner Party in Vero Beach" },
-  { title: "A Guide to Effortless Coastal Entertaining" },
-  { title: "Welcoming Guests to Your Florida Winter Residence" },
-  { title: "Holiday Entertaining on the Treasure Coast" },
   {
     title: "How to Host an Elegant Dinner Party in Wellington",
     status: "Featured Journal",
@@ -406,15 +391,76 @@ const structuredData = [
   },
 ];
 
+function HeroFilm() {
+  const videoRef = useRef(null);
+  const [paused, setPaused] = useState(true);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const applyMotionPreference = () => {
+      if (motion.matches) video.pause();
+      else video.play().catch(() => setPaused(true));
+    };
+    applyMotionPreference();
+    motion.addEventListener("change", applyMotionPreference);
+    return () => motion.removeEventListener("change", applyMotionPreference);
+  }, []);
+
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (video.paused) video.play().catch(() => setPaused(true));
+    else video.pause();
+  };
+
+
+
+  return (
+    <div className={styles.heroFilmPanel}>
+      <div className={styles.heroFilmScreen}>
+        <img src="/whiteblue%20.webp" alt="Maison Lucia floral arrangements and refined table styling" className={styles.heroFilmPoster} />
+        <video
+          ref={videoRef}
+          id="maison-hero-film"
+          className={styles.heroFilmVideo}
+          style={failed ? { display: "none" } : undefined}
+          src="/hero-film-portrait-silent.mp4"
+          poster="/whiteblue%20.webp"
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-label="Maison Lucia event styling film"
+          onPlay={() => setPaused(false)}
+          onPause={() => setPaused(true)}
+          onError={() => setFailed(true)}
+        />
+      </div>
+      <div className={styles.heroFilmBar}>
+        <span className={styles.heroFilmCaption}>The art of gathering</span>
+        {!failed && <div className={styles.heroFilmControls}>
+          <button type="button" onClick={togglePlayback} aria-controls="maison-hero-film" aria-label={paused ? "Play film" : "Pause film"}>
+            <span aria-hidden="true">{paused ? "▶" : "Ⅱ"}</span> {paused ? "Play" : "Pause"}
+          </button>
+
+        </div>}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const floralCarouselRef = useRef(null);
   const [inquiryForm, setInquiryForm] = useState(initialInquiryForm);
   const [formErrors, setFormErrors] = useState({});
   const [submissionStatus, setSubmissionStatus] = useState("idle");
 
+  // Preserve experience inquiry context without changing the original homepage form layout.
   useEffect(() => {
-    const service = new URLSearchParams(window.location.search).get("experience");
-    if (service && inquiryOptions.includes(service)) setInquiryForm(current => ({ ...current, services: [service] }));
+    const experience = new URLSearchParams(window.location.search).get("experience");
+    const approved = ["Private Entertaining","Seasonal Living","The Maison Lucia Dining Experience","Estate Events","Concierge — By Request"];
+    if (approved.includes(experience)) setInquiryForm(current => ({...current,services:["Custom Request"],eventNotes:"Interested in: "+experience+"\n"}));
   }, []);
 
   const handleInquiryChange = (event) => {
@@ -457,10 +503,6 @@ export default function Home() {
       errors.services = "Please select at least one interested service.";
     }
 
-    if (inquiryForm.guestCount && (!Number.isInteger(Number(inquiryForm.guestCount)) || Number(inquiryForm.guestCount) < 1)) {
-      errors.guestCount = "Please enter a positive whole number.";
-    }
-
     if (!inquiryForm.eventNotes.trim()) {
       errors.eventNotes = "Please share a few event notes.";
     }
@@ -491,12 +533,6 @@ export default function Home() {
     const message = [
       `Name: ${inquiryForm.name.trim()}`,
       `Email: ${inquiryForm.email.trim()}`,
-      `Phone: ${inquiryForm.phone.trim() || "Not provided"}`,
-      `Location: ${inquiryForm.location.trim() || "Undecided"}`,
-      `Date: ${inquiryForm.eventDate || "Undecided"}`,
-      `Guest count: ${inquiryForm.guestCount || "Undecided"}`,
-      `Event type: ${inquiryForm.eventType.trim() || "Undecided"}`,
-      `Estimated budget: ${inquiryForm.budget.trim() || "Undecided"}`,
       `Interested Service: ${services}`,
       `Event Notes: ${inquiryForm.eventNotes.trim()}`,
     ].join("\n");
@@ -508,12 +544,6 @@ export default function Home() {
       name: inquiryForm.name.trim(),
       email: inquiryForm.email.trim(),
       services,
-      phone: inquiryForm.phone.trim(),
-      location: inquiryForm.location.trim(),
-      event_date: inquiryForm.eventDate,
-      guest_count: inquiryForm.guestCount,
-      event_type: inquiryForm.eventType.trim(),
-      estimated_budget: inquiryForm.budget.trim(),
       event_notes: inquiryForm.eventNotes.trim(),
       message,
       replyto: inquiryForm.email.trim(),
@@ -582,7 +612,7 @@ export default function Home() {
             <a href="#top" className={styles.brandName} aria-label="Maison Lucia home">
               <BrandLogo />
             </a>
-            <p className={styles.tagline}>Private Entertaining &amp; Event Styling</p>
+            <p className={styles.tagline}>South Florida Event Styling</p>
           </div>
 
           <PrimaryNav />
@@ -592,39 +622,45 @@ export default function Home() {
           </a>
         </header>
 
-        <section className={coastal.cover} aria-label="Maison Lucia private entertaining">
-          <figure className={`${coastal.coverPhoto} ${coastal.originalHero}`}><img src="/Bluewhiteandgold.JPG" alt="Maison Lucia blue-and-white porcelain, gold flatware and blue glassware, styled by Veronica" fetchPriority="high" /></figure>
-          <div className={coastal.coverContent}>
-            <p className={coastal.coverKicker}>Vero Beach · Treasure Coast · Palm Beach</p>
-            <h1>Modern Tables.<br />Meaningful Moments.</h1>
-            <p className={coastal.coverLead}>Beautiful gatherings. Effortless hosting.</p>
-            <div className={coastal.coverActions}><a href="#contact" className={coastal.lightButton}>Plan Your Gathering</a><a href="/experiences" className={coastal.outlineButton}>Explore Our Services</a></div>
+        <section className={`${styles.hero} ${styles.filmHero}`} aria-label="Maison Lucia event styling">
+          <div className={styles.heroWatermark} aria-hidden="true"><BrandLogo variant="watermark" decorative /></div>
+          <div className={styles.heroTextCol}>
+            <h1>
+              Modern Tables.
+              <br />
+              Meaningful Moments.
+            </h1>
+            <p className={styles.heroTagline}>
+              Florals. Tablescapes. Thoughtful Gatherings.
+            </p>
+            <p className={styles.heroCopy}>
+              Maison Lucia creates luxury event styling, floral styling, and refined
+              tablescapes for weddings, private dinners, corporate gatherings,
+              bridal showers, baby showers, and beautiful celebrations across
+              West Palm Beach, Vero Beach, Melbourne, Orlando, Miami,
+              Fort Lauderdale, and communities across South and Central Florida.
+            </p>
+            <div className={styles.heroActions}>
+              <a href="#contact" className={styles.primaryButton}>
+                Inquire About Your Event
+              </a>
+              <a href="#gallery" className={styles.secondaryButton}>
+                View Tablescapes
+              </a>
+            </div>
+            <a
+              href="https://atmos.maisonluciallc.com/"
+              className={styles.atmosLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Explore Atmos AI
+            </a>
           </div>
+
+          <HeroFilm />
         </section>
-        <section className={coastal.manifesto}>
-          <p className={coastal.eyebrow}>The art of gathering</p>
-          <h2>Thoughtfully hosted.<br />Beautifully remembered.</h2>
-          <p>Maison Lucia is a boutique event styling and private entertaining company serving Vero Beach, the Treasure Coast, Palm Beach and South Florida. From intimate dinners at home to beautifully curated celebrations, we bring together refined tablescapes, thoughtful florals and personalized hospitality to create memorable experiences.</p>
-          <p className={coastal.signature}>Leave everything to us and just show up to enjoy.</p>
-          <a href="https://atmos.maisonluciallc.com/" className={coastal.textLink} target="_blank" rel="noopener noreferrer">Explore Atmos AI</a>
-        </section>
-        <section className={coastal.editorial} aria-labelledby="hospitality-heading">
-          <div><p className={coastal.eyebrow}>The pleasure of hosting</p><h2 id="hospitality-heading">Be a Guest at Your Own Event</h2>
-            <p>Entertaining should be a pleasure, not a responsibility that keeps you away from your guests. From the initial concept to the finishing touches, Maison Lucia thoughtfully manages the details that bring your gathering together.</p>
-            <p>One point of contact. Personalized attention. Beautiful execution.</p>
-            <p className={coastal.signature}>Leave everything to us and just show up to enjoy.</p>
-            <a className={coastal.button} href="/vero-beach">Discover Vero Beach</a>
-          </div><img src="/Blueandraffia.JPG" alt="Maison Lucia blue botanical plates with woven raffia chargers and hydrangeas" loading="lazy" />
-        </section>
-        <section className={coastal.section} aria-labelledby="experience-heading">
-          <p className={coastal.eyebrow}>Private entertaining & hospitality</p><h2 id="experience-heading">Experiences, thoughtfully curated.</h2>
-          <ExperienceCards limit={3} />
-          <a className={coastal.button} href="/experiences">Explore all experiences</a>
-        </section>
-        <section className={coastal.coastBand}>
-          <LifestylePhoto kind="sunset" />
-          <div><p className={coastal.eyebrow}>An invitation to slow down</p><h2>The Art of Entertaining in Vero Beach</h2><p>Refined gatherings inspired by coastal living.</p><a className={coastal.button} href="/vero-beach">Discover Vero Beach</a></div>
-        </section>
+
         <section className={styles.featureSection} id="services">
           <div className={styles.featureIntro}>
             <p className={styles.kicker}>The Maison Lucia Approach</p>
@@ -745,6 +781,7 @@ export default function Home() {
 
             <div
               className={styles.approachImages}
+              id="gallery"
               aria-label="Maison Lucia table setting details"
             >
               <figure className={styles.approachHeroImage}>
@@ -848,33 +885,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={coastal.section} aria-labelledby="portfolio-title">
-          <p className={coastal.eyebrow}>From the Maison Lucia collection</p><h2 id="portfolio-title">A closer look at the details</h2>
-          <div className={coastal.portfolioGrid}>
-            {[
-              ["beige-floral1.jpg","Neutral floral arrangement"],
-              ["beige-floral2.jpg","Soft beige floral details"],
-              ["cocktail detail 1.jpg","Cocktail styling detail"],
-              ["floral-blue-2.jpg","Blue floral composition"],
-              ["floral-blue1.jpg","Blue floral detail"],
-              ["green-purple-gold.PNG","Green, purple and gold styling palette"],
-              ["napkin detail 1 .jpg","Refined napkin detail"],
-              ["napkin-setting 2.jpg","Styled napkin and place setting"],
-              ["table setup 2.jpg","Layered table setting"]
-            ].map(([image,alt]) => <figure key={image}><img loading="lazy" src={"/"+encodeURIComponent(image)} alt={alt}/><figcaption>{alt}</figcaption></figure>)}
-          </div>
-        </section>
-        <section id="gallery" className={coastal.viewerSection} aria-labelledby="viewer-heading"><div className={coastal.viewerIntro}><p className={coastal.eyebrow}>The Maison Lucia portfolio</p><h2 id="viewer-heading">Beautiful details. Real inspiration.</h2><p>Explore our tablescapes, florals and thoughtful styling, one detail at a time.</p></div><PortfolioViewer /><a className={coastal.textLink} href="/experiences">Explore our experiences</a></section>
-        <section className={coastal.editorial} id="about" aria-labelledby="founder-heading">
-          <img src="/lacesilverwhite.webp" alt="Refined white floral and silver table details" loading="lazy" />
-          <div><p className={coastal.eyebrow}>Meet our founder</p><h2 id="founder-heading">A Personal Approach to Exceptional Hospitality</h2>
-            <p>Founded by Veronica Orozco, Maison Lucia brings together an appreciation for beautiful details and professional experience in live event production, logistics and guest coordination.</p>
-            <p>We believe exceptional hospitality is about more than creating a beautiful setting. It is about anticipating needs, managing details and making every guest feel genuinely welcomed.</p>
-            <p>With a thoughtful approach to design and an experienced approach to execution, Maison Lucia creates gatherings that feel as effortless as they are memorable.</p></div>
-        </section>
         <section
           className={styles.floralSection}
-          id="signature-collections"
+          id="about"
           aria-label="Signature Floral Styling"
         >
           <div className={styles.floralIntro}>
@@ -1004,16 +1017,6 @@ export default function Home() {
               />
             </label>
             {formErrors.email && <p id="inquiry-email-error" className={styles.formError}>{formErrors.email}</p>}
-            <div className={coastal.formGrid}>
-              {[["phone","Phone","tel"],["location","Event location","text"],["eventDate","Event date","date"],["guestCount","Estimated guest count","number"],["eventType","Event type","text"],["budget","Estimated budget","text"]].map(([name,label,type]) => (
-                <label key={name} htmlFor={`inquiry-${name}`}>{label}
-                  <input id={`inquiry-${name}`} name={name} type={type} value={inquiryForm[name]} onChange={handleInquiryChange}
-                    min={type === "number" ? 1 : undefined} step={type === "number" ? 1 : undefined}
-                    aria-invalid={Boolean(formErrors[name])} aria-describedby={formErrors[name] ? `inquiry-${name}-error` : undefined} />
-                  {formErrors[name] && <span id={`inquiry-${name}-error`} className={styles.formError}>{formErrors[name]}</span>}
-                </label>
-              ))}
-            </div>
             <fieldset
               aria-invalid={Boolean(formErrors.services)}
               aria-describedby={formErrors.services ? "inquiry-services-error" : undefined}
